@@ -85,7 +85,3 @@ There are several important considerations when using display locking:
   similar proposal from 2014, with motivating examples that are applicable to
   display locking as well.
 
-
-
-
-
