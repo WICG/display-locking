@@ -1,0 +1,35 @@
+<!doctype HTML>
+
+<style>
+#lockable {
+  width: 200px;
+  height: 50px;
+  contain: paint;
+  background-color: lightblue;
+}
+</style>
+
+<div id="lockable"></div>
+
+<script>
+async function updateLockable() {
+  let element = document.getElementById("lockable");
+
+  // Get the lock if the user-agent supports getDisplayLock.
+  let lock = element.getDisplayLock ? element.getDisplayLock() : undefined;
+  // Await lock acquisition.
+  if (lock)
+    await lock.acquire();
+
+  // Update the contents of a locked element.
+  element.innerText = "Lorem ipsum.";
+
+  // Commit. We don't need to await the resolution, since we don't need to do
+  // anything when the promise resolves.
+  if (lock)
+    lock.commit();
+}
+
+window.onload = updateLockable;
+</script>
+
