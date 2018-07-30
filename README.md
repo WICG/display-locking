@@ -34,9 +34,18 @@ subtree are not rendered immediately. Instead, when the lock is committed, the
 user-agent processed rendering updates co-operatively, yielding periodically to
 allow script or user interactions to happen. 
 
-The visual content of an element which is locked for display is fixed to
-whatever content was present at the time the lock was acquired, and remains this
-way until the lock is released and all associated promises are resolved.
+The visual content of an element which is locked for display does not change.
+One option is that the visual output is fixed to whatever content was present at
+the time the lock was acquired, and remains this way until the lock is released
+and all associated promises are resolved. Another possiblity is effectively
+making the locked subtree `visibility: hidden`, meaning that we don't display
+any content while work is completed.
+
+There are other possible options here, such as displaying developer specified
+content. The details of this are up for discussion, but the consistent result is
+that the visual representation of the modified DOM is not necessarily rendered
+to screen, affording the user-agent the opportunity to break the work up into
+smaller pieces.
 
 ### Example
 
