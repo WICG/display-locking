@@ -285,6 +285,11 @@ Commit performs the following steps:
 ---
 ### Implementation description
 
+Note that this section describes the sample prototype implementation. The design
+choices here are not meant to represent final design decisions. As an example,
+snapshotting the current visual representation is only needed in one possible
+design of this feature.
+
 There are two key components to implementing the display locking API.
 
 First, we need to be able to snapshot the current visual representation of the
@@ -401,6 +406,18 @@ implementation:
 It’s possible that other approaches could have better behavior than budgeted
 update phases, but any approach is feasible as long as it implements
 non-janking phase updates.
+
+Another consideration is what to display when the element is locked for display.
+As described in the implementation details, one possibility is to snapshot the
+current visual representation and use that throughout the lock's lifetime. Other
+possbilities are listed below:
+* Do not show any content until the processing is done.
+* Allow the developer to specify the content to display
+  * Allow the developer to specify HTML to display instead of the content while
+    the real content is being processed
+  * Allow the developer to specify a Bitmap to display when the element is
+    locked, possibly but not necessarily containing the result of the content at
+    the time the lock was acquired.
 
 ---
 ### Examples revisited
