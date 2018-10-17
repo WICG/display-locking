@@ -268,7 +268,7 @@ When the element is in the locked state, the callback can make changes to the
 element's subtree. Specifically changes to DOM, or style that affect its subtree
 update the DOM in such a way that script can inspect it immediately, **with the
 exception of style-inducing properties** (see
-[what-forces-layout](https://gist.github.com/paulirish/5d52fb081b3570c81e3a).
+[what-forces-layout](https://gist.github.com/paulirish/5d52fb081b3570c81e3a)).
 When the element is painted, stashed draw commands are used.
 
 ##### Committing the lock
@@ -741,6 +741,11 @@ from complete.
       this decision will be left up to the script author by allowing an options
       dictionary to be passed to acquireDisplayLock, which would dictate whether
       the content modified is searcabhe (e.g. { searchable: true }).
+* Dealing with exceptions in callbacks.
+    * If a callback throws an exception, then we need to someone propagate that
+      knowledge to the script. The current thinking is that this causes the
+      returned promise to be rejected, and any scheduled continuations do not
+      run.
 
 Display locking will certainly have edge cases that need to be considered, some
 of which we have listed here. The general feeling is that the edge cases are
