@@ -62,7 +62,7 @@ Consider the following example.
    #container {
     width: 100px;
     height: 100px;
-    contain: strict;
+    contain: content;
   }
  </style>
  <div id="container">
@@ -266,10 +266,11 @@ Acquire performs the following steps:
 
 When the element is in the locked state, the callback can make changes to the
 element's subtree. Specifically changes to DOM, or style that affect its subtree
-update the DOM in such a way that script can inspect it immediately, **with the
-exception of style-inducing properties** (see
-[what-forces-layout](https://gist.github.com/paulirish/5d52fb081b3570c81e3a)).
-When the element is painted, stashed draw commands are used.
+update the DOM in such a way that script can inspect it immediately. It is
+important to note that style and layout inducing properties (see
+[what-forces-layout](https://gist.github.com/paulirish/5d52fb081b3570c81e3a)),
+when queries will force style or layout synchronously in order to return correct
+values. When the element is painted, stashed draw commands are used.
 
 ##### Committing the lock
 
@@ -306,10 +307,10 @@ a DisplayLockContext, which is given to the callback.
 
 ##### DisplayLockContext.schedule()
 
-The `acquireDisplayLock()` callback may call `context.schedule()` passing it
-another callback which will schedule to run on the next frame. This allows for
-the callback to yield to other script, as well as other update phases that may
-affect other content on the page.
+The `acquireDisplayLock()` callback may call `context.schedule()`, passing it
+another callback which will run as a separate event loop task in the future.
+This allows for the callback to yield to other script, as well as other update
+parts of the DOM that are not locked.
 
 The continuation callback is also given the same DisplayLockContext, and it is
 free to continue scheduling more work as needed. Note that multiple calls to
@@ -330,8 +331,7 @@ prevent the visual updates to appear on screen using
 - The lock lifetime is extended indefinitely.
 - Any scheduled continuations or acquireDisplayLock callbacks that have not yet
   run will not run while the context is suspended.
-- A handle to a release object is returned, which allows script to resume the
-  context.
+- A handle object is returned, which allows script to resume the context.
 
 Note that it is a misuse of the API to capture the passed context outside of the
 scope of the callback. For this reason, if the context is suspended a handle is
@@ -520,7 +520,7 @@ Let's revisit the motivating examples, modified with display locking:
    #container {
     width: 100px;
     height: 100px;
-    contain: strict;
+    contain: content;
   }
  </style>
  <div id="container">
@@ -546,10 +546,10 @@ Let's revisit the motivating examples, modified with display locking:
 ```
 
 Similar to the original example, on load we present the content in the
-`complicated_subtree`. However, we now use acquireDisplayLock callback to modify
-the contents. This causes the user-agent to lock the container for visual
-updates. Then, we modify the DOM by setting the `complicated_subtree` display
-property to `block`. Since the lock's lifetime is not extended, it is
+`complicated_subtree`. However, we use the `acquireDisplayLock()` callback to
+modify the contents. This causes the user-agent to lock the container's subtree
+for visual updates. Then, we modify the DOM by setting the `complicated_subtree`
+display property to `block`. Since the lock's lifetime is not extended, it is
 automatically committed. This sequence of commands causes the user-agent to
 co-operatively update the phases without introducing an undue delay for the rest
 of the updates. In other words, the remainder of the page remains interactive
@@ -606,7 +606,7 @@ following:
   current update phases and stash the paint output (as in the first step).
 * Frame 4: the callback is run, etc.
 
-If this animation continues like this, there is always two frames between script
+If this animation continues like this, there are always two frames between script
 successively changing the animated properties (Frames 2 and 4 are the ones that
 run the callback). This means that the best frame rate the script may achieve
 with this version of display locking is 30fps.
@@ -623,7 +623,7 @@ display lock is requested. This eliminates one frame of latency. In the example
 above, it means that the callback can run on frame 3, since the painted output
 can be re-captured at the end of frame 2.
 
-This makes it possible to run display lock drive animations at 60fps.
+This makes it possible to run display lock driven animations at 60fps.
 
 For more discussion on this, see [issue
 26](https://github.com/chrishtr/display-locking/issues/26).
@@ -740,9 +740,9 @@ from complete.
       discoverable by find-in-page or tab order navigation. It is possible that
       this decision will be left up to the script author by allowing an options
       dictionary to be passed to acquireDisplayLock, which would dictate whether
-      the content modified is searcabhe (e.g. { searchable: true }).
+      the content modified is searchable (e.g. { searchable: true }).
 * Dealing with exceptions in callbacks.
-    * If a callback throws an exception, then we need to someone propagate that
+    * If a callback throws an exception, then we need to somehow propagate that
       knowledge to the script. The current thinking is that this causes the
       returned promise to be rejected, and any scheduled continuations do not
       run.

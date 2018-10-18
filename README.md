@@ -37,10 +37,13 @@ allow script or user interactions to happen.
 The visual content of an element's subtree which is locked for display does not
 change. Specifically, if the element already existed in the DOM, then the
 content that was present at the time the lock was acquired remains visibile
-until the lock is committed and the associated promise is resolved. If the
-element was locked before being inserted into the DOM, then it is effectively
-inserted in a hidden state, which means the user agent does not display any
-content for this element until the work is completed.
+until the lock is committed and the associated promise is resolved. Note that in
+this case, the element itself still responds and updates its own visual state
+(e.g. border); it is only the element's subtree that is locked for display.
+
+If the element was locked before being inserted into the DOM, then it is
+effectively inserted in a hidden state, which means the user agent does not
+display any content for this element or its subtree until the work is completed.
 
 ### Example
 
