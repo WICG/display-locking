@@ -638,9 +638,9 @@ is acquired
 
 When the element's lock is acquired while the element is already a part of the
 DOM, then the draw commands associated with that element's subtree are stashed
-and used while the hold is acquired. Note that in this mode, changes to the
+and used while the lock is acquired. Note that in this mode, changes to the
 element itself (e.g. border, size) are updated synchronously. In other words,
-the element itself is not locked for dipslay, only its subtree.
+the element itself is not locked for display, only its subtree.
 
 This mode is appropriate to use when the element's subtree needs to be updated
 without jank, but old contents should still be displayed.
