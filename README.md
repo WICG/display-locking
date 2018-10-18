@@ -32,40 +32,37 @@ locking an element.
 If an element is locked for display, it means that any DOM updates to its
 subtree are not rendered immediately. Instead, when the lock is committed, the
 user-agent processed rendering updates co-operatively, yielding periodically to
-allow script or user interactions to happen. 
+allow script or user interactions to happen.
 
-The visual content of an element which is locked for display does not change.
-One option is that the visual output is fixed to whatever content was present at
-the time the lock was acquired, and remains this way until the lock is released
-and all associated promises are resolved. Another possiblity is effectively
-making the locked subtree `visibility: hidden`, meaning that we don't display
-any content while work is completed.
+The visual content of an element's subtree which is locked for display does not
+change. Specifically, if the element already existed in the DOM, then the
+content that was present at the time the lock was acquired remains visibile
+until the lock is committed and the associated promise is resolved. Note that in
+this case, the element itself still responds and updates its own visual state
+(e.g. border); it is only the element's subtree that is locked for display.
 
-There are other possible options here, such as displaying developer specified
-content. The details of this are up for discussion, but the consistent result is
-that the visual representation of the modified DOM is not necessarily rendered
-to screen, affording the user-agent the opportunity to break the work up into
-smaller pieces.
+If the element was locked before being inserted into the DOM, then it is
+effectively inserted in a hidden state, which means the user agent does not
+display any content for this element or its subtree until the work is completed.
 
 ### Example
 
 ```js
-async function updateDom() {
+function updateDom() {
   let element = document.getElementById("container");
 
-  // Get and acquire a lock, causing the element to be locked.
-  let lock = element.getDisplayLock();
-  await lock.acquire();
+  // Acquire a lock, and modify the element's subtree in the callback.
+  element.acquireDisplayLock((context) => {
+    // Modify element's subtree. The DOM is modified immediately, same as
+    // without display locking. However, rendering of the element is delayed.
+    element.innerHTML = ...;
+  });
 
-  // Modify element's subtree. The DOM is modified immediately, same as without
-  // display locking. However, rendering of the element is delayed.
-  element.innerHTML = ...;
-
-  // Commit the lock. This returns a promise. The user-agent starts to
-  // co-operatively process steps required to render the modified subtree,
-  // including style, layout, and painting. When the user-agent is done
-  // with these steps, the promise is resolved.
-  lock.commit();
+  // In this example, after the callback runs the lock is automatically
+  // committed. This means the user-agent starts to co-operatively process steps
+  // required to render the modified subtree, including style, layout, and
+  // painting. acquireDisplayLock() returns a promise which is resolved when
+  // this work is completed.
 }
 
 ```
@@ -74,6 +71,17 @@ In cases where DOM manipulations would cause jank, this instead allows the
 user-agent to split up the work across several frames, yielding for script and
 user interactions. When the updates are finished processing, the result is
 displayed without jank.
+
+Note that more advanced patterns are possible using the provided display lock
+context in the callback. In particular, the context allows the following, which
+are discussed in more details in the explainer linked below:
+
+- Splitting up the script work across multiple frames using context.schedule()
+- Postponing the co-operative work indefinitely using context.suspend()
+- Subsequently resuming the postponed work using a handle object returned by
+  context.suspend()
+- Forcing the update to become synchronous to support "idle until urgent"
+  pattern using a handle returned by context.getSynchronousHandle()
 
 ### Further reading
 
@@ -85,3 +93,7 @@ displayed without jank.
   similar proposal from 2014, with motivating examples that are applicable to
   display locking.
 
+### Revision log
+
+- 2018-07-24: Initial version.
+- 2018-10-17: Updated the explainer to reflect new api surface. Closes #24.
