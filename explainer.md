@@ -629,6 +629,37 @@ For more discussion on this, see [issue
 26](https://github.com/chrishtr/display-locking/issues/26).
 
 ---
+### Locked subtree vs locked element + subtree
+
+Display locking supports two modes of operation, distinguished by when the lock
+is acquired
+
+#### Mode 1 (locked subtree)
+
+When the element's lock is acquired while the element is already a part of the
+DOM, then the draw commands associated with that element's subtree are stashed
+and used while the hold is acquired. Note that in this mode, changes to the
+element itself (e.g. border, size) are updated synchronously. In other words,
+the element itself is not locked for dipslay, only its subtree.
+
+This mode is appropriate to use when the element's subtree needs to be updated
+without jank, but old contents should still be displayed.
+
+#### Mode 2 (locked element + subtree)
+
+When the element's lock is acquired before the element is inserted into the DOM,
+then the element itself as well as its subtree are considered locked. This means
+that when the element is inserted into the DOM it will not visually change the
+output of the page.
+
+In this mode, changes to either the element itself or to the subtree will not be
+reflected on screen until the lock is committed and the corresponding promise
+resolves.
+
+This mode is appropriate to use when a new element or a widget is inserted into
+the page and it should present asynchonously when ready without causing jank.
+
+---
 ### Restrictions
 
 In consideration of display locking, we have also discussed when it would and
