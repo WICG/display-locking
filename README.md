@@ -34,10 +34,9 @@ subtree are not rendered immediately. Instead, when the lock is committed, the
 user-agent processed rendering updates co-operatively, yielding periodically to
 allow script or user interactions to happen.
 
-The current consideration is only for an element to be locked before it is
-inserted into the DOM. Display locking can later be extended to lock elements
-already in the DOM, either freezing their visual state, or making them
-invisible.
+The visual content of an element's subtree which is locked for display does not
+change. Specifically, if the element already existed in the DOM, then the
+content that was present at the time the lock was acquired remains. 
 
 If the element was locked before being inserted into the DOM, then it is
 effectively inserted in a hidden state, which means the user agent does not
@@ -56,7 +55,7 @@ async function updateDom() {
   // Acquire a lock.
   await element.getDisplayLock().acquire();
 
-  // Append the element to the DOm.
+  // Append the element to the DOM.
   document.body.appendChild(element);
 
   // Now we can update the element, causing co-operative updates. After that
