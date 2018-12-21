@@ -26,17 +26,14 @@ previous layout and visual update to be done before running subsequent script.
 We propose a new concept, display locking, to assist developers with alleviating
 jank caused by DOM updates. Using display locking, the developer will be able to
 lock an element and its subtree, preventing visual updates. Then, the developer
-will be able update the locked subtree’s DOM however it desires, without any
-rendering cost or jank -- updates that will be interleaved with other work such
-as running script or DOM updates outside of the locked subtree. The developer
-will then be able to unlock the element, causing the visual updates of the
-modified subtree to appear. Note that unlock would still be asynchronous,
-meaning that the request to unlock can take some time to process to allow for
-co-operative updates to complete. In essence, display locking will make it
-possible to perform complicated DOM updates without causing the rest of the page
-to jank. However, it will also come at a small cost: DOM updates in a locked
-subtree will not be visually updated until the lock is committed, and input
-events targeted for the locked subtree will not be processed.
+will be able construct the locked subtree’s DOM however it desires, and insert
+it into the DOM without any rendering cost or jank. After insertion, the element
+can be updated. These updates will be co-operative -- interleaved with other
+work such as running script or DOM updates outside of the locked subtree. The
+developer will then be able to commit the element's lock, causing the visual
+updates of the modified subtree to appear.  In essence, display locking will
+make it possible to perform complicated DOM updates without causing the rest of
+the page to jank.
 
 In the rest of the document, we describe the display locking concept in detail.
 We will first examine some motivating examples which we commonly observe in rich
@@ -51,6 +48,19 @@ that in place, we will revisit the motivating examples to see how display
 locking can be applied in order to improve their performance. Finally, we will
 discuss possible display locking implementations, along with possible corner
 cases and limitations.
+
+Note that although some of the motivating examples below talk about locking an
+element which is already in the DOM, the current effort is to only introduce a
+variant of display locking that locks an element before it is inserted into the
+DOM. This helps with one important consideration: current visual state while the
+element is locked. When locking an element before inserting it into the DOM, we
+treat the element's current visual state as non-existent, essentially display:
+none.
+
+If, however, the element is locked after being in the DOM, we need to consider
+and decide how to display the element's current, "stale", visual state. This is
+left as an enhancement to display locking. The documentation for the
+locked-after-append mode is going to be updated at a future date.
 
 ---
 ### Motivating Examples
@@ -230,145 +240,99 @@ The display locking proposal is intended to improve the script, layout, paint,
 as well as parts of the compositing update phases. In particular, it aims to add
 javascript APIs to allow the developer to lock an element for display. This
 means that the element and its subtree's paint output (ie the output of the
-layout and paint phase) will not change while the lock is acquired. This, in
-turn, means that the user-agent does not have to finish processing the locked
+layout and paint phase) will not change while the lock is acquired. In the
+lock-before-append case, this means that the visual state is empty. What this
+allows is for the user-agent to not have to finish processing the locked
 element’s subtree when processing the layout and paint phase. In other words,
-the user-agent is free to process parts of the subtree, eliminating them from
-the list of things that have changed (i.e. the dirty elements list). Note that
-this dirty list can be indirectly populated as well by, for example, changing
-CSS properties that affect some elements on the page. There are some edge cases
-to consider here which will be discussed later in this document.
+when requested, the user-agent is free to process parts of the subtree,
+eliminating them from the list of things that have changed (i.e. the dirty
+elements list). Note that this dirty list can be indirectly populated as well
+by, for example, changing CSS properties that affect some elements on the page.
+There are some edge cases to consider here which will be discussed later in this
+document.
 
-##### Element.acquireDisplayLock()
+##### Element.getDisplayLock()
 
 With display locking, each of the `Element` objects has a new function,
-`acquireDisplayLock()` which takes a callback to run when the lock is acquired
-and returns a promise which resolves when all of the work to layout, and paint
-the subtree has completed. The callback given to `acquireDisplayLock()` takes
-a DisplayLockContext object, which provides functionality for more sophisticated
-designs.
+`getDisplayLock()` which returns a DisplayLockContext reprsenting the display
+lock. The rest of the display locking function happens by interacting with this
+object. The DisplayLockContext is bound to the element from which it was
+retrieved, meaning that operations on the object will affect the source element.
+
+##### DisplayLockContext.acquire(options)
 
 Acquire performs the following steps:
 
-* It finishes all of the update phases for the current state
-* It saves the output of the layout and paint phase (the painted draw commands)
-  and stashes them to be used when the locked element needs to be painted. Note
-  that in the case of an element that is outside of the DOM, this painted output
-  is empty.
-* It sets a flag on the associated element to lock it for visual updates.
-* It returns a promise which, when resolved or rejected, indicates that the lock
-  has been released.
-  <!-- TODO: define the "next opportunity" time -->
-* Finally, at the next opportunity, it runs the given callback passing it a
-  DisplayLockContext for the locked element.
+* It finishes all of the update phases for the current state, if needed.
+* (in lock-after-append) It saves the output of the layout and paint phase (the
+  painted draw commands) and stashes them to be used when the locked element
+  needs to be painted. Note that in the case of an element that is outside of
+  the DOM, this painted output is empty.
+* It marks the source element as locked for display, preventing normal update
+  phases to recurse into it.
+* It returns a promise which, when resolved, indicates that the above work has
+  been completed.
+
+Note that the acquire call takes options, consisting of the following key-value
+pairs:
+* (optional) timeout: timeoutInMilliseconds
+  * This is an optional timeout value for the duration of the lock. When the
+    lock is acquired, and commit is not called within timeoutInMilliseconds
+    milliseconds, the lock will be automatically committed. This is a safety
+    valve for protecting pages from inadvertently leaving an element locked
+    indefinitely due to uncaught exceptions or other bugs in the code. For a
+    more sofisticated use cases, the value of Infinity will effectively disable
+    the timeout.
 
 ##### DOM modifications in the locked state
 
-When the element is in the locked state, the callback can make changes to the
-element's subtree. Specifically changes to DOM, or style that affect its subtree
-update the DOM in such a way that script can inspect it immediately. It is
-important to note that style and layout inducing properties (see
+When the element is in the locked state, it can be inserted into the DOM. The
+script is then free to make changes to the element's subtree. Specifically
+changes to DOM, or style that affect its subtree update the DOM in such a way
+that script can inspect it immediately. It is important to note that style and
+layout inducing properties (see
 [what-forces-layout](https://gist.github.com/paulirish/5d52fb081b3570c81e3a)),
-when queries will force style or layout synchronously in order to return correct
-values. When the element is painted, stashed draw commands are used.
+when queried, will force style or layout synchronously in order to return correct
+values. When the element is painted, the current state of the DOM is not visible
+to the user. In lock-before-append mode, this means that the element is
+effectively display: none.
 
-##### Committing the lock
+##### DisplayLockContext.update()
 
-Unless the lock's durating is extended (see below), the lock is committed and
-the following operations take place:
+This operation causes the lock to allow co-operative updates on the element and
+its subtree in preparation for display or measuring layout. It performs the
+following steps:
 
-* The updates to layout and paint are processed as long as they do not cause
+* The updates to rendering stages are processed as long as they do not cause
   undue delay to the rest of the update phases
 * If an undue delay is likely to be caused, the work already completed is
   processed and the update phase yields to other update phases for unlocked
   content.
 * Future update phases for the locked element are gated on the fact that the
   previous update phases for this locked element have completed.
-* As before, when the element is painted, stashed draw commands are used. Note
-  that the user-agent is free to paint the element with the updated visual
-  representation, as long as that representation is not presented to screen.
+* As before, when the element is painted, the changes are not visible to the
+  user. Note that `update()` is free to skip doing any paint work for the
+  element, since the visual state will not be displayed.
 * When all of the above phases finish, the promise returned by
-  `acquireDisplayLock()` is resolved, giving the script opportunity to
-  re-acquire the lock before the contents are displayed.
-  * If the promise resolution callback does not re-acquire the lock, the
-    contents are presented to screen.
-  * If the pormise resolution callback does re-acquire the lock, then the
-    process starts again in a locked state and the visual contents remain
-    unchanged (i.e. the contents displayed are the same contents as before the
-    intial lock was acquired). (Note: see active vs passive locks discussions
-    below)
+  `update()` is resolved, giving the script opportunity to measure layout, do
+  other work, or signal to other subsystems that this element and its subtree
+  are "prepared".
 
-##### Extending the lifetime of the lock
+##### DisplayLockContext.commit()
 
-It is possible that the passed callback, which is run to completion, runs for a
-long enough time to actually cause jank: it may prevent other script from
-running. A way to alleviate this is to schedule a continuation of the work using
-a DisplayLockContext, which is given to the callback.
+This operation causes the lock to be released and visual state of the element
+and its subtree to become visible to the user. It performs the following steps:
 
-##### DisplayLockContext.schedule()
+* It allows the element and its subtree to be updated for all the rendering
+  phases.
+* It paints the element and ensures that the process of displaying to the user
+  is started. (e.g. it sends draw commands to the compositor, or to the GPU).
+* It resolves the promise returned by `commit()`, indicating that the above work
+  was finished.
 
-The `acquireDisplayLock()` callback may call `context.schedule()`, passing it
-another callback which will run as a separate event loop task in the future.
-This allows for the callback to yield to other script, as well as other update
-parts of the DOM that are not locked.
-
-The continuation callback is also given the same DisplayLockContext, and it is
-free to continue scheduling more work as needed. Note that multiple calls to
-`DisplayLockContext.schedule()` result in multiple callbacks being run on the
-next frame, analogous to requestAnimationFrame callbacks.
-
-As long as some work has been scheduled to run on the next frame, the duration
-of the lock is extended and the user-agent will not process any of the partially
-updated DOM.
-
-
-##### DisplayLockContext.suspend()
-
-DisplayLockContext also allows script to indefinitely suspend processing and
-prevent the visual updates to appear on screen using
-`DisplayLockContext.suspend()`. When invoked, the following happens:
-
-- The lock lifetime is extended indefinitely.
-- Any scheduled continuations or acquireDisplayLock callbacks that have not yet
-  run will not run while the context is suspended.
-- A handle object is returned, which allows script to resume the context.
-
-Note that it is a misuse of the API to capture the passed context outside of the
-scope of the callback. For this reason, if the context is suspended a handle is
-returned which may be captured outside of the scope.
-
-The handle provides a single function `DisplayLockSuspendedHandle.resume()`,
-which causes the context to resume processing any scheduled continuations and
-eventually commit the lock.
-
-One pattern that may utilize this functionality is to suspend processing content
-which is off-screen, and rely on a virtual scroller to resume processing when
-the content is scrolled on-screen.
-
-##### DisplayLockContext.getSynchronousHandle()
-
-DisplayLockContext also allows to get a handle which may be used to force
-synchronous processing of all scheduled continuations as well as all of the
-update phases required to display the content.
-
-This handle provides a single function
-`DisplayLockSynchronousHandle.forceSynchronous()`, which when invoked performs
-the following steps:
-
-- At the time the next scheduled continuation is called, it processes all
-  continuations **including newly scheduled ones**.
-- It causes all of the update phases to complete in that same frame, possibly
-  causing jank.
-- The promise is then resolved as usual, giving the script an opportunity to
-  re-acquire the lock or let the contents be displayed to screen.
-
-Note that as before, DisplayLockContext is not meant to be captured outside of
-the running callback, hence a separate handle is provided if forcing a
-synchronous update is required.
-
-Note that since the scheduled continuations can keep scheduling more work, there
-is a possibility to run into a live-lock: running script synchronously forever.
-It is up to the page author to avoid this situation.
+Note that it is OK to call `commit()` following an earlier `update()` which has
+not yet resolved. This causes work that is still needed to become synchronous,
+enabling the idle-until-urgent pattern.
 
 ---
 ### Implementation description
@@ -380,21 +344,18 @@ section.
 
 There are three key components to implementing the display locking API.
 
-First, we need to be able to snapshot the current visual representation of the
-locked element, so that future updates to the page have content to populate in
-place of the locked element. Since the user-agents vary greatly in the way they
-generate commands for drawing content to screen, we will omit a detailed
-discussion of this. It suffices to say that any kind of double-buffering
-approach would work. That is, the user-agent could generate the commands needed
-to render the element and its subtree at the time the lock is acquired. Then,
-for the duration of the lock it uses these commands to render the content, while
-accumulating new draw commands in a separate buffer to be used when the lock is
-released.
+First, in lock-after-append, we need to be able to snapshot the current visual
+representation of the locked element, so that future updates to the page have
+content to populate in place of the locked element. Since the user-agents vary
+greatly in the way they generate commands for drawing content to screen, we will
+omit a detailed discussion of this. It suffices to say that any kind of
+double-buffering approach would work. That is, the user-agent could generate the
+commands needed to render the element and its subtree at the time the lock is
+acquired. Then, for the duration of the lock it uses these commands to render
+the content, while accumulating new draw commands in a separate buffer to be
+used when the lock is released.
 
-Second, we need to run scheduled callbacks at some predefined time. This can be
-done with a simple scheduling queue that processes task at predefined intervals.
-
-Third, we need to implement the co-operative update phases.  That is, we need a
+Second, we need to implement the co-operative update phases.  That is, we need a
 way to prevent the update phases in the locked subtree from blocking other
 phases from occurring for other parts of the tree. The co-operative updates part
 of the API can be implemented in several ways. Here, we describe one possible
@@ -517,7 +478,7 @@ Let's revisit the motivating examples, modified with display locking:
 
 ```html
  <style>
-   #container {
+#container {
     width: 100px;
     height: 100px;
     contain: content;
@@ -530,31 +491,27 @@ Let's revisit the motivating examples, modified with display locking:
  </div>
 
  <script>
- function presentContent() {
-   document.getElementById("container").acquireDisplayLock(
-     (context) => {
-       let subtree = document.getElementById("complicated_subtree");
-       subtree.style.display = "block";
-     }
-   ).then(onContentPresented);
+ async function presentContent() {
+   let lock = document.getElementById("container").getDisplayLock();
+   await lock.acquire({ timeout: Infinity; });
+   document.getElementById("complicated_subtree").style.display = "block";
+   lock.update().then(() => { lock.commit().then(onContentPresented); });
  }
 
- window.onload = function() {
-   window.requestAnimationFrame(presentContent);
- };
+ window.onload = presentContent;
  </script>
 ```
 
 Similar to the original example, on load we present the content in the
-`complicated_subtree`. However, we use the `acquireDisplayLock()` callback to
+`complicated_subtree`. However, we first acquire a lock on the item and then
 modify the contents. This causes the user-agent to lock the container's subtree
 for visual updates. Then, we modify the DOM by setting the `complicated_subtree`
-display property to `block`. Since the lock's lifetime is not extended, it is
-automatically committed. This sequence of commands causes the user-agent to
-co-operatively update the phases without introducing an undue delay for the rest
-of the updates. In other words, the remainder of the page remains interactive
-and animating. When the updates eventually complete, the commit promise resolves
-and `onContentPresented` is invoked.
+display property to `block`. Then we call `update()` and when that finishes,
+`commit()`. This sequence of commands causes the user-agent to co-operatively
+update the phases without introducing an undue delay for the rest of the
+updates. In other words, the remainder of the page remains interactive and
+animating. When the updates eventually complete, we commit and when that promise
+resolves and `onContentPresented` is invoked.
 
 As before, let’s see a [real example, this time using a prototype of display
 locking](https://drive.google.com/file/d/1r1aBi4P1_DMCZNXlpzW5jAibCEdT38YB/view?usp=sharing
@@ -570,7 +527,7 @@ implementation being incomplete (the delay is approximately 40ms).
 However, other than the small jank the animation keep going, while the
 user-agent lays out the content co-operatively. Note that even though the
 animation is going ahead, the content is not yet presented. We can detect this
-from JavaScript, by observing that the `acquireDisplayLock()` promise has not
+from JavaScript, by observing that the `commit()` promise has not
 yet resolved.
 
 <div style="text-align: center">
@@ -578,8 +535,8 @@ yet resolved.
 </div>
 &nbsp;
 
-After the user-agent completes the update phases, the content is presented
-without jank.
+After the user-agent completes the update phases and commit, the content is
+presented without jank.
 
 <div style="text-align: center">
   <img src="resources/spinner_without_jank_3.jpg" alt="spinner without jank">
@@ -587,54 +544,12 @@ without jank.
 &nbsp;
 
 ---
-### Active vs passive locks
-
-In order to allow the use of display locking to animate content, we need to
-consider the timing of the updates. The current timing landscape looks like the
-following:
-
-* Frame 1: acquireDisplayLock is called, which needs to finish current update
-  phases and stash the paint.
-* Frame 2: the given callback is called and the intent of the script is to
-  present the contents.
-* Frame 2 also detects that no more things have been scheduled and processes the
-  update phases to completion.
-* End of Frame 2: the promise is resolved. Note that here, script cannot
-  re-acquire the lock, since that would prevent the visual updates from making
-  it to screen; it must do this in a rAf or a setTimeout callback instead.
-* Frame 3: script calls acquireDisplayLock again, which has to finish the
-  current update phases and stash the paint output (as in the first step).
-* Frame 4: the callback is run, etc.
-
-If this animation continues like this, there are always two frames between script
-successively changing the animated properties (Frames 2 and 4 are the ones that
-run the callback). This means that the best frame rate the script may achieve
-with this version of display locking is 30fps.
-
-Since this is a common use case, we need to allow for a display lock driven
-animation to run at 60fps instead.
-
-One way to solve this is to specify a passive property to acquireDisplayLock via
-an options dictionary (e.g. `{ passive: true }`). This means that when the promise
-resolves for a display lock, re-acquiring the display lock **does not extend the
-lifetime of the lock**. This means that the contents are presented to the
-screen, and the acquireDisplayLock call is interpreted to mean that a **new**
-display lock is requested. This eliminates one frame of latency. In the example
-above, it means that the callback can run on frame 3, since the painted output
-can be re-captured at the end of frame 2.
-
-This makes it possible to run display lock driven animations at 60fps.
-
-For more discussion on this, see [issue
-26](https://github.com/chrishtr/display-locking/issues/26).
-
----
 ### Locked subtree vs locked element + subtree
 
 Display locking supports two modes of operation, distinguished by when the lock
 is acquired
 
-#### Mode 1 (locked subtree)
+#### Lock-after-append. (locked subtree)
 
 When the element's lock is acquired while the element is already a part of the
 DOM, then the draw commands associated with that element's subtree are stashed
@@ -645,7 +560,7 @@ the element itself is not locked for display, only its subtree.
 This mode is appropriate to use when the element's subtree needs to be updated
 without jank, but old contents should still be displayed.
 
-#### Mode 2 (locked element + subtree)
+#### Lock-before-append (locked element + subtree)
 
 When the element's lock is acquired before the element is inserted into the DOM,
 then the element itself as well as its subtree are considered locked. This means
@@ -666,13 +581,10 @@ In consideration of display locking, we have also discussed when it would and
 would not be appropriate to allow an element to be locked. One main
 consideration for this is containment. That is, it seems to make sense to
 require that the element that is going to be locked provides containment for
-paint, style, and layout. This can be achieved with the `contain: content` CSS
+style and layout. This can be achieved with the `contain: style layout;` CSS
 property.
 
 This allows us to better reason about the expected behavior of the page. Specifically,
-* Paint done on the element’s subtree will not appear elsewhere on the page.
-  This ensures us that our content that we snapshot at the beginning of commit
-  remains a good enough substitute while other content is being prepared.
 * Layout of the locked subtree will not affect the layout of other elements
   outside of the locked element. This ensures that we can process as little or
   as much of the subtree’s layout without visually affecting the rest of the
@@ -685,9 +597,9 @@ This allows us to better reason about the expected behavior of the page. Specifi
 ---
 ### Dealing with user input
 
-One of the difficult aspects of locking an element for display is deciding what
-to do with user input (e.g. mouse clicks) that are targeted at the element
-which is locked for display.
+One of the difficult aspects of locking an element for display in
+lock-after-append mode is deciding what to do with user input (e.g. mouse
+clicks) that are targeted at the element which is locked for display.
 
 ##### Queuing up input and replaying
 
@@ -769,14 +681,9 @@ from complete.
 * Find-in-page and tab order.
     * It is unclear whether the content put into a locked subtree should be
       discoverable by find-in-page or tab order navigation. It is possible that
-      this decision will be left up to the script author by allowing an options
-      dictionary to be passed to acquireDisplayLock, which would dictate whether
-      the content modified is searchable (e.g. { searchable: true }).
-* Dealing with exceptions in callbacks.
-    * If a callback throws an exception, then we need to somehow propagate that
-      knowledge to the script. The current thinking is that this causes the
-      returned promise to be rejected, and any scheduled continuations do not
-      run.
+      this decision will be left up to the script author by adding an additional
+      option to `acquire()`, which would dictate whether the content modified is
+      searchable (e.g. { searchable: true }).
 
 Display locking will certainly have edge cases that need to be considered, some
 of which we have listed here. The general feeling is that the edge cases are
@@ -807,7 +714,7 @@ largely a performance API, it can be stubbed out for the most part by only
 preventing the browser from displaying new content. The layout and other update
 phases can still be non-co-operative. The co-operative updates can be
 incrementally implemented in user-agents. As for the web developers, the feature
-detection of `acquireDisplayLock` is also simple. If it is present, the developer
+detection of `getDisplayLock` is also simple. If it is present, the developer
 can wait on the lock acquisition and commit. Otherwise, the developer simply
 updates the DOM in the same way as before. This makes this feature easy to adopt
 and, in case of problems, deprecate.
