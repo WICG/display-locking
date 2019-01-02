@@ -254,8 +254,8 @@ document.
 ##### Element.getDisplayLock()
 
 With display locking, each of the `Element` objects has a new function,
-`getDisplayLock()` which returns a DisplayLockContext reprsenting the display
-lock. The rest of the display locking function happens by interacting with this
+`getDisplayLock()` which returns a DisplayLockContext representing the display
+lock. The rest of the display locking functionality happens by interacting with this
 object. The DisplayLockContext is bound to the element from which it was
 retrieved, meaning that operations on the object will affect the source element.
 
@@ -281,7 +281,7 @@ pairs:
     milliseconds, the lock will be automatically committed. This is a safety
     valve for protecting pages from inadvertently leaving an element locked
     indefinitely due to uncaught exceptions or other bugs in the code. For a
-    more sofisticated use cases, the value of Infinity will effectively disable
+    more sophisticated use cases, the value of Infinity will effectively disable
     the timeout.
 
 ##### DOM modifications in the locked state
