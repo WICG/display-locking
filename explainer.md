@@ -26,7 +26,7 @@ previous layout and visual update to be done before running subsequent script.
 We propose a new concept, display locking, to assist developers with alleviating
 jank caused by DOM updates. Using display locking, the developer will be able to
 lock an element and its subtree, preventing visual updates. Then, the developer
-will be able construct the locked subtree’s DOM however it desires, and insert
+will be able construct the locked subtree’s DOM however they desire, and insert
 it into the DOM without any rendering cost or jank. After insertion, the element
 can be updated. These updates will be co-operative -- interleaved with other
 work such as running script or DOM updates outside of the locked subtree. The
@@ -257,7 +257,7 @@ With display locking, each of the `Element` objects has a new function,
 `getDisplayLock()` which returns a DisplayLockContext representing the display
 lock. The rest of the display locking functionality happens by interacting with this
 object. The DisplayLockContext is bound to the element from which it was
-retrieved, meaning that operations on the object will affect the source element.
+retrieved, meaning that operations on the object will affect that element.
 
 ##### DisplayLockContext.acquire(options)
 
