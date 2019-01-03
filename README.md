@@ -1,7 +1,7 @@
 # Display Locking
 
 This is a short proposal for Display Locking. For more details, see the
-[explainer](https://github.com/chrishtr/display-locking/blob/master/explainer.md).
+[explainer](https://github.com/WICG/display-locking/blob/master/explainer.md).
 
 ### Problem
 
@@ -36,10 +36,7 @@ allow script or user interactions to happen.
 
 The visual content of an element's subtree which is locked for display does not
 change. Specifically, if the element already existed in the DOM, then the
-content that was present at the time the lock was acquired remains visibile
-until the lock is committed and the associated promise is resolved. Note that in
-this case, the element itself still responds and updates its own visual state
-(e.g. border); it is only the element's subtree that is locked for display.
+content that was present at the time the lock was acquired remains. 
 
 If the element was locked before being inserted into the DOM, then it is
 effectively inserted in a hidden state, which means the user agent does not
@@ -48,46 +45,52 @@ display any content for this element or its subtree until the work is completed.
 ### Example
 
 ```js
-function updateDom() {
-  let element = document.getElementById("container");
+async function updateDom() {
+  let element = document.createElement("div");
 
-  // Acquire a lock, and modify the element's subtree in the callback.
-  element.acquireDisplayLock((context) => {
-    // Modify element's subtree. The DOM is modified immediately, same as
-    // without display locking. However, rendering of the element is delayed.
-    element.innerHTML = ...;
+  // Construct the element
+  element.appendChild(...);
+  element.id = "...";
+
+  // Acquire a lock.
+  await element.getDisplayLock().acquire();
+
+  // Append the element to the DOM.
+  document.body.appendChild(element);
+
+  // Now we can update the element, causing co-operative updates. After that
+  // resolves, we can commit the element making it visible to the user.
+  element.getDisplayLock().update().then(() => {
+    element.getDisplayLock().commit();
   });
-
-  // In this example, after the callback runs the lock is automatically
-  // committed. This means the user-agent starts to co-operatively process steps
-  // required to render the modified subtree, including style, layout, and
-  // painting. acquireDisplayLock() returns a promise which is resolved when
-  // this work is completed.
 }
 
 ```
 
-In cases where DOM manipulations would cause jank, this instead allows the
+In cases where DOM rendering would cause jank, this instead allows the
 user-agent to split up the work across several frames, yielding for script and
 user interactions. When the updates are finished processing, the result is
-displayed without jank.
+committed and displayed without jank.
 
-Note that more advanced patterns are possible using the provided display lock
-context in the callback. In particular, the context allows the following, which
-are discussed in more details in the explainer linked below:
+Note that display locking allows several patterns, which serve as motivating
+examples:
 
-- Splitting up the script work across multiple frames using context.schedule()
-- Postponing the co-operative work indefinitely using context.suspend()
-- Subsequently resuming the postponed work using a handle object returned by
-  context.suspend()
-- Forcing the update to become synchronous to support "idle until urgent"
-  pattern using a handle returned by context.getSynchronousHandle()
+- Splitting up the DOM construction work across several frames, while storing
+  intermediate results in the DOM itself under a locked element. These
+  intermediate results are not displayed until the lock is committed.
+- Postponing the rendering work indefinitely by controlling when the lock is
+  committed.
+- Performing co-operative rendering work using update(), which can always be
+  forced to be synchronous using a commit() call enabling an idle-until-urgent
+  pattern.
+- Measuring layout without jank or display by calling update() on a locked
+  element, then reading off relevant layout values and either removing the
+  element or committing it for display depending on the desired behavior.
 
 ### Further reading
 
-- [Detailed explainer](https://github.com/chrishtr/display-locking/blob/master/explainer.md)
-- [Sample
-  code](https://github.com/chrishtr/display-locking/blob/master/sample-code)
+- [Detailed explainer](https://github.com/WICG/display-locking/blob/master/explainer.md)
+- [Sample code](https://github.com/WICG/display-locking/blob/master/sample-code)
   (work in progress)
 - [Layout transitions](http://tabatkins.github.io/specs/layout-transitions/) - a
   similar proposal from 2014, with motivating examples that are applicable to
@@ -97,3 +100,4 @@ are discussed in more details in the explainer linked below:
 
 - 2018-07-24: Initial version.
 - 2018-10-17: Updated the explainer to reflect new api surface. Closes #24.
+- 2018-12-21: Updated the explainer to acquire/update/commit API.
