@@ -101,3 +101,4 @@ examples:
 - 2018-07-24: Initial version.
 - 2018-10-17: Updated the explainer to reflect new api surface. Closes #24.
 - 2018-12-21: Updated the explainer to acquire/update/commit API.
+- 2019-02-01: Updated to displayLock (previously getDisplayLock()), added updateAndCommit().
