@@ -53,15 +53,15 @@ async function updateDom() {
   element.id = "...";
 
   // Acquire a lock.
-  await element.getDisplayLock().acquire();
+  await element.displayLock.acquire();
 
   // Append the element to the DOM.
   document.body.appendChild(element);
 
   // Now we can update the element, causing co-operative updates. After that
   // resolves, we can commit the element making it visible to the user.
-  element.getDisplayLock().update().then(() => {
-    element.getDisplayLock().commit();
+  element.displayLock.update().then(() => {
+    element.displayLock.commit();
   });
 }
 
