@@ -4,7 +4,7 @@
 #container {
   width: 200px;
   height: 50px;
-  contain: content;
+  contain: style layout;
   background: lightblue;
 }
 </style>
@@ -17,16 +17,14 @@ async function updateLockable() {
   element.id = "container";
   element.innerHTML = "Lorem ipsum."
 
-  // Get the lock if the user-agent supports getDisplayLock.
-  let lock = element.getDisplayLock && element.getDisplayLock();
-  // Await lock acquisition.
-  lock && await lock.acquire();
+  element.displayLock && await element.displayLock.acquire();
 
   // Attach the element.
   document.body.appendChild(element);
 
   // Update, which does co-operative updates. After that finishes, commit.
-  lock && lock.update().then(() => { lock.commit(); });
+  element.displaLock && element.displayLock.update().then(
+    () => { element.displayLock.commit(); });
 }
 
 window.onload = updateLockable;

@@ -251,10 +251,10 @@ by, for example, changing CSS properties that affect some elements on the page.
 There are some edge cases to consider here which will be discussed later in this
 document.
 
-##### Element.getDisplayLock()
+##### Element.displayLock
 
-With display locking, each of the `Element` objects has a new function,
-`getDisplayLock()` which returns a DisplayLockContext representing the display
+With display locking, each of the `Element` objects has a new attribute,
+`displayLock` which returns a DisplayLockContext representing the display
 lock. The rest of the display locking functionality happens by interacting with this
 object. The DisplayLockContext is bound to the element from which it was
 retrieved, meaning that operations on the object will affect that element.
@@ -333,6 +333,14 @@ and its subtree to become visible to the user. It performs the following steps:
 Note that it is OK to call `commit()` following an earlier `update()` which has
 not yet resolved. This causes work that is still needed to become synchronous,
 enabling the idle-until-urgent pattern.
+
+
+##### DisplayLockContext.updateAndCommit()
+
+This operation combines the effects of an `update()` and a `commit()` calls:
+* It causes the element to be co-operatively updated.
+* When the update is finished, the element is committed resulting in visual
+  updates to appear on screen.
 
 ---
 ### Implementation description
@@ -492,7 +500,7 @@ Let's revisit the motivating examples, modified with display locking:
 
  <script>
  async function presentContent() {
-   let lock = document.getElementById("container").getDisplayLock();
+   let lock = document.getElementById("container").displayLock;
    await lock.acquire({ timeout: Infinity; });
    document.getElementById("complicated_subtree").style.display = "block";
    lock.update().then(() => { lock.commit().then(onContentPresented); });
