@@ -30,7 +30,7 @@ slow rendering phase updates.
 Specifically, we propose a concept of *display locking* an element.
 
 If an element is display locked, it means that
-**any DOM, style, layout updates to its subtree are not rendered immediately**.
+**any DOM, style or layout updates to its subtree are not rendered immediately**.
 Instead, when allowed, the user agent will process rendering updates *co-operatively*,
 yielding periodically to allow script or user interactions to happen.
 The web author can also commit/unlock the lock,
@@ -66,7 +66,7 @@ async function updateDom() {
   // Append the element to the DOM.
   document.body.appendChild(element);
 
-  // Now even if the element is appended to the tree we can do DOM updates,
+  // Now even if the element is attached to the tree we can do DOM updates,
   // change style, etc. to it but it won't affect rendering.
   element.style = "...";
   element.appendChild(...);
