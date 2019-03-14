@@ -13,8 +13,8 @@ to be easily distributed to users.
 
 However, as developers are implementing richer and more compelling applications,
 they are hitting the limits of performance. Specifically, some patterns commonly
-used to produce dynamic content to the user can cause the performance of the
-whole application to degrade temporarily. For example, when a site modifies the
+used to produce dynamic content to the user can **cause the performance of the
+whole application to degrade temporarily**. For example, when a site modifies the
 DOM in a way that causes expensive layout, the user experiences jank --
 noticeable delay in visual updates. Note that because of the complexity of the
 DOM, layouts in some areas of the page can frequently cause jank elsewhere on
@@ -23,17 +23,33 @@ if the user agent is busy performing layout. The reason for this is that script
 runs in the same event loop as layout, and browser rendering semantics require
 previous layout and visual update to be done before running subsequent script.
 
-We propose a new concept, display locking, to assist developers with alleviating
-jank caused by DOM updates. Using display locking, the developer will be able to
-lock an element and its subtree, preventing visual updates. Then, the developer
-will be able construct the locked subtree’s DOM however they desire, and insert
-it into the DOM without any rendering cost or jank. After insertion, the element
-can be updated. These updates will be co-operative -- interleaved with other
-work such as running script or DOM updates outside of the locked subtree. The
+Creating more complex applications might also mean having a **bigger amount of things in a web page**,
+making the rendering costs to have all of the content to actually be part of the DOM
+to be prohibitively expensive.
+This drives some amount of web authors to *virtualization* instead,
+where they actually **refrain from putting things in the DOM**,
+keeping content in memory in some non-DOM data structure,
+with only the visible portion converted into DOM nodes and inserted into the document,
+recycling them in and out as needed.
+Popular examples include https://m.twitter.com/ and [react-window](https://github.com/bvaughn/react-window).
+However, this will **make the web app suffer** because a lot of things like find-in-page,
+accessibility, indexability, focus navigation, anchor links, etc.
+**depends on having things in the DOM**.
+
+We propose a new concept, **display locking**, to assist developers with **alleviating
+jank caused by DOM updates** and having some control on **when to pay rendering costs**,
+while also **allowing things that depend on the updates to get the up-to-date values** when urgent.
+
+Using display locking, the developer will be able to lock an element and its subtree,
+preventing visual updates.
+Then, the developer will be able construct the locked subtree’s DOM however they desire,
+and insert it into the DOM without any rendering cost or jank. After insertion, the element
+can be updated. These updates will be *co-operative* -- **interleaved with other
+work such as running script or DOM updates outside of the locked subtree**. The
 developer will then be able to commit the element's lock, causing the visual
 updates of the modified subtree to appear.  In essence, display locking will
-make it possible to perform complicated DOM updates without causing the rest of
-the page to jank.
+make it possible to **perform complicated DOM updates without causing the rest of
+the page to jank** and **only pay rendering costs on things that really needs it**.
 
 In the rest of the document, we describe the display locking concept in detail.
 We will first examine some motivating examples which we commonly observe in rich
@@ -48,19 +64,6 @@ that in place, we will revisit the motivating examples to see how display
 locking can be applied in order to improve their performance. Finally, we will
 discuss possible display locking implementations, along with possible corner
 cases and limitations.
-
-Note that although some of the motivating examples below talk about locking an
-element which is already in the DOM, the current effort is to only introduce a
-variant of display locking that locks an element before it is inserted into the
-DOM. This helps with one important consideration: current visual state while the
-element is locked. When locking an element before inserting it into the DOM, we
-treat the element's current visual state as non-existent, essentially display:
-none.
-
-If, however, the element is locked after being in the DOM, we need to consider
-and decide how to display the element's current, "stale", visual state. This is
-left as an enhancement to display locking. The documentation for the
-locked-after-append mode is going to be updated at a future date.
 
 ---
 ### Motivating Examples
@@ -128,7 +131,7 @@ the subtree** (it’s an iframe in this example), it still janks because **DOM
 updates are atomic.**
 
 
-##### Common patterns
+#### Common patterns
 
 There are other common patterns that exhibit similar behavior, and as a result
 suffer from similar drawbacks.
@@ -144,29 +147,32 @@ suffer from similar drawbacks.
 - Measuring layout, with intent of sizing containers without actually displaying
   the contents.
 
-In general, large-scale updates to application state in a web app can cause
-updates which induce large document lifecycle updates, including style, layout,
+In general, **large-scale updates** to application state in a web app can cause
+updates which **induce large document lifecycle updates**, including style, layout,
 compositing, and paint. In turn, these can cause jank on the page, due to
 lifecycle updates being synchronous with script and user interactions.
 
+In a large-enough web app, even having small updates might be expensive even though
+we might not necessarily need every part of the web app to be up-to-date all the time. 
+
 In the rest of this document, we discuss display locking and how it can help
-with situations such as these.
+with situations like the ones mentioned above.
 
 ---
-### Background
+### Background: User-agent's Update Phases
 
 When processing DOM changes, the user-agent typically goes through several
 stages, which we will call *update phases*. In order to understand how display
 locking proposal is going to work, we will briefly discuss the major update
 phases.
 
-Note to the reader: these phases are covered in greater detail in the
+**Note to the reader**: these phases are covered in greater detail in the
 [rendering event
 loop](https://github.com/chrishtr/rendering/blob/master/rendering-event-loop.md).
 Here, we briefly go over the main update phases that happen in a typical
 user-agent.
 
-##### Script
+#### Script
 During the script update phase, the user-agent executes script requested by the
 page. At this time, the script on the page is free to mutate the DOM in any way.
 It can do things like update element style, position elements based on a custom
@@ -179,7 +185,7 @@ Because of this, developers should always be mindful of long running script.
 After the script phase finishes, the DOM structure and style for the next visual
 update is finalized.
 
-##### Layout and paint
+#### Layout and paint
 During the layout and paint phase, the user-agent goes through the DOM and
 updates any properties that need to be updated. Specifically, it can apply new
 style to elements, position and size the elements based on style, as well as
@@ -199,7 +205,7 @@ happen while layout and paint is executing.
 The output of the layout and paint phase is a sequence of draw commands which,
 when executed, will draw the current visual update.
 
-##### Compositing
+#### Compositing
 In order to avoid doing repeated work, modern user-agents also employ
 compositing. Compositing is a process of splitting up draw commands into
 separate layers, each with its own backing, in order to avoid re-rasterizing
@@ -223,7 +229,7 @@ use to promote the affected element to a separate layer.
 The output of the compositing update phase is a set of layers with either draw
 commands, or rasterized textures.
 
-##### Presentation
+#### Presentation
 The final update phase is presentation to the screen. By this time, the
 user-agent has generated draw commands, or possibly even rasterized those into
 separate layers, and arranged the layers in the final locations. With GPU
@@ -236,30 +242,62 @@ user.
 ---
 ### Proposal
 
-The display locking proposal is intended to improve the script, layout, paint,
-as well as parts of the compositing update phases. In particular, it aims to add
-javascript APIs to allow the developer to lock an element for display. This
-means that the element and its subtree's paint output (ie the output of the
-layout and paint phase) will not change while the lock is acquired. In the
-lock-before-append case, this means that the visual state is empty. What this
-allows is for the user-agent to not have to finish processing the locked
-element’s subtree when processing the layout and paint phase. In other words,
-when requested, the user-agent is free to process parts of the subtree,
-eliminating them from the list of things that have changed (i.e. the dirty
-elements list). Note that this dirty list can be indirectly populated as well
-by, for example, changing CSS properties that affect some elements on the page.
-There are some edge cases to consider here which will be discussed later in this
-document.
+The display locking proposal is intended to **improve the script, layout, paint,
+as well as parts of the compositing update phases**. In particular, it aims to add
+javascript APIs to allow the developer to lock an element for display.
 
-##### Element.displayLock
+With the proposed APIs,
+**web authors can control when not to pay the updating costs for a locked element**,
+and also **request the user-agent to do the updates in a non-janky way**.
+
+### Example code
+
+In this example, we want to add a lot of items to a list in a non-janky way.
+
+```html
+<ul id="itemsList">
+ <div>Item #1</div>
+ <div>Item #2</div>
+ <div>Item #3</div>
+</ul>
+
+<script>
+// Remaining items in the list are in |remainingItems|.
+// We want to add the remaining list items asynchronously.
+remainingItems.forEach(item => {
+  requestIdleCallback((deadline) => {
+    let itemEl = createElementForItem(item);
+    itemEl.displayLock.acquire({ timeout: Infinity, activatable: true });
+    itemsList.appendChild(itemEl);
+    // We can do expensive operations to the items without worrying of the rendering costs.
+    // After we finished all the operations we can trigger a co-operative update & commit.
+    // We might do this in a fancier way by not actually committing the element,
+    // leaving it locked and detecting when to commit by using IntersectionObservers etc,
+    // but that's out of the scope of this example :)
+    doExpensiveOperationsToEl(itemEl).then(element.updateAndCommit);
+  });
+});
+
+// If we need the updated style / layout values of the element, we can do it co-operatively.
+function getOffsetTopForLockedEl(element) {
+  return new Promise((resolve) => {
+    element.displayLock.update().then(() => { resolve(element.offsetTop) };
+  });
+}
+</script>
+```
+
+### Proposed APIs Details
+
+#### Element.displayLock
 
 With display locking, each of the `Element` objects has a new attribute,
-`displayLock` which returns a DisplayLockContext representing the display
+`displayLock` which returns a `DisplayLockContext` representing the display
 lock. The rest of the display locking functionality happens by interacting with this
-object. The DisplayLockContext is bound to the element from which it was
+object. The `DisplayLockContext` is bound to the element from which it was
 retrieved, meaning that operations on the object will affect that element.
 
-##### DisplayLockContext.acquire(options)
+#### DisplayLockContext.acquire(options)
 
 Acquire performs the following steps:
 
@@ -275,29 +313,59 @@ Acquire performs the following steps:
 
 Note that the acquire call takes options, consisting of the following key-value
 pairs:
-* (optional) timeout: timeoutInMilliseconds
+* (optional) `timeout`: `timeoutInMilliseconds`
   * This is an optional timeout value for the duration of the lock. When the
-    lock is acquired, and commit is not called within timeoutInMilliseconds
+    lock is acquired, and commit is not called within `timeoutInMilliseconds`
     milliseconds, the lock will be automatically committed. This is a safety
     valve for protecting pages from inadvertently leaving an element locked
     indefinitely due to uncaught exceptions or other bugs in the code. For a
     more sophisticated use cases, the value of Infinity will effectively disable
     the timeout.
+* (optional) `activatable`: `true|false`
+  * Signifies whether the user-agent can automatically unlock/commit the lock
+    when the browser needs to *activate* the locked element or its descendants.
+    See [element activation section](#element-activation) for more details.
+  * Not setting this, or setting this to `false`,
+    means this element and its descendants will be ignored in cases like
+    find-in-page, anchor link navigation, focus navigation, etc.
 
-##### DOM modifications in the locked state
+#### DisplayLockContext.locked
 
-When the element is in the locked state, it can be inserted into the DOM. The
-script is then free to make changes to the element's subtree. Specifically
-changes to DOM, or style that affect its subtree update the DOM in such a way
-that script can inspect it immediately. It is important to note that style and
-layout inducing properties (see
-[what-forces-layout](https://gist.github.com/paulirish/5d52fb081b3570c81e3a)),
-when queried, will force style or layout synchronously in order to return correct
-values. When the element is painted, the current state of the DOM is not visible
-to the user. In lock-before-append mode, this means that the element is
-effectively display: none.
+This is a boolean value that will be `true`
+if the `Element` associated with this `DisplayLockContext` is in the locked state,
+and `false` if not.
 
-##### DisplayLockContext.update()
+#### The locked state
+
+#### What happens
+
+The element and its subtree's paint output (i.e. the output of the
+layout and paint phase) will not change while the lock is acquired. In the
+lock-before-append case, this means that the visual state is empty. What this
+allows is for the user-agent to not have to finish processing the locked
+element’s subtree when processing the layout and paint phase.
+
+In other words, when requested, the user-agent is free to process parts of the subtree,
+eliminating them from the list of things that have changed (i.e. the dirty
+elements list). Note that this dirty list can be indirectly populated as well
+by, for example, changing CSS properties that affect some elements on the page.
+There are some edge cases to consider here which will be discussed later in this
+document.
+
+##### Modifications to the locked subtree
+
+Changes to DOM in a locked subtree updates the DOM in such a way that script can inspect it immediately,
+but no updates wil be painted until the element is unlocked,
+through `commit()` or user-agent activating the element.
+
+Style and layout updates will not be visible or inspectable immediately without first trigerring an update,
+either through calling`update()`
+or trigerring a *forced update* by calling style and layout inducing methods/properties
+(see [what-forces-layout](https://gist.github.com/paulirish/5d52fb081b3570c81e3a)),
+which will force style or layout synchronously in order to return correct values.
+
+
+#### DisplayLockContext.update()
 
 This operation causes the lock to allow co-operative updates on the element and
 its subtree in preparation for display or measuring layout. It performs the
@@ -318,7 +386,7 @@ following steps:
   other work, or signal to other subsystems that this element and its subtree
   are "prepared".
 
-##### DisplayLockContext.commit()
+#### DisplayLockContext.commit()
 
 This operation causes the lock to be released and visual state of the element
 and its subtree to become visible to the user. It performs the following steps:
@@ -335,12 +403,67 @@ not yet resolved. This causes work that is still needed to become synchronous,
 enabling the idle-until-urgent pattern.
 
 
-##### DisplayLockContext.updateAndCommit()
+#### DisplayLockContext.updateAndCommit()
 
 This operation combines the effects of an `update()` and a `commit()` calls:
 * It causes the element to be co-operatively updated.
 * When the update is finished, the element is committed resulting in visual
   updates to appear on screen.
+
+
+#### Element activation
+
+When an element is locked,
+there are some actions in the page that might require the element to get unlocked and be rendered to work properly.
+
+If the browser needs to *activate* a locked element
+or an element that has one or more locked ancestors,
+in order to make the activated element be visible,
+it will commit all locked elements in the ancestor chain of the element to be activated,
+unless at least one of them is locked without the `activatable` flag set to `true`.
+
+*Activating an element* is defined as one of the following actions:
+ - `focus()` is called on the element
+ - `scrollIntoView()` is called on the element
+ - Tab order navigation lands on the element
+ - Anchor link navigation navigates to the element
+ - Find-in-page active match navigation goes to the element
+
+For all the elements that we commit as part of element activation,
+we will send a `beforeactivate` event to it just before committing.
+
+#### beforeactivate event
+
+| property  | value  |
+|---|---|
+| bubbles  | true  |
+| composed | false |
+| target  | the previously-locked ancestor |
+| activatedElement  | The element that needs activation  |
+
+
+Consider this tree structure:
+```html
+<div id="first">
+ <div id="second"> <!-- locked -->
+  <div id="third">
+    blah
+    <div id="fourth">  <!-- locked -->
+     bleh
+    </div>
+  </div>
+ </div>
+<div>
+```
+
+If we need to activate `#fourth` div,
+then two `beforeactivate` events will be fired.
+One targeted at `#fourth` and one targeted at `#second`.
+The `activatedElement` in both of them is the `#fourth` div.
+
+If instead we need to activate `#third` div,
+only one `beforeactivate` event will be fired,
+at `#second` with `#third` in the `activatedElement` field.
 
 ---
 ### Implementation description
@@ -480,6 +603,7 @@ possbilities are listed below:
     the time the lock was acquired.
 
 ---
+
 ### Examples revisited
 
 Let's revisit the motivating examples, modified with display locking:
@@ -501,7 +625,7 @@ Let's revisit the motivating examples, modified with display locking:
  <script>
  async function presentContent() {
    let lock = document.getElementById("container").displayLock;
-   await lock.acquire({ timeout: Infinity; });
+   await lock.acquire({ timeout: Infinity, activatable: true });
    document.getElementById("complicated_subtree").style.display = "block";
    lock.update().then(() => { lock.commit().then(onContentPresented); });
  }
@@ -520,6 +644,11 @@ update the phases without introducing an undue delay for the rest of the
 updates. In other words, the remainder of the page remains interactive and
 animating. When the updates eventually complete, we commit and when that promise
 resolves and `onContentPresented` is invoked.
+
+Also, because we specify the `activatable` option as `true` when acquiring,
+the contents of `complicated_subtree` will be considered in focus navigation,
+anchor link navigation, find-in-page, etc. even when the content is not
+presented yet.
 
 As before, let’s see a [real example, this time using a prototype of display
 locking](https://drive.google.com/file/d/1r1aBi4P1_DMCZNXlpzW5jAibCEdT38YB/view?usp=sharing
@@ -603,6 +732,7 @@ This allows us to better reason about the expected behavior of the page. Specifi
   changing the content on the rest of the page.
 
 ---
+
 ### Dealing with user input
 
 One of the difficult aspects of locking an element for display in
