@@ -23,10 +23,23 @@ DOM at once in order to prevent jank. As an example, ReactJS is [adding the
 ability](https://reactjs.org/blog/2018/03/01/sneak-peek-beyond-react-16.html)
 to do async operations to help with this problem.
 
+Creating more complex applications might also mean having a **bigger amount of things in a web page**,
+making the rendering costs to have all of the content to actually be part of the DOM prohibitively expensive.
+
+This drives some amount of web authors to *virtualization* instead,
+where they actually **refrain from putting things in the DOM**,
+keeping content in memory in some non-DOM data structure,
+with only the visible portion converted into DOM nodes and inserted into the document,
+recycling them in and out as needed.
+
+However, this will **make the web app suffer** because a lot of things like find-in-page,
+accessibility, indexability, focus navigation, anchor links, etc.
+**depends on having things in the DOM**.
+
 ### Proposal
 
 This document proposes to augment user-agent APIs to help address the problem of
-slow rendering phase updates.
+**slow rendering phase updates**, and having some control on **when to pay rendering costs**
 Specifically, we propose a concept of *display locking* an element.
 
 If an element is display locked, it means that
@@ -38,7 +51,7 @@ which triggers a synchronous update and render when necessary,
 causing the element to get updated and rendered in the next frame.
 
 The visual content of an element's subtree which is locked for display does not
-change. Specifically, if the element already existed in the DOM, then the
+change. When locked, if the element already existed in the DOM, then the
 content that was present at the time the lock was acquired remains.
 
 If the element was locked before being inserted into the DOM, then it is
@@ -115,11 +128,3 @@ examples:
 - [Layout transitions](http://tabatkins.github.io/specs/layout-transitions/) - a
   similar proposal from 2014, with motivating examples that are applicable to
   display locking.
-
-### Revision log
-
-- 2018-07-24: Initial version.
-- 2018-10-17: Updated the explainer to reflect new api surface. Closes #24.
-- 2018-12-21: Updated the explainer to acquire/update/commit API.
-- 2019-02-01: Updated to displayLock (previously getDisplayLock()), added updateAndCommit().
-- 2019-03-14: Update readme with "activatable"
