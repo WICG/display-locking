@@ -23,7 +23,7 @@ async function updateLockable() {
   document.body.appendChild(element);
 
   // Update, which does co-operative updates. After that finishes, commit.
-  element.displaLock && element.displayLock.update().then(
+  element.displayLock && element.displayLock.update().then(
     () => { element.displayLock.commit(); });
 }
 
