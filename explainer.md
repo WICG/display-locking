@@ -32,9 +32,9 @@ keeping content in memory in some non-DOM data structure,
 with only the visible portion converted into DOM nodes and inserted into the document,
 recycling them in and out as needed.
 Popular examples include https://m.twitter.com/ and [react-window](https://github.com/bvaughn/react-window).
-However, this will **make the web app suffer** because a lot of things like find-in-page,
+However, this **causes problems for the web app** because a lot of things like find-in-page,
 accessibility, indexability, focus navigation, anchor links, etc.
-**depends on having things in the DOM**.
+**depends on having the contents in the DOM**.
 
 We propose a new concept, **display locking**, to assist developers with **alleviating
 jank caused by DOM updates** and having some control on **when to pay rendering costs**,
@@ -152,8 +152,9 @@ updates which **induce large document lifecycle updates**, including style, layo
 compositing, and paint. In turn, these can cause jank on the page, due to
 lifecycle updates being synchronous with script and user interactions.
 
-In a large-enough web app, even having small updates might be expensive even though
-we might not necessarily need every part of the web app to be up-to-date all the time. 
+In a large enough web app, even having small updates like window resizing or a style tweak might be expensive,
+due to the **large amount of things getting affected**,
+even though we might **not necessarily need every part of the web app to be up-to-date all the time**. 
 
 In the rest of this document, we discuss display locking and how it can help
 with situations like the ones mentioned above.
@@ -278,10 +279,14 @@ remainingItems.forEach(item => {
   });
 });
 
-// If we need the updated style / layout values of the element, we can do it co-operatively.
-function getOffsetTopForLockedEl(element) {
+// Getting style/layout values within a locked subtree :
+// - If we access child.offsetTop directly, it will cause a forced synchronous update
+//   (see [what-forces-layout](https://gist.github.com/paulirish/5d52fb081b3570c81e3a)).
+// - We can call update() on the locked element to trigger a co-operative update and get
+//   the value after the calculations finished instead.
+function getOffsetTopForLockedElementChild(child, lockedElement) {
   return new Promise((resolve) => {
-    element.displayLock.update().then(() => { resolve(element.offsetTop) };
+    lockedElement.displayLock.update().then(() => { resolve(child.offsetTop) };
   });
 }
 </script>
@@ -322,7 +327,7 @@ pairs:
     more sophisticated use cases, the value of Infinity will effectively disable
     the timeout.
 * (optional) `activatable`: `true|false`
-  * Signifies whether the user-agent can automatically unlock/commit the lock
+  * Signifies whether the user-agent can automatically commit the lock
     when the browser needs to *activate* the locked element or its descendants.
     See [element activation section](#element-activation) for more details.
   * Not setting this, or setting this to `false`,
@@ -339,31 +344,31 @@ and `false` if not.
 
 #### What happens
 
-The element and its subtree's paint output (i.e. the output of the
-layout and paint phase) will not change while the lock is acquired. In the
-lock-before-append case, this means that the visual state is empty. What this
-allows is for the user-agent to not have to finish processing the locked
-element’s subtree when processing the layout and paint phase.
+When its lock is acquired, if the element already existed in the DOM,
+the visual content that was present at the time the lock was acquired is cleared,
+leaving only the space it takes in layout,
+similar to an element with `visibility: hidden;`.
 
-In other words, when requested, the user-agent is free to process parts of the subtree,
-eliminating them from the list of things that have changed (i.e. the dirty
-elements list). Note that this dirty list can be indirectly populated as well
-by, for example, changing CSS properties that affect some elements on the page.
-There are some edge cases to consider here which will be discussed later in this
-document.
+If the element was locked before being inserted into the DOM,
+then it is effectively inserted in an state similar to `display: none;`,
 
 ##### Modifications to the locked subtree
 
-Changes to DOM in a locked subtree updates the DOM in such a way that script can inspect it immediately,
-but no updates wil be painted until the element is unlocked,
-through `commit()` or user-agent activating the element.
+Changes to the DOM, style, layout, etc of the *locked element itself*
+will be applied immediately if the element is locked after it is attached to the DOM,
+but will be ignored if it is locked before it is attached to the DOM.
+See [lock-after-append](#lock-after-append-locked-subtree) vs [lock-before-append](#lock-before-append-locked-element--subtree).
 
-Style and layout updates will not be visible or inspectable immediately without first trigerring an update,
-either through calling`update()`
+Changes to the *descendants of a locked element* updates the DOM in such a way that script can inspect it immediately,
+but no updates wil be painted until the element is unlocked,
+through `commit()` or the user-agent activating the element.
+
+Style and layout updates will not be inspectable immediately without first trigerring an update,
+either through calling `update()`
 or trigerring a *forced update* by calling style and layout inducing methods/properties
 (see [what-forces-layout](https://gist.github.com/paulirish/5d52fb081b3570c81e3a)),
-which will force style or layout synchronously in order to return correct values.
-
+which will force style or layout synchronously in order to return correct values,
+but not actually painting it.
 
 #### DisplayLockContext.update()
 
@@ -419,8 +424,9 @@ there are some actions in the page that might require the element to get unlocke
 If the browser needs to *activate* a locked element
 or an element that has one or more locked ancestors,
 in order to make the activated element be visible,
-it will commit all locked elements in the ancestor chain of the element to be activated,
-unless at least one of them is locked without the `activatable` flag set to `true`.
+it will commit all locked elements in the inclusive ancestor chain of the element to be activated,
+unless at least one of them is locked without the `activatable` flag set to `true`,
+in which case the element can't be activated.
 
 *Activating an element* is defined as one of the following actions:
  - `focus()` is called on the element
@@ -438,17 +444,17 @@ we will send a `beforeactivate` event to it just before committing.
 |---|---|
 | bubbles  | true  |
 | composed | false |
-| target  | the previously-locked ancestor |
+| target  | previously-locked ancestor |
 | activatedElement  | The element that needs activation  |
 
 
 Consider this tree structure:
 ```html
 <div id="first">
- <div id="second"> <!-- locked -->
+ <div id="second"> <!-- locked, activatable -->
   <div id="third">
     blah
-    <div id="fourth">  <!-- locked -->
+    <div id="fourth">  <!-- locked, activatable -->
      bleh
     </div>
   </div>
@@ -464,6 +470,32 @@ The `activatedElement` in both of them is the `#fourth` div.
 If instead we need to activate `#third` div,
 only one `beforeactivate` event will be fired,
 at `#second` with `#third` in the `activatedElement` field.
+
+If `#second` is actually locked with `activatable` set to false,
+we can't activate anything `#second` or anything inside its subtree.
+For example if `#fourth` needs activation,
+even if we activate `#fourth`,
+it will not be visible because `#second` is still locked.
+
+---
+### Restrictions
+
+In consideration of display locking, we have also discussed when it would and
+would not be appropriate to allow an element to be locked. One main
+consideration for this is containment. That is, it seems to make sense to
+require that the element that is going to be locked provides containment for
+style and layout. This can be achieved with the `contain: style layout;` CSS
+property.
+
+This allows us to better reason about the expected behavior of the page. Specifically,
+* Layout of the locked subtree will not affect the layout of other elements
+  outside of the locked element. This ensures that we can process as little or
+  as much of the subtree’s layout without visually affecting the rest of the
+  page.
+* Finally, style of the locked subtree will not affect style of elements outside
+  of the locked element. Similarly to layout containment, this ensures that we
+  can process any number of elements on the locked subtree without visually
+  changing the content on the rest of the page.
 
 ---
 ### Implementation description
@@ -603,7 +635,6 @@ possbilities are listed below:
     the time the lock was acquired.
 
 ---
-
 ### Examples revisited
 
 Let's revisit the motivating examples, modified with display locking:
@@ -694,8 +725,12 @@ and used while the lock is acquired. Note that in this mode, changes to the
 element itself (e.g. border, size) are updated synchronously. In other words,
 the element itself is not locked for display, only its subtree.
 
+The visual content of the locked subtree is cleared,
+leaving only the space occupied by the locked element,
+similar to having `visibility: hidden` on the locked element.
+
 This mode is appropriate to use when the element's subtree needs to be updated
-without jank, but old contents should still be displayed.
+without jank.
 
 #### Lock-before-append (locked element + subtree)
 
@@ -712,27 +747,6 @@ This mode is appropriate to use when a new element or a widget is inserted into
 the page and it should present asynchonously when ready without causing jank.
 
 ---
-### Restrictions
-
-In consideration of display locking, we have also discussed when it would and
-would not be appropriate to allow an element to be locked. One main
-consideration for this is containment. That is, it seems to make sense to
-require that the element that is going to be locked provides containment for
-style and layout. This can be achieved with the `contain: style layout;` CSS
-property.
-
-This allows us to better reason about the expected behavior of the page. Specifically,
-* Layout of the locked subtree will not affect the layout of other elements
-  outside of the locked element. This ensures that we can process as little or
-  as much of the subtree’s layout without visually affecting the rest of the
-  page.
-* Finally, style of the locked subtree will not affect style of elements outside
-  of the locked element. Similarly to layout containment, this ensures that we
-  can process any number of elements on the locked subtree without visually
-  changing the content on the rest of the page.
-
----
-
 ### Dealing with user input
 
 One of the difficult aspects of locking an element for display in
