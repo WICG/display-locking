@@ -43,11 +43,17 @@ while also **allowing things that depend on the updates to get the up-to-date va
 Using display locking, the developer will be able to lock an element and its subtree,
 preventing visual updates.
 Then, the developer will be able construct the locked subtree’s DOM however they desire,
-and insert it into the DOM without any rendering cost or jank. After insertion, the element
-can be updated. These updates can be *co-operative* -- **interleaved with other
-work such as running script or DOM updates outside of the locked subtree**. The
-developer will then be able to commit the element's lock, causing the visual
-updates of the modified subtree to appear.  In essence, display locking will
+and insert it into the DOM without any rendering cost or jank.
+
+After insertion, we can request the rendering values (style, layout, etc) to be updated.
+These updates can be *co-operative* -- **interleaved with other
+work such as running script or DOM updates outside of the locked subtree** if they are going to take a long time,
+or calculated synchronusly if we need it.
+The developer is also able to commit the element's lock,
+which will calculate the rendering values if it's not up-to-date,
+and cause the visual updates of the modified subtree to appear.
+
+In essence, display locking will
 make it possible to **perform complicated DOM updates without causing the rest of
 the page to jank** and **only pay rendering costs on things that really need it**.
 
