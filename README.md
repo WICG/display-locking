@@ -23,8 +23,8 @@ DOM at once in order to prevent jank. As an example, ReactJS is [adding the
 ability](https://reactjs.org/blog/2018/03/01/sneak-peek-beyond-react-16.html)
 to do async operations to help with this problem.
 
-Creating more complex applications might also mean having a **bigger amount of things in a web page**,
-making the rendering costs to have all of the content to actually be part of the DOM prohibitively expensive.
+Creating more complex applications might also mean having a **larger amount of things in a web page**,
+making the rendering costs of having all of the content to actually be part of the DOM prohibitively expensive.
 
 This drives some amount of web authors to *virtualization* instead,
 where they actually **refrain from putting things in the DOM**,
@@ -32,9 +32,9 @@ keeping content in memory in some non-DOM data structure,
 with only the visible portion converted into DOM nodes and inserted into the document,
 recycling them in and out as needed.
 
-However, this will **make the web app suffer** because a lot of things like find-in-page,
+However, this will **cause problems to the web app** because a lot of things like find-in-page,
 accessibility, indexability, focus navigation, anchor links, etc.
-**depends on having things in the DOM**.
+**depends on having the content be in the DOM**.
 
 ### Proposal
 
@@ -46,20 +46,21 @@ If an element is display locked, it means that
 **any DOM, style or layout updates to its subtree are not rendered immediately**.
 Instead, when allowed, the user agent will process rendering updates *co-operatively*,
 yielding periodically to allow script or user interactions to happen.
-The web author can also commit/unlock the lock,
+The web author can also commit the lock,
 which triggers a synchronous update and render when necessary,
 causing the element to get updated and rendered in the next frame.
 
-The visual content of an element's subtree which is locked for display does not
-change. When locked, if the element already existed in the DOM, then the
-content that was present at the time the lock was acquired remains.
+When locked, if the element already existed in the DOM,
+then the visual content that was present at the time the lock was acquired is cleared,
+leaving only the space it takes in layout,
+similar to an element with `visibility: hidden;`.
 
 If the element was locked before being inserted into the DOM, then it is
 effectively inserted in a hidden state, which means the user agent does not
 display any content for this element or its subtree until the lock gets committed.
 
-The web author can also opt-in to allow display-locked elements to be **committed by the user agent in cases like focus navigation,
-find-in-page match navigation**, etc.
+The web author can also opt-in to allow display-locked elements to be
+**committed by the user agent in cases like focus navigation, find-in-page match navigation**, etc.
 so that they are properly rendered when needed in those cases.
 
 ### Example
@@ -72,8 +73,8 @@ async function updateDom() {
   element.appendChild(...);
   element.id = "...";
 
-  // Acquire a lock, and allow it to be unlocked by the user agent when
-  // necessary.
+  // Acquire a lock, and allow it to be committed by the user agent when
+  // necessary when focused, navigated to in find-in-page, anchor links, etc.
   await element.displayLock.acquire({ activatable: true });
 
   // Append the element to the DOM.
@@ -91,9 +92,13 @@ async function updateDom() {
   let updatePromise = element.displayLock.update();
   updatePromise.then(() => {
     // Calling commit() will cause the element to be rendered on the next frame.
+    // Returns a promise that resolves when rendering finishes.
     // Note that we can call commit() without calling update() beforehand, but
     // that might cause a jank because we're doing the style, layout, paint in
     // one frame instead because we don't have the updated values.
+    // However, even if we call update() beforehand, there are cases like flex
+    // layout where the layout of the locked element affects its siblings,
+    // possibly causing this to be janky.
     element.displayLock.commit();
   });
 }
