@@ -23,9 +23,9 @@ if the user agent is busy performing layout. The reason for this is that script
 runs in the same event loop as layout, and browser rendering semantics require
 previous layout and visual update to be done before running subsequent script.
 
-Creating more complex applications might also mean having a **bigger amount of things in a web page**,
-making the rendering costs to have all of the content to actually be part of the DOM
-to be prohibitively expensive.
+Creating more complex applications might also mean having a **larger number of things in a web page**,
+making the rendering costs of having all of the content to actually be part of the DOM
+prohibitively expensive.
 This drives some amount of web authors to *virtualization* instead,
 where they actually **refrain from putting things in the DOM**,
 keeping content in memory in some non-DOM data structure,
@@ -44,12 +44,12 @@ Using display locking, the developer will be able to lock an element and its sub
 preventing visual updates.
 Then, the developer will be able construct the locked subtree’s DOM however they desire,
 and insert it into the DOM without any rendering cost or jank. After insertion, the element
-can be updated. These updates will be *co-operative* -- **interleaved with other
+can be updated. These updates can be *co-operative* -- **interleaved with other
 work such as running script or DOM updates outside of the locked subtree**. The
 developer will then be able to commit the element's lock, causing the visual
 updates of the modified subtree to appear.  In essence, display locking will
 make it possible to **perform complicated DOM updates without causing the rest of
-the page to jank** and **only pay rendering costs on things that really needs it**.
+the page to jank** and **only pay rendering costs on things that really need it**.
 
 In the rest of the document, we describe the display locking concept in detail.
 We will first examine some motivating examples which we commonly observe in rich
