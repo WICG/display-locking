@@ -26,7 +26,7 @@ previous layout and visual update to be done before running subsequent script.
 Creating more complex applications might also mean having a **larger number of things in a web page**,
 making the rendering costs of having all of the content to actually be part of the DOM
 prohibitively expensive.
-This drives some amount of web authors to *virtualization* instead,
+This drives some number of web authors to *virtualization* instead,
 where they actually **refrain from putting things in the DOM**,
 keeping content in memory in some non-DOM data structure,
 with only the visible portion converted into DOM nodes and inserted into the document,
@@ -348,7 +348,7 @@ and `false` if not.
 
 #### The locked state
 
-#### What happens
+##### What happens
 
 When its lock is acquired, if the element already existed in the DOM,
 the visual content that was present at the time the lock was acquired is cleared,
@@ -356,13 +356,14 @@ leaving only the space it takes in layout,
 similar to an element with `visibility: hidden;`.
 
 If the element was locked before being inserted into the DOM,
-then it is effectively inserted in an state similar to `display: none;`,
+when it got inserted to the DOM, it will be in an state similar to `display: none;`.
+See [lock-after-append](#lock-after-append-locked-subtree) vs [lock-before-append](#lock-before-append-locked-element--subtree).
 
 ##### Modifications to the locked subtree
 
 Changes to the DOM, style, layout, etc of the *locked element itself*
-will be applied immediately if the element is locked after it is attached to the DOM,
-but will be ignored if it is locked before it is attached to the DOM.
+will be applied immediately if the element is locked after it is inserted to the DOM,
+but will be ignored if it is locked before it is inserted to the DOM.
 See [lock-after-append](#lock-after-append-locked-subtree) vs [lock-before-append](#lock-before-append-locked-element--subtree).
 
 Changes to the *descendants of a locked element* updates the DOM in such a way that script can inspect it immediately,
@@ -726,14 +727,12 @@ is acquired
 #### Lock-after-append. (locked subtree)
 
 When the element's lock is acquired while the element is already a part of the
-DOM, then the draw commands associated with that element's subtree are stashed
+DOM, visual content of elements within the locked subtree
+(not the locked element itself) is cleared
+and the draw commands associated with that element's subtree are stashed
 and used while the lock is acquired. Note that in this mode, changes to the
 element itself (e.g. border, size) are updated synchronously. In other words,
 the element itself is not locked for display, only its subtree.
-
-The visual content of the locked subtree is cleared,
-leaving only the space occupied by the locked element,
-similar to having `visibility: hidden` on the locked element.
 
 This mode is appropriate to use when the element's subtree needs to be updated
 without jank.
