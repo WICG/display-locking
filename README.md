@@ -12,12 +12,6 @@ script to update views, style updates, layout, and paint. This, in turn, causes
 **jank or noticeable delay** when presenting content, because the rendering phase is
 updated **synchronously** with user interactions and requestAnimationFrame script.
 
-The following are a few of the common patterns that can cause jank:
-- Resizing multi-pane UI with complex layout within each pane (e.g. IDEs)
-- Adding widgets with complex DOM.
-- Dynamically displaying content based on the current value of text input.
-- Measuring layout of otherwise hidden DOM with intent of sizing containers.
-
 Developers are aware of these issues and build systems to avoid adding complex
 DOM at once in order to prevent jank. As an example, ReactJS is [adding the
 ability](https://reactjs.org/blog/2018/03/01/sneak-peek-beyond-react-16.html)
@@ -50,15 +44,6 @@ The web author can also commit the lock,
 which triggers a synchronous update and render when necessary,
 causing the element to get updated and rendered in the next frame.
 
-When locked, if the element already existed in the DOM,
-then the visual content that was present at the time the lock was acquired is cleared,
-leaving only the space it takes in layout,
-similar to an element with `visibility: hidden;`.
-
-If the element was locked before being inserted into the DOM, then it is
-effectively inserted in a hidden state, which means the user agent does not
-display any content for this element or its subtree until the lock gets committed.
-
 The web author can also opt-in to allow display-locked elements to be
 **committed by the user agent in cases like focus navigation, find-in-page match navigation**, etc.
 so that they are properly rendered when needed in those cases.
@@ -86,11 +71,13 @@ async function updateDom() {
   element.appendChild(...);
 
   // Calling update() will allow rendering to go update the style & layout
-  // values through co-operative updates that may last multiple frames.
+  // values through co-operative updates that may last multiple frames,
+  // starting from the next frame.
   // Note that this will not cause the element to be painted/rendered.
   // Also, only elements in the locked element's subtree will be updated
-  // co-operatively. If there are other things that needed rendering update
-  // in the document, those things will be updated in one go.
+  // co-operatively. If there are other things in the document outside of
+  // the locked subtree that needed rendering update, they will be updated
+  // in one go at the next frame, as usual.
   let updatePromise = element.displayLock.update();
 
   // After the co-operative calculations finish the promise that update()
