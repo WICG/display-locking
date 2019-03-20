@@ -351,9 +351,8 @@ and `false` if not.
 ##### What happens
 
 When its lock is acquired, if the element already existed in the DOM,
-the visual content that was present at the time the lock was acquired is cleared,
-leaving only the space it takes in layout,
-similar to an element with `visibility: hidden;`.
+the visual content of the nodes in the subtree of the element that was present at the time the lock was acquired is cleared,
+but the locked element itself will still be rendered and laid out normally.
 
 If the element was locked before being inserted into the DOM,
 when it got inserted to the DOM, it will be in an state similar to `display: none;`.
@@ -730,7 +729,9 @@ When the element's lock is acquired while the element is already a part of the
 DOM, visual content of elements within the locked subtree
 (not the locked element itself) is cleared
 and the draw commands associated with that element's subtree are stashed
-and used while the lock is acquired. Note that in this mode, changes to the
+and used while the lock is acquired.
+
+Note that in this mode, the locked element is rendered normally and changes to the
 element itself (e.g. border, size) are updated synchronously. In other words,
 the element itself is not locked for display, only its subtree.
 
