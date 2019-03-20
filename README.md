@@ -9,7 +9,7 @@ Websites frequently rely on dynamic content to present information. This means
 that DOM is often manipulated using script to present rich and dynamic content.
 There are cases when this can cause slow rendering phase updates, including
 script to update views, style updates, layout, and paint. This, in turn, causes
-**jank or noticeable delay** when presenting content, because rendering phase is
+**jank or noticeable delay** when presenting content, because the rendering phase is
 updated **synchronously** with user interactions and requestAnimationFrame script.
 
 The following are a few of the common patterns that can cause jank:
@@ -23,23 +23,23 @@ DOM at once in order to prevent jank. As an example, ReactJS is [adding the
 ability](https://reactjs.org/blog/2018/03/01/sneak-peek-beyond-react-16.html)
 to do async operations to help with this problem.
 
-Creating more complex applications might also mean having a **larger amount of things in a web page**,
+Creating more complex applications might also mean having a **larger number of things on a web page**,
 making the rendering costs of having all of the content to actually be part of the DOM prohibitively expensive.
 
-This drives some amount of web authors to *virtualization* instead,
+This drives some number of web authors to *virtualization* instead,
 where they actually **refrain from putting things in the DOM**,
 keeping content in memory in some non-DOM data structure,
 with only the visible portion converted into DOM nodes and inserted into the document,
 recycling them in and out as needed.
 
-However, this will **cause problems to the web app** because a lot of things like find-in-page,
+However, this will **cause problems to the web app** because a lot of user-agent features such as find-in-page,
 accessibility, indexability, focus navigation, anchor links, etc.
-**depends on having the content be in the DOM**.
+**depend on having the content be in the DOM**.
 
 ### Proposal
 
 This document proposes to augment user-agent APIs to help address the problem of
-**slow rendering phase updates**, and having some control on **when to pay rendering costs**
+**slow rendering phase updates**, and having some control on **when to pay rendering costs**.
 Specifically, we propose a concept of *display locking* an element.
 
 If an element is display locked, it means that
@@ -93,16 +93,17 @@ async function updateDom() {
   // in the document, those things will be updated in one go.
   let updatePromise = element.displayLock.update();
 
-  // After the calculations finish the promise update() returns will resolve.
+  // After the co-operative calculations finish the promise that update()
+  // returned will resolve.
   updatePromise.then(() => {
     // Calling commit() will cause the element to be rendered on the next frame.
-    // Returns a promise that resolves when rendering finishes.
+    // commit() returns a promise that resolves when rendering finishes.
     // Note that we can call commit() without calling update() beforehand, but
     // that might cause a jank because we're doing the style, layout, paint in
     // one frame instead because we don't have the updated values.
     // However, even if we call update() beforehand, there are cases like flex
     // layout where the layout of the locked element affects its siblings,
-    // possibly causing this to be janky.
+    // possibly causing this to be slow.
     element.displayLock.commit();
   });
 }
