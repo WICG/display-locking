@@ -32,9 +32,9 @@ keeping content in memory in some non-DOM data structure,
 with only the visible portion converted into DOM nodes and inserted into the document,
 recycling them in and out as needed.
 Popular examples include https://m.twitter.com/ and [react-window](https://github.com/bvaughn/react-window).
-However, this **causes problems for the web app** because a lot of things like find-in-page,
+However, this **causes problems for the web app** because a lot of user-agent features such as find-in-page,
 accessibility, indexability, focus navigation, anchor links, etc.
-**depends on having the contents in the DOM**.
+**depend on having the contents in the DOM**.
 
 We propose a new concept, **display locking**, to assist developers with **alleviating
 jank caused by DOM updates** and having some control on **when to pay rendering costs**,
@@ -158,7 +158,7 @@ updates which **induce large document lifecycle updates**, including style, layo
 compositing, and paint. In turn, these can cause jank on the page, due to
 lifecycle updates being synchronous with script and user interactions.
 
-In a large enough web app, even having small updates like window resizing or a style tweak might be expensive,
+In a large enough web app, even small updates like window resizing or a style tweak might be expensive,
 due to the **large amount of things getting affected**,
 even though we might **not necessarily need every part of the web app to be up-to-date all the time**. 
 
@@ -276,7 +276,7 @@ remainingItems.forEach(item => {
     let itemEl = createElementForItem(item);
     itemEl.displayLock.acquire({ timeout: Infinity, activatable: true });
     itemsList.appendChild(itemEl);
-    // We can do expensive operations to the items without worrying of the rendering costs.
+    // We can do expensive operations to the items without worrying about the rendering costs.
     // After we finished all the operations we can trigger a co-operative update & commit.
     // We might do this in a fancier way by not actually committing the element,
     // leaving it locked and detecting when to commit by using IntersectionObservers etc,
