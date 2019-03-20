@@ -88,8 +88,12 @@ async function updateDom() {
   // Calling update() will allow rendering to go update the style & layout
   // values through co-operative updates that may last multiple frames.
   // Note that this will not cause the element to be painted/rendered.
-  // After the calculations finish the promise it returns will resolve.
+  // Also, only elements in the locked element's subtree will be updated
+  // co-operatively. If there are other things that needed rendering update
+  // in the document, those things will be updated in one go.
   let updatePromise = element.displayLock.update();
+
+  // After the calculations finish the promise update() returns will resolve.
   updatePromise.then(() => {
     // Calling commit() will cause the element to be rendered on the next frame.
     // Returns a promise that resolves when rendering finishes.
