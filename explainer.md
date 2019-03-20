@@ -728,8 +728,8 @@ is acquired
 When the element's lock is acquired while the element is already a part of the
 DOM, visual content of elements within the locked subtree
 (not the locked element itself) is cleared
-and the draw commands associated with that element's subtree are stashed
-and used while the lock is acquired.
+and changes to the subtree will not be reflected on screen until the lock is committed
+and the corresponding promise resolves.
 
 Note that in this mode, the locked element is rendered normally and changes to the
 element itself (e.g. border, size) are updated synchronously. In other words,
