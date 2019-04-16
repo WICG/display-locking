@@ -1,6 +1,6 @@
 # Display Locking
 
-### Introduction
+## Introduction
 
 As the quality and performance of the user-agents progresses, developers are
 looking towards the web as a platform to deliver rich, visually appealing and
@@ -36,28 +36,9 @@ However, this **causes problems for the web app** because a lot of user-agent fe
 accessibility, indexability, focus navigation, anchor links, etc.
 **depend on having the contents in the DOM**.
 
-### Proposal: Display Locking
-
 We propose a new concept, **display locking**, to assist developers with **alleviating
 jank caused by DOM updates** and having some control on **when to pay rendering costs**,
 while also **allowing things that depend on the updates to get the up-to-date values** when urgent.
-
-Using display locking, the developer will be able to lock an element and its subtree,
-preventing visual updates.
-Then, the developer will be able construct the locked subtree’s DOM however they desire,
-and insert it into the DOM without any rendering cost or jank.
-
-After insertion, we can request the rendering values (style, layout, etc) to be updated.
-These updates can be *co-operative* -- **interleaved with other
-work such as running script or DOM updates outside of the locked subtree** if they are going to take a long time,
-or calculated synchronusly if we need it.
-The developer is also able to commit the element's lock,
-which will calculate the rendering values if it's not up-to-date,
-and cause the visual updates of the modified subtree to appear.
-
-In essence, display locking will
-make it possible to **perform complicated DOM updates without causing the rest of
-the page to jank** and **only pay rendering costs on things that really need it**.
 
 In the rest of the document, we describe the display locking concept in detail.
 We will first examine some motivating examples which we commonly observe in rich
@@ -76,8 +57,7 @@ and presentation to the screen as well as areas that display locking is geared
 to improve. 
 A brief explanation of possible display locking implementations is also [available](./implementation.md).
 
----
-### Motivating Examples
+## Motivating Examples
 
 Consider the following example.
 
@@ -142,7 +122,7 @@ the subtree** (it’s an iframe in this example), it still janks because **DOM
 updates are atomic.**
 
 
-#### Common patterns
+### Common patterns
 
 There are other common patterns that exhibit similar behavior, and as a result
 suffer from similar drawbacks.
@@ -170,16 +150,28 @@ even though we might **not necessarily need every part of the web app to be up-t
 In the rest of this document, we discuss display locking and how it can help
 with situations like the ones mentioned above.
 
----
-### Proposed API
+## Proposal: Display Locking
 
-The display locking proposal is intended to **improve the script, layout, paint,
-as well as parts of the compositing update phases**. In particular, it aims to add
-javascript APIs to allow the developer to lock an element for display.
-
-With the proposed APIs,
+Using display locking, 
 **web authors can control when not to pay the rendering costs for a locked subtree**,
 and also **request the user-agent to do the updates in a non-janky way**.
+
+The developer will be able to lock an element and its subtree,
+preventing visual updates.
+Then, the developer will be able construct the locked subtree’s DOM however they desire,
+and insert it into the DOM without any rendering cost or jank.
+
+After insertion, we can request the rendering values (style, layout, etc) to be updated.
+These updates can be *co-operative* -- **interleaved with other
+work such as running script or DOM updates outside of the locked subtree** if they are going to take a long time,
+or calculated synchronusly if we need it.
+The developer is also able to commit the element's lock,
+which will calculate the rendering values if it's not up-to-date,
+and cause the visual updates of the modified subtree to appear.
+
+In essence, display locking will
+make it possible to **perform complicated DOM updates without causing the rest of
+the page to jank** and **only pay rendering costs on things that really need it**.
 
 ### Example code
 
@@ -193,40 +185,67 @@ In this example, we want to add a lot of items to a list in a non-janky way.
 </ul>
 
 <script>
-// Remaining items in the list are in |remainingItems|.
-// We want to add the remaining list items asynchronously.
+// Add remaining items as locked.
 remainingItems.forEach(item => {
-  requestIdleCallback((deadline) => {
-    let itemEl = createElementForItem(item);
-    itemEl.displayLock.acquire({ timeout: Infinity, activatable: true });
-    itemsList.appendChild(itemEl);
-    // We can do expensive operations to the item's subtree without worrying about the rendering costs.
-    // After we finished all the operations we can trigger a co-operative update & commit.
-    // We might do this in a fancier way by not actually committing the element,
-    // leaving it locked and detecting when to commit by using IntersectionObservers etc,
-    // but that's out of the scope of this example :)
-    doExpensiveOperationsToChildren(itemEl).then(element.updateAndCommit);
-    itemEl.appendChild(...);
-    itemEl.firstChild.style = "...";
-  });
+  let itemEl = document.createElement("div");
+  itemEl.style = "contain: style layout;";
+  itemEl.displayLock.acquire({ timeout: Infinity, activatable: true, size: [100, 100] });
+  itemsList.appendChild(itemEl);
+ 
+  // We can do updates to the item's subtree without worrying about the rendering costs.
+  // After we finished all the operations we can trigger a co-operative update & commit.
+  // We might do this in a fancier way by not actually committing the element,
+  // leaving it locked and detecting when to commit by using IntersectionObservers etc,
+  // but that's out of the scope of this example :)
+  itemEl.innerText = item;
+  itemEl.appendChild(...);
+  itemEl.firstChild.style = "...";
+  doExpensiveOperationsToChildren(itemEl).then(element.updateAndCommit);
 });
 
 // Getting style/layout values within a locked subtree :
-// - If we call getComputedStyle directly, it will cause a forced synchronous style update
+// - If we call getComputedStyle, etc. directly, it will cause a forced synchronous style update
 //   (see [what-forces-layout](https://gist.github.com/paulirish/5d52fb081b3570c81e3a)).
 // - We can call update() on the locked element to trigger a co-operative update and get
 //   the value after the calculations finished instead.
-function getComputedStyleForLockedElementChild(child, lockedElement) {
-  return new Promise((resolve) => {
-    lockedElement.displayLock.update().then(() => { resolve(getComputedStyle(child)) };
-  });
-}
+lockedElement.displayLock.update().then(() => {
+  // They're free!
+  getComputedStyle(child);
+  child.offsetTop;
+};
 </script>
 ```
+### The locked state
 
-### API Details
+#### The locked element
 
-#### Element.displayLock
+When its lock is acquired, the locked element itself will still be rendered and laid out normally.
+Changes to the DOM, style, layout, etc of the *locked element itself* will be applied as it would on any other normal element.
+
+##### Sizing
+
+When locked, the locked element is treated similar to as if it has [size containment](https://www.w3.org/TR/css-contain-1/#containment-size) with some differences.
+
+* If some style rule specifies the size of the locked element, we will use that size for the locked element.
+* If there are no style rule specifying the size of the locked element, we will use the size given in the `acquire` call's options.
+Instead of being treated as having no contents, the locked element will behave as if there is one child with the given *locked content size* as its intrinsic width and height, for sizing purposes.
+* If there are no size specified in the `acquire` call, the locked element will not take any space, similar to `display: none` elements instead.
+
+#### The locked subtree
+
+When its lock is acquired, the **visual content of the nodes of flat-tree descendants of the element is cleared**, similar to `display: none`.
+
+Changes to the *flat-tree descendants of a locked element* updates the DOM in such a way that script can inspect it immediately,
+but no rendering updates wil be painted until the element is unlocked,
+through `commit()` or the user-agent activating the element.
+
+Style and layout updates can happen without unlocking the element,
+through calling `update()` or triggering a *forced update* by calling style and layout inducing methods/properties
+(see [what-forces-layout](https://gist.github.com/paulirish/5d52fb081b3570c81e3a)).
+
+## API Details
+
+### Element.displayLock
 
 With display locking, the `Element` interface has a new attribute,
 `displayLock` which returns a `DisplayLockContext` representing the display
@@ -234,7 +253,7 @@ lock. The rest of the display locking functionality happens by interacting with 
 object. The `DisplayLockContext` is bound to the element from which it was
 retrieved, meaning that operations on the object will affect that element.
 
-#### DisplayLockContext.acquire(options)
+### DisplayLockContext.acquire(options)
 
 Acquire performs the following steps:
 
@@ -262,45 +281,17 @@ pairs:
   * Not setting this, or setting this to `false`,
     means this element and its descendants will be ignored in cases like
     find-in-page, anchor link navigation, focus navigation, etc.
-* (optional): `size`:  `[width , height]`
+* (optional): `size`:  `[width, height]`
    * Indicates the *locked content size* of the locked element. See [sizing](#sizing) section for more detail.
    * If not specified, the locked element will not take any space, similar to `display: none` elements.
 
-#### DisplayLockContext.locked
+### DisplayLockContext.locked
 
 This is a boolean value that will be `true`
 if the `Element` associated with this `DisplayLockContext` is in the locked state,
 and `false` if not.
 
-#### The locked state
-
-##### The locked element
-
-When its lock is acquired, the locked element itself will still be rendered and laid out normally.
-Changes to the DOM, style, layout, etc of the *locked element itself* will be applied as it would on any other normal element.
-
-##### Sizing
-
-When locked, the locked element is treated similar to as if it has [size containment](https://www.w3.org/TR/css-contain-1/#containment-size) with some differences.
-
-* If some style rule specifies the size of the locked element, we will use that size for the locked element.
-* If there are no style rule specifying the size of the locked element, we will use the size given in the `acquire` call's options.
-Instead of being treated as having no contents, the locked element will behave as if there is one child with the given *locked content size* as its intrinsic width and height, for sizing purposes.
-* If there are no size specified in the `acquire` call, the locked element will not take any space, similar to `display: none` elements instead.
-
-##### The locked subtree
-
-When its lock is acquired, the **visual content of the nodes of flat-tree descendants of the element is cleared**, similar to `display: none`.
-
-Changes to the *flat-tree descendants of a locked element* updates the DOM in such a way that script can inspect it immediately,
-but no rendering updates wil be painted until the element is unlocked,
-through `commit()` or the user-agent activating the element.
-
-Style and layout updates can happen without unlocking the element,
-through calling `update()` or triggering a *forced update* by calling style and layout inducing methods/properties
-(see [what-forces-layout](https://gist.github.com/paulirish/5d52fb081b3570c81e3a)).
-
-#### DisplayLockContext.update()
+### DisplayLockContext.update()
 
 This operation causes the lock to allow co-operative updates on the element and
 its subtree in preparation for display or measuring layout. It performs the
@@ -321,7 +312,7 @@ following steps:
   other work, or signal to other subsystems that this element and its subtree
   are "prepared".
 
-#### DisplayLockContext.commit()
+### DisplayLockContext.commit()
 
 This operation causes the lock to be released and visual state of the element
 and its subtree to become visible to the user. It performs the following steps:
@@ -338,7 +329,7 @@ not yet resolved. This causes work that is still needed to become synchronous,
 enabling the idle-until-urgent pattern.
 
 
-#### DisplayLockContext.updateAndCommit()
+### DisplayLockContext.updateAndCommit()
 
 This operation combines the effects of an `update()` and a `commit()` calls:
 * It causes the element to be co-operatively updated.
@@ -346,7 +337,7 @@ This operation combines the effects of an `update()` and a `commit()` calls:
   updates to appear on screen.
 
 
-#### Element activation
+### Element activation
 
 When an element is locked,
 there are some actions in the page that might require the element to get unlocked and be rendered to work properly.
@@ -368,7 +359,7 @@ in which case the element can't be activated.
 For all the elements that we commit as part of element activation,
 we will send a `beforeactivate` event to it just before committing.
 
-#### beforeactivate event
+### beforeactivate event
 
 | property  | value  |
 |---|---|
@@ -407,8 +398,7 @@ For example if `#fourth` needs activation,
 even if we activate `#fourth`,
 it will not be visible because `#second` is still locked.
 
----
-### Requirement: Style and Layout Containment
+## Requirement: Style and Layout Containment
 
 In consideration of display locking, we have also discussed when it would and
 would not be appropriate to allow an element to be locked. One main
@@ -427,8 +417,7 @@ This allows us to better reason about the expected behavior of the page. Specifi
   can process any number of elements on the locked subtree without visually
   changing the content on the rest of the page.
 
----
-### Examples revisited
+## Examples revisited
 
 Let's revisit the motivating examples, modified with display locking:
 
@@ -504,8 +493,7 @@ presented without jank.
 </div>
 &nbsp;
 
----
-### Edge cases
+## Edge cases
 
 There are a number of edge cases that need to be considered when working with
 display locking. This section briefly lists a few of them, but the list is far
@@ -552,8 +540,7 @@ of which we have listed here. The general feeling is that the edge cases are
 tractable and, given the benefits of the feature, should not block progress on
 its implementation.
 
----
-### Discussion
+## Discussion
 
 Let’s briefly touch on two aspects of web standards that are important for new
 features: ergonomics and interoperability.
