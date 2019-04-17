@@ -26,7 +26,7 @@ previous layout and visual update to be done before running subsequent script.
 Creating more complex applications might also mean having a **larger number of things in a web page**,
 making the rendering costs of having all of the content to actually be part of the DOM
 prohibitively expensive.
-This drives some number of web authors to *virtualization* instead,
+This drives some number of developers to *virtualization* instead,
 where they actually **refrain from putting things in the DOM**,
 keeping content in memory in some non-DOM data structure,
 with only the visible portion converted into DOM nodes and inserted into the document,
@@ -153,7 +153,7 @@ with situations like the ones mentioned above.
 ## Proposal: Display Locking
 
 Using display locking, 
-**web authors can control when not to pay the rendering costs for a locked subtree**,
+developers can **control when not to pay the rendering costs for a locked subtree**,
 and also **request the user-agent to do the updates in a non-janky way**.
 
 The developer will be able to lock an element and its subtree,
@@ -164,14 +164,14 @@ and insert it into the DOM without any rendering cost or jank.
 After insertion, we can request the rendering values (style, layout, etc) to be updated.
 These updates can be *co-operative* -- **interleaved with other
 work such as running script or DOM updates outside of the locked subtree** if they are going to take a long time,
-or calculated synchronusly if we need it.
+or calculated synchronusly if needed.
 The developer is also able to commit the element's lock,
-which will calculate the rendering values if it's not up-to-date,
+which will calculate the rendering values if they are not up-to-date,
 and cause the visual updates of the modified subtree to appear.
 
 In essence, display locking will
 make it possible to **perform complicated DOM updates without causing the rest of
-the page to jank** and **only pay rendering costs on things that really need it**.
+the page to jank** and **only pay rendering costs if and when the developer decides to do it**.
 
 ### Example code
 
@@ -204,12 +204,14 @@ remainingItems.forEach(item => {
 });
 
 // Getting style/layout values within a locked subtree :
-// - If we call getComputedStyle, etc. directly, it will cause a forced synchronous style update
+// - If we call getComputedStyle, offsetTop, etc. directly,
+//   it may cause a forced synchronous style and/or layout update
 //   (see [what-forces-layout](https://gist.github.com/paulirish/5d52fb081b3570c81e3a)).
 // - We can call update() on the locked element to trigger a co-operative update and get
 //   the value after the calculations finished instead.
 lockedElement.displayLock.update().then(() => {
-  // They're free!
+  // These accesses are cheap or in some cases even free,
+  // because the style & layout values in the subtree are up-to-date.
   getComputedStyle(child);
   child.offsetTop;
 };
@@ -220,22 +222,28 @@ lockedElement.displayLock.update().then(() => {
 #### The locked element
 
 When its lock is acquired, the locked element itself will still be rendered and laid out normally.
+The visual content of the element will stay and kept up-to-date, unlike its shadow-including descendants (see [the locked subtree section](#the-locked-subtree)).
 Changes to the DOM, style, layout, etc of the *locked element itself* will be applied as it would on any other normal element.
 
 ##### Sizing
 
 When locked, the locked element is treated similar to as if it has [size containment](https://www.w3.org/TR/css-contain-1/#containment-size) with some differences.
+Specifically, the following demonstrates how the element is laid out:
 
 * If some style rule specifies the size of the locked element, we will use that size for the locked element.
 * If there are no style rule specifying the size of the locked element, we will use the size given in the `acquire` call's options.
 Instead of being treated as having no contents, the locked element will behave as if there is one child with the given *locked content size* as its intrinsic width and height, for sizing purposes.
-* If there are no size specified in the `acquire` call, the locked element will not take any space, similar to `display: none` elements instead.
+* Related to the point above, if *locked content size* is `[0, 0]` (either directly specified in the `aquire` call options, or from using the default value),
+it will behave like any other element with size containment, laying out as if it has no contents.
 
 #### The locked subtree
 
-When its lock is acquired, the **visual content of the nodes of flat-tree descendants of the element is cleared**, similar to `display: none`.
+"The locked subtree" refers to the locked element's [shadow-including descendants](https://dom.spec.whatwg.org/#concept-shadow-including-descendant),
+which does not include the locked element itself.
 
-Changes to the *flat-tree descendants of a locked element* updates the DOM in such a way that script can inspect it immediately,
+When its lock is acquired, the **visual content of the locked subtree is cleared**, similar to `display: none`.
+
+Changes to the locked subtree updates the DOM in such a way that script can inspect it immediately,
 but no rendering updates wil be painted until the element is unlocked,
 through `commit()` or the user-agent activating the element.
 
@@ -283,7 +291,7 @@ pairs:
     find-in-page, anchor link navigation, focus navigation, etc.
 * (optional): `size`:  `[width, height]`
    * Indicates the *locked content size* of the locked element. See [sizing](#sizing) section for more detail.
-   * If not specified, the locked element will not take any space, similar to `display: none` elements.
+   * If not specified, the *locked content size* will default to `[0, 0]`.
 
 ### DisplayLockContext.locked
 
