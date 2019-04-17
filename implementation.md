@@ -2,7 +2,7 @@
 
 Note to the reader: this describes the sample prototype implementation.
 The design choices here are not meant to represent final design decisions, but
-act as a proof of concept implementation in Blink
+act as a proof of concept implementation in Blink.
 
 To implement the co-operative update phases, we need a
 way to prevent the update phases in the locked subtree from blocking other
