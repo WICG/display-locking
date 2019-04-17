@@ -290,7 +290,8 @@ pairs:
     means this element and its descendants will be ignored in cases like
     find-in-page, anchor link navigation, focus navigation, etc.
 * (optional): `size`:  `[width, height]`
-   * Indicates the *locked content size* of the locked element. See [sizing](#sizing) section for more detail.
+   * |width| and |height| should be non-negative numbers.
+   * Indicates the *locked content size* of the locked element, in pixels. See [sizing](#sizing) section for more detail.
    * If not specified, the *locked content size* will default to `[0, 0]`.
 
 ### DisplayLockContext.locked
