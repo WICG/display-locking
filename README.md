@@ -127,3 +127,7 @@ examples:
 - [Layout transitions](http://tabatkins.github.io/specs/layout-transitions/) - a
   similar proposal from 2014, with motivating examples that are applicable to
   display locking.
+
+### Notes
+- Display Locking is available in Chrome Canary behind a Display Locking flag.
+  See about:flags.
