@@ -96,7 +96,6 @@ function initialize() {
       activate(button, content);
     });
     content.addEventListener("beforeactivate", (e) => {
-      console.log("before activate on " + content.id);
       activate(button, content);
     });
     if (!active_button) {
