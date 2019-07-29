@@ -1,0 +1,136 @@
+<!doctype html>
+
+<style>
+.container {
+  width: max-content;
+  min-width: 500px;
+  height: 500px;
+  background: lightblue;
+}
+.tab-strip {
+  width: 100%;
+  background: lightgreen;
+  display: flex;
+}
+.tab-strip-button {
+  box-sizing: border-box;
+  padding: 5px;
+  text-align: center;
+  flex-grow: 1;
+  min-width: 100px;
+  cursor: pointer;
+}
+.tab-strip-button.active {
+  border-style: solid;
+  border-color: black;
+  border-width: 1px 1px 0px 1px;
+  background: lightgrey;
+}
+.tab-strip-button.inactive {
+  border: 1px solid black;
+  background: grey;
+}
+.tab-container {
+  position: relative;
+  box-sizing: border-box;
+  background: lightgrey;
+  border-style: solid;
+  border-color: black;
+  border-width: 0px 1px 1px 1px;
+  width: 100%;
+  height: 100%;
+}
+.tab-contents {
+  box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  contain: style layout;
+  padding: 10px;
+  overflow: auto;
+}
+.tab-contents.active {}
+.tab-contents.inactive {
+  visibility: hidden;
+}
+.locked {
+  z-index: -1
+}
+</style>
+
+<div class="container">
+  <div class="tab-strip">
+    <div class="tab-strip-button inactive">tab one</div>
+    <div class="tab-strip-button inactive">tab two</div>
+    <div class="tab-strip-button inactive">tab three</div>
+  </div>
+  <div class="tab-container">
+    <div id=one class="tab-contents inactive">
+      Contents of tab one.
+      Note that with display-locking, we can use find-in-page
+      to find contents of tabs two and three.
+    </div>
+    <div id=two class="tab-contents inactive">
+      Contents of tab two.
+    </div>
+    <div id=three class="tab-contents inactive">
+      Contents of tab three.
+    </div>
+  </div>
+</div>
+
+<script>
+let active_button;
+let active_content;
+function initialize() {
+  const tab_buttons = document.getElementsByClassName("tab-strip-button");
+  const tab_contents = document.getElementsByClassName("tab-contents");
+  console.assert(tab_buttons.length > 0);
+  console.assert(tab_buttons.length === tab_contents.length);
+  for (let i = 0; i < tab_buttons.length; ++i) {
+    const button = tab_buttons[i];
+    const content = tab_contents[i];
+    button.addEventListener("click", (e) => {
+      activate(button, content);
+    });
+    content.addEventListener("beforeactivate", (e) => {
+      activate(button, content);
+    });
+    if (!active_button) {
+      active_button = button;
+      active_content = content;
+      active_button.classList.replace("inactive", "active");
+      active_content.classList.replace("inactive", "active");
+    } else {
+      if (active_content.displayLock) {
+        content.classList.replace("inactive", "locked");
+        content.displayLock.acquire({ timeout: Infinity, activatable: true });
+      }
+    }
+  }  
+}
+
+function activate(button, content) {
+  if (button == active_button)
+    return;
+  active_button.classList.replace("active", "inactive");
+  active_button = button;
+  active_button.classList.replace("inactive", "active");
+
+  if (active_content.displayLock) {
+    active_content.displayLock.acquire({ timeout: Infinity, activatable: true });
+    active_content.classList.replace("active", "locked");
+    active_content = content;
+    active_content.displayLock.commit();
+    active_content.classList.replace("locked", "active");
+  } else {
+    active_content.classList.replace("active", "inactive");
+    active_content = content;
+    active_content.classList.replace("inactive", "active");
+  }
+}
+
+initialize();
+</script>
