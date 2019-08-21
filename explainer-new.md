@@ -1,6 +1,6 @@
-** Display locking
+# Display locking
 
-*** Introduction
+## Introduction
 
 Display locking is a set of API changes that make it straightforward for developers and browsers to easily scale to large amounts of content and control when rendering [2] work happens. More concretely, the goals are:
 * Avoid loading [1] and rendering work for content not visible to the user, without breaking user-agent features and supporting existing layout algorithms
@@ -13,7 +13,7 @@ The following use-cases motivate this work:
 * Pre-load and render non-visible content asynchronously to prepare it for future display (Example: improving latency to show content not currently displayed but predicted to be soon, but *without jank*. Think search as you type, tabbed UIs, hero element clicks.)
 * Layout measurement (examples: responsive design or animation setup)
 
-** Motivation & background
+## Motivation & background
 
 Web developers need ways to reduce loading and rendering time of web apps that have a lot of DOM. Two common techniques are to mark non-visible DOM as "invisible" [3], or to use virtualization [4]. Browser implementors also want to reduce loading and rendering time of web apps. Common techniques to do so include adding caching of rendering state [5], and avoiding rendering work [6] for content that is not visible.
 
@@ -25,7 +25,7 @@ Previously adopted web APIs, in particular the [contain](https://developer.mozil
 
 While these forms of isolation help, they do not guarantee that isolated content does not need to be rendered at all. Ideally there would be a way for the developer to specify that specific parts of the DOM need not be rendered, and pair that with a guarantee that if they were rendered, it would not invalidate more than a small amount of style, layout or paint in the rest of the document.
 
-** Summary
+## Summary
 
 Three new features are proposed:
 
@@ -35,7 +35,7 @@ Three new features are proposed:
 
 * An `updateRendering` method on Element objects. This can be used to pre-render content within a subtree marked with `rendersubtree` as invisible to make it ready for display or measurement.
 
-** Example usage
+## Example usage
 
 ```
 <div rendersubtree=invisible style="content-size: 200px 200px">...content...</div>
@@ -59,12 +59,13 @@ target.updateRendering().then(() => console.log(target.offsetTop)); // fast!
 ```
 The div does not render to the screen, but the User Agent does work in the background to prepare to render it quickly in the future. This includes loading external resources referred to in the subtree, and custom element upgrades. It also may include running the rendering lifecycle steps for the subtree up to and including style, layout, paint and raster. When the returned promise resolves, reading layout or style-inducing properties on the div is expected to be fast.
 
-** Alternatives considered
+## Alternatives considered
 
 The `display:none` CSS property causes content subtrees not to render. However, there is no mechanism for User Agent features to cause these subtrees to render.
 
 `visibility: hidden` causes subtrees to not paint, but they still need style and layout, as descendants may be `visibility: visible`. Second, there is no mechanism for User Agent features to cause subtrees to render.
 
+`contain: strict` allows the browser to automatically detect subtrees that are definitely offscreen, and therefore that don't need to be rendered. However, `contain:strict` is not flexible enough to allow for responsive design layouts that grow elements to fit their content. Second, `contain:strict` may or may not result in rendering work, dependin on whether the browser detects the content is actually offscreen. Third, it does not support pre-rendering or User Agent features in cases when it is not actually rendered to the user in the current application view.
 
 [1] Examples: fetching images off the network, custom element upgrade callbacks
 [2] Meaning, the [rendering part](https://github.com/chrishtr/rendering/blob/master/rendering-event-loop.md) of the browser event loop.
