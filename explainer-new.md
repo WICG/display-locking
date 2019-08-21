@@ -31,7 +31,7 @@ Three new features are proposed:
 
 * A new `rendersubtree` attribute (early draft spec [here](https://chrishtr.github.io/html/output/#the-rendersubtree-attribute)). This controls whether DOM subtrees do or do not render, and is the mechanism by which rendering work can be avoided. User Agent features may modify this attribute, causing on-demand rendering, if desired. The developer may listen to this on-demand rendering via a MutationObserver and respond to it before rendering occurs. `rendersubtree`, when present, forces `style` and `layout` containment, plus `size` containment if invisible.
 
-* A `content-size` attribute that specifies how much space a subtree should take up. This is intended to allocate a placeholder size for content marked as invisible by `rendersubtree` (since it already has `size` containment, as mentioned above).
+* A `content-size` attribute (early draft spec [here](http://tabatkins.github.io/specs/css-content-size/) that specifies how much space a subtree should take up. This is intended to allocate a placeholder size for content marked as invisible by `rendersubtree` (since it already has `size` containment, as mentioned above).
 
 * An `updateRendering` method on Element objects. This can be used to pre-render content within a subtree marked with `rendersubtree` as invisible to make it ready for display or measurement.
 
