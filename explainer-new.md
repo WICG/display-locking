@@ -9,8 +9,8 @@ Display locking is a set of API changes that make it straightforward for develop
 The following use-cases motivate this work:
 * Fast display of large HTML documents (examples: HTML one-page spec, other long documents)
 * Deep links into pages with hidden content (example: mobile Wikipedia)
-* Support scrollers with a large amount of content, without resorting to virtualization
-* Pre-load and render non-visible content asynchronously to prepare it for future display (Example: improving latency to show content not currently displayed but predicted to be soon, but *without jank*. Think search as you type, tabbed UIs, hero element clicks.)
+* Scrollers with a large amount of content, without resorting to virtualization
+* Pre-loading and rendering of non-visible content asynchronously to prepare it for future display (Example: improving latency to show content not currently displayed but predicted to be soon, but *without jank*. Think search as you type, tabbed UIs, hero element clicks.)
 * Layout measurement (examples: responsive design or animation setup)
 
 ## Motivation & background
