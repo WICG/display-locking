@@ -68,7 +68,7 @@ The `display:none` CSS property causes content subtrees not to render. However, 
 
 `visibility: hidden` causes subtrees to not paint, but they still need style and layout, as the subtree takes up layout space and descendants may be `visibility: visible`. Second, there is no mechanism for user-agent features to cause subtrees to render.
 
-`contain: strict` allows the browser to automatically detect subtrees that are definitely offscreen, and therefore that don't need to be rendered. However, `contain:strict` is not flexible enough to allow for responsive design layouts that grow elements to fit their content. Second, `contain:strict` may or may not result in rendering work, depending on whether the browser detects the content is actually offscreen. Third, it does not support pre-rendering or user-agent features in cases when it is not actually rendered to the user in the current application view.
+`contain: strict` allows the browser to automatically detect subtrees that are definitely offscreen, and therefore that don't need to be rendered. However, `contain:strict` is not flexible enough to allow for responsive design layouts that grow elements to fit their content. (To work around this, content could be marked as `contain:strict` when offscreen and then some other value when on-screen (this is similar to `rendersubtree`).) Second, `contain:strict` may or may not result in rendering work, depending on whether the browser detects the content is actually offscreen. Third, it does not support pre-rendering or user-agent features in cases when it is not actually rendered to the user in the current application view.
 
 <a name="foot-notes"></a>
 
