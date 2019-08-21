@@ -2,8 +2,8 @@
 
 ## Introduction
 
-Display locking is a set of API changes that make it straightforward for developers and browsers to easily scale to large amounts of content and control when rendering [1] work happens. More concretely, the goals are:
-* Avoid loading [2] and rendering work for content not visible to the user, without breaking [user-agent features](https://github.com/WICG/display-locking/blob/master/user-agent-features.md) or any layout algorithms (e.g. responsive design, flexbox, grid)
+Display locking is a set of API changes that make it straightforward for developers and browsers to easily scale to large amounts of content and control when rendering [\[1\]](#foot-notes) work happens. More concretely, the goals are:
+* Avoid loading [\[2\]](#foot-notes) and rendering work for content not visible to the user, without breaking [user-agent features](https://github.com/WICG/display-locking/blob/master/user-agent-features.md) or any layout algorithms (e.g. responsive design, flexbox, grid)
 * Support developer-controlled pre-loading, pre-rendering and measurement of content without having to fully render it to the screen
 
 The following use-cases motivate this work:
@@ -15,10 +15,10 @@ The following use-cases motivate this work:
 
 ## Motivation & background
 
-Web developers need ways to reduce loading and rendering time of web apps that have a lot of DOM. Two common techniques are to mark non-visible DOM as "invisible" [3], or to use virtualization [4]. Browser implementors also want to reduce loading and rendering time of web apps. Common techniques to do so include adding caching of rendering state [5], and avoiding rendering work [6] for content that is not visible.
+Web developers need ways to reduce loading and rendering time of web apps that have a lot of DOM. Two common techniques are to mark non-visible DOM as "invisible" [\[3\]](#foot-notes), or to use virtualization [\[4\]](#foot-notes). Browser implementors also want to reduce loading and rendering time of web apps. Common techniques to do so include adding caching of rendering state [\[5\]](#foot-notes), and avoiding rendering work [\[6\]](#foot-notes) for content that is not visible.
 
 These techniques can work in many cases but have some drawbacks and limitations. These include:
-a. [3] and [4] usually means that such content is not available to user-agent features. Also, content that is merely placed offscreen may or may not have rendering cost (it depends on browser heuristics), which makes the technique unreliable.
+a. [\[3\]](#foot-notes) and [\[4\]](#foot-notes) usually means that such content is not available to user-agent features. Also, content that is merely placed offscreen may or may not have rendering cost (it depends on browser heuristics), which makes the technique unreliable.
 b. Caching intermediate rendering state is [hard work](https://martinfowler.com/bliki/TwoHardThings.html), and often has performance limitations and cliffs that are not obvious to developers. Similarly, relying on the browser to avoid rendering for content that is clipped out or not visible is sometimes not reliable, as it's hard for the browser to efficiently detect what content is actually visible.
 
 Previously adopted web APIs, in particular the [contain](https://developer.mozilla.org/en-US/docs/Web/CSS/contain) and [will-change](https://developer.mozilla.org/en-US/docs/Web/CSS/will-change) CSS properties, add ways to specify forms of rendering [isolation](https://github.com/chrishtr/rendering/blob/master/isolation.md) or isolation hints, with the intention of them being a mechanism for the web developer to help the browser optimize rendering for the page.
@@ -43,7 +43,7 @@ Three new features are proposed:
 target.setAttribute('rendersubtree', 'visible'); // makes #target render
 </script>
 ```
-This div's subtree is not rendered (but the div itself is; this allows the div to show fallback or "loading..." affordances), and there is no need for the browser to do any rendering lifecycle phases for the subtree of the div. Custom element upgrades are not performed and resources are not loaded. The div lays out as if it had a single 200px by 200px child, which serves as a placeholder in order to take up the approximate layout size of the div's subtree. This allows page layout to be approximately correct, and preserves layout overflow size for scrolling. The brrowser may *not* render the content, even via a user-agent feature.
+This div's subtree is not rendered (but the div itself is; this allows the div to show fallback or "loading..." affordances), and there is no need for the browser to do any rendering lifecycle phases for the subtree of the div. Custom element upgrades are not performed and resources are not loaded. The div lays out as if it had a single 200px by 200px child, which serves as a placeholder in order to take up the approximate layout size of the div's subtree. This allows page layout to be approximately correct, and preserves layout overflow size for scrolling. The browser may *not* render the content, even via a user-agent feature.
 
 ```
 <div rendersubtree=invisible-activatable  style="content-size: 200px 200px">...content</div>
@@ -58,17 +58,19 @@ This div and its subtree render, but still has `style` and `layout` containment.
 ```
 <div id=target rendersubtree=invisible style="content-size: 200px 200px">...content...</div>
 <script>
-target.updateRendering().then(() => console.log(target.offsetTop)); // fast!
+target.updateRendering().then(() => console.log(target.firstElementChild.offsetTop)); // fast!
 ```
-The div's subtree does not render to the screen, but when updateRendering is called, the browser does work in the background to prepare to render it quickly in the future. This includes loading external resources referred to in the subtree and custom element upgrades. It also may include running the rendering lifecycle steps for the subtree up to and including style, layout, paint and raster. When the returned promise resolves, reading layout or style-inducing properties on the div is expected to be fast. Changing the `rendersubtree` value to `visible` should also be fast.
+The div's subtree does not render to the screen, but when updateRendering is called, the browser does work in the background to prepare to render it quickly in the future. This includes loading external resources referred to in the subtree and custom element upgrades. It also may include running the rendering lifecycle steps for the subtree up to and including style, layout, paint and raster. When the returned promise resolves, reading layout or style-inducing properties on the subtree is expected to be fast. Changing the `rendersubtree` value to `visible` should also be fast.
 
 ## Alternatives considered
 
 The `display:none` CSS property causes content subtrees not to render. However, there is no mechanism for User Agent features to cause these subtrees to render.
 
-`visibility: hidden` causes subtrees to not paint, but they still need style and layout, as the subtree takes up layotu space and descendants may be `visibility: visible`. Second, there is no mechanism for user-agent features to cause subtrees to render.
+`visibility: hidden` causes subtrees to not paint, but they still need style and layout, as the subtree takes up layout space and descendants may be `visibility: visible`. Second, there is no mechanism for user-agent features to cause subtrees to render.
 
 `contain: strict` allows the browser to automatically detect subtrees that are definitely offscreen, and therefore that don't need to be rendered. However, `contain:strict` is not flexible enough to allow for responsive design layouts that grow elements to fit their content. Second, `contain:strict` may or may not result in rendering work, depending on whether the browser detects the content is actually offscreen. Third, it does not support pre-rendering or user-agent features in cases when it is not actually rendered to the user in the current application view.
+
+<a name="foot-notes"></a>
 
 [1]: Meaning, the [rendering part](https://github.com/chrishtr/rendering/blob/master/rendering-event-loop.md) of the browser event loop.
 
