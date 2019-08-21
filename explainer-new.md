@@ -38,7 +38,10 @@ Three new features are proposed:
 ## Example usage
 
 ```
-<div rendersubtree=invisible style="content-size: 200px 200px">...content...</div>
+<div id=target rendersubtree=invisible style="content-size: 200px 200px">...content...</div>
+<script>
+target.setAttribute('rendersubtree', 'visible'); // makes #target render
+</script>
 ```
 This div's subtree is not rendered (but the div itself is; this allows the div to show fallback or "loading..." affordances), and there is no need for the browser to do any rendering lifecycle phases for the subtree of the div. Custom element upgrades are not performed and resources are not loaded. The div lays out as if it had a single 200px by 200px child, which serves as a placeholder in order to take up the approximate layout size of the div's subtree. This allows page layout to be approximately correct, and preserves layout overflow size for scrolling. The brrowser may *not* render the content, even via a user-agent feature.
 
