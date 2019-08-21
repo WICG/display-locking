@@ -2,8 +2,8 @@
 
 ## Introduction
 
-Display locking is a set of API changes that make it straightforward for developers and browsers to easily scale to large amounts of content and control when rendering [2] work happens. More concretely, the goals are:
-* Avoid loading [1] and rendering work for content not visible to the user, without breaking user-agent features and supporting existing layout algorithms
+Display locking is a set of API changes that make it straightforward for developers and browsers to easily scale to large amounts of content and control when rendering [^1] work happens. More concretely, the goals are:
+* Avoid loading [^2] and rendering work for content not visible to the user, without breaking user-agent features and supporting existing layout algorithms
 * Support developer-controlled pre-loading, rendering and measurement of content without having to fully render it to the screen
 
 The following use-cases motivate this work:
@@ -67,9 +67,9 @@ The `display:none` CSS property causes content subtrees not to render. However, 
 
 `contain: strict` allows the browser to automatically detect subtrees that are definitely offscreen, and therefore that don't need to be rendered. However, `contain:strict` is not flexible enough to allow for responsive design layouts that grow elements to fit their content. Second, `contain:strict` may or may not result in rendering work, dependin on whether the browser detects the content is actually offscreen. Third, it does not support pre-rendering or User Agent features in cases when it is not actually rendered to the user in the current application view.
 
-[1] Examples: fetching images off the network, custom element upgrade callbacks
-[2] Meaning, the [rendering part](https://github.com/chrishtr/rendering/blob/master/rendering-event-loop.md) of the browser event loop.
-[3] Examples: placing `display:none` CSS on DOM subtrees, or by placing content far offscreen via tricks like `margin-left: -10000px`
-[4] In this context, virtualization means representing content outside of the DOM, and inserting it into the DOM only when visible. This is most commonly used for virtual or infinite scrollers.
-[5] Examples: caching the computed style of DOM elements, the output of text / block layout, and display list output of paint.
-[6] Examples: detecting elements that are clipped out by ancestors, or not visible in the viewport, and avoiding some or most rendering [lifecycle phases](https://github.com/WICG/display-locking/blob/master/lifecycle.md) for such content.
+[^1]: Meaning, the [rendering part](https://github.com/chrishtr/rendering/blob/master/rendering-event-loop.md) of the browser event loop.
+[^2]: Examples: fetching images off the network, custom element upgrade callbacks
+[^3]: Examples: placing `display:none` CSS on DOM subtrees, or by placing content far offscreen via tricks like `margin-left: -10000px`
+[^4]: In this context, virtualization means representing content outside of the DOM, and inserting it into the DOM only when visible. This is most commonly used for virtual or infinite scrollers.
+[^5]: Examples: caching the computed style of DOM elements, the output of text / block layout, and display list output of paint.
+[^6]: Examples: detecting elements that are clipped out by ancestors, or not visible in the viewport, and avoiding some or most rendering [lifecycle phases](https://github.com/WICG/display-locking/blob/master/lifecycle.md) for such content.
