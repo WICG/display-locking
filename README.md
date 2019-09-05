@@ -48,7 +48,7 @@ This div's subtree is not rendered (but the div itself is; this allows the div t
 ```html
 <div rendersubtree="invisible activatable"  style="content-size: 200px 200px">...content</div>
 ```
-Same as above, except that user-agent features may change the `rendersubtree` attribute to `visible`.
+Same as above, except that user-agent features may change the `rendersubtree` attribute to the empty string, causing the div's subtree to get rendered. More on this on ["Element activation by the user agent"](https://github.com/rakina/display-locking#element-activation-by-the-user-agent)
 
 ```html
 <div rendersubtree style="content-size: 200px 200px">...content</div>
