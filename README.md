@@ -60,7 +60,9 @@ async function updateDom() {
 
   // Acquire a lock, and allow it to be committed by the user agent when
   // necessary when focused, navigated to in find-in-page, anchor links, etc.
-  await element.displayLock.acquire({ activatable: true });
+  // We also state that we don't want the user agent to automatically commit
+  // triggered by a timeout by setting it to Infinity.
+  await element.displayLock.acquire({ activatable: true, timeout: Infinity });
 
   // Append the element to the DOM.
   document.body.appendChild(element);
@@ -110,7 +112,7 @@ examples:
   intermediate results are not displayed until the lock is committed.
 - **Postponing the rendering work indefinitely** by controlling when the lock is
   committed.
-- Performing co-operative rendering work using update(), which can always be
+- Performing **co-operative rendering work** using update(), which can always be
   forced to be synchronous using a commit() call enabling an idle-until-urgent
   pattern.
 - **Measuring layout without jank** or display by calling update() on a locked
@@ -125,3 +127,7 @@ examples:
 - [Layout transitions](http://tabatkins.github.io/specs/layout-transitions/) - a
   similar proposal from 2014, with motivating examples that are applicable to
   display locking.
+
+### Notes
+- Display Locking is available in Chrome Canary behind a Display Locking flag.
+  See about:flags.
