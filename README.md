@@ -43,12 +43,17 @@ Three new features are proposed:
 target.setAttribute('rendersubtree', ''); // makes #target render
 </script>
 ```
-This div's subtree is not rendered (but the div itself is; this allows the div to show fallback or "loading..." affordances), and there is no need for the browser to do any rendering lifecycle phases for the subtree of the div. Custom element upgrades are not performed and resources are not loaded. The div lays out as if it had a single 200px by 200px child, which serves as a placeholder in order to take up the approximate layout size of the div's subtree. This allows page layout to be approximately correct, and preserves layout overflow size for scrolling. The browser may *not* render the content, even via a user-agent feature.
+This div's subtree is not rendered (but the div itself is; this allows the div to show fallback or "loading..." affordances), and there is no need for the browser to do any rendering lifecycle phases for the subtree of the div. The div lays out as if it had a single 200px by 200px child, which serves as a placeholder in order to take up the approximate layout size of the div's subtree. This allows page layout to be approximately correct, and preserves layout overflow size for scrolling. The browser may *not* render the content, even via a user-agent feature.
 
 ```html
 <div rendersubtree="invisible activatable"  style="content-size: 200px 200px">...content</div>
 ```
 Same as above, except that user-agent features may change the `rendersubtree` attribute to the empty string, causing the div's subtree to get rendered. More on this on ["Element activation by the user agent"](https://github.com/rakina/display-locking#element-activation-by-the-user-agent)
+
+```html
+<div id=target rendersubtree="invisible holdupgrades holdloads" style="content-size: 200px 200px">...content...</div>
+```
+Same as just having the `invisible` value, but custom element upgrades are not performed and resources are not loaded. Note that these values can also be used without the `invisible` value also.
 
 ```html
 <div rendersubtree style="content-size: 200px 200px">...content</div>
@@ -65,7 +70,7 @@ The div's subtree does not render to the screen, but when updateRendering is cal
 
 ## Element activation by the user agent
 
-When an element is not rendered because it's a part of a not-rendered subtree caused by `rendersubtree`, there are some actions in the page that might require the element (and its ancestors) to be rendered to work properly. If all of the element's rendering ancestors' `rendersubtree` attributes contain contain `activatable`, then the user agent can *activate* the element. This will change of the non-null rendersubtree value of all of its rendering ancestors to the empty string - causing the element and its ancestors to get rendered.
+When an element is not rendered because it's a part of a not-rendered subtree caused by `rendersubtree`, there are some actions in the page that might require the element (and its ancestors) to be rendered to work properly. If all of the element's ancestors' `rendersubtree` attributes contain `activatable` (or not set), then the user agent can *activate* the element. This will change all of the non-null `rendersubtree` value of all of its ancestors to the empty string - causing the element and its ancestors to get rendered.
 
 ```html
 <div id="focusable" rendersubtree="invisible activatable" tabindex=0>Focus me!</div>
@@ -74,9 +79,9 @@ When an element is not rendered because it's a part of a not-rendered subtree ca
 </script>
 ```
 
-Note that if any of the element's rendering ancestor is not activatable (the `rendersubtree` attribute contains `invisible` but not `activatable`) then the element is not activatable.
+Note that if any of the element's ancestor is not activatable (the `rendersubtree` is not null but doesn't contain `activatable`) then the element is not activatable.
 
-Actions that will trigger activation to an element and all of its rendering ancestors:
+Actions that will trigger activation to an element and all of its ancestors, are listed below:
 
 - `focus()` is called on the element
 - `scrollIntoView()` is called on the element
