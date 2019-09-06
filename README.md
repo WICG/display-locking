@@ -65,7 +65,7 @@ The div's subtree does not render to the screen, but when updateRendering is cal
 
 ## Element activation by the user agent
 
-When an element is not rendered because it's a part of a not-rendered subtree caused by `rendersubtree`, there are some actions in the page that might require the element (and its ancestors) to be rendered to work properly. If all of the element's rendering ancestor whose `rendersubtree` attribute contains `invisible` also contains `activatable`, then the user agent can *activate* the element. This will change of the non-null rendersubtree value of all of its rendering ancestors to the empty string - causing the element and its ancestors to get rendered.
+When an element is not rendered because it's a part of a not-rendered subtree caused by `rendersubtree`, there are some actions in the page that might require the element (and its ancestors) to be rendered to work properly. If all of the element's rendering ancestors' `rendersubtree` attributes contain contain `activatable`, then the user agent can *activate* the element. This will change of the non-null rendersubtree value of all of its rendering ancestors to the empty string - causing the element and its ancestors to get rendered.
 
 ```html
 <div id="focusable" rendersubtree="invisible activatable" tabindex=0>Focus me!</div>
