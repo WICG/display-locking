@@ -1,3 +1,6 @@
+# **NOTE: this is a deprecated and old explainer. See [here](README.md) instead for the current explainer**
+
+
 # Display Locking
 
 ## Introduction
