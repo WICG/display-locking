@@ -7,6 +7,8 @@ Currently, such intrinsic sizes are determined implicitly from other factors. Fo
 
 This proposal exposes these intrinsic sizes explicitly. (In that sense, one motivation for the `content-size` property could be [explaining](https://extensiblewebmanifesto.org) these algorithms. One practical application could be its use in testing their behavior.
 
+`contain:size` has an effect similar to `content-size`, in that it detaches constraints on the layout outside of the element from subtree elements; in place of a specified size for the subtree content's intrinsic sizing, it uses a intrinsic width and height of 0. In the [spec](https://drafts.csswg.org/css-contain/#containment-size), this is due to the sentence that says, "when calculating the size of the containing box, it must be treated as having no contents". `content-size` can also be thought of as extending `contain:size` to change to passing a non-zero intrinsic width or height.
+
 ## Application to non-rendered subtrees
 
 A more compelling and direct motivation for exposing `content-size` is to use it in cases when the layout of a subtree is *not available*. The layout can be unavailable in situations such as:
