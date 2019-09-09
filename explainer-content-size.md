@@ -21,7 +21,7 @@ Adding `contain: size layout; content-size: XXpx YYpx` to blocks of DOM that are
 
 Another motivating use-case for `content-size` is to use it in cases when the layout of a subtree is *not available*. The layout can be unavailable in situations such as:
 * The subtree is not yet fully loaded from the network, or rendered into DOM by a custom element or framework
-* The User Agent has skipped rendering for the subtree as an optimization
+* The User Agent has temporarily skipped rendering for the subtree as an optimization
 
 Note that these two cases can be seen as the same use case, if the concept of "rendering" is extended to include asynchronous, scheduled factors such as the network, a DOM rendering framework [1], a [custom element](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements), dynamic replaced elements such as embedded SVG documents, images and videos. In other words, the [rendering event loop](https://github.com/chrishtr/rendering/blob/master/rendering-event-loop.md) is only one source of potential asynchrony in an expanded concept of rendering.
 
