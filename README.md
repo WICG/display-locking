@@ -15,7 +15,7 @@ The following use-cases motivate this work:
 
 ## Motivation & background
 
-Faster web page loads and interactions directly improve the user experience of the web. On the other hand, web sites each year are larger and more complex, in part because they support more and more use cases, and contain more information. This leads to pages with a lot of DOM, and since the DOM is presently monolithic, it inherently takes more time to render on the same machine.
+Faster web page loads and interactions directly improve the user experience of the web. On the other hand, web sites each year are larger and more complex than the last, in part because they support more and more use cases, and contain more information. This leads to pages with a lot of DOM, and since the DOM presently renders atomically, it inherently takes more and more time to render on the same machine.
 
 For these reasons, web developers need ways to reduce loading and rendering time of web apps that have a lot of DOM. Two common techniques are to mark non-visible DOM as "invisible" [\[3\]](#foot-notes), or to use virtualization [\[4\]](#foot-notes). Browser implementors also want to reduce loading and rendering time of web apps. Common techniques to do so include adding caching of rendering state [\[5\]](#foot-notes), and avoiding rendering work [\[6\]](#foot-notes) for content that is not visible.
 
