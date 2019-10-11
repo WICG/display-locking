@@ -10,6 +10,7 @@ with possibly out-of-date explainers.
 ## Revision log
 
 2019-10-10: Initial version.
+2019-10-11: s/skip-visibility-activation/skip-viewport-activation/
 
 ## Terminology
 
@@ -22,7 +23,7 @@ with possibly out-of-date explainers.
     element is currently locked (i.e. invisible)
   * `rendersubtree="invisible skip-activation"`: this refers to the
     fact that the UA cannot activate this element (see Activation)
-  * `rendersubtree="invisible skip-visibility-activation"`: this refers to the
+  * `rendersubtree="invisible skip-viewport-activation"`: this refers to the
     fact that the UA can only activate the element on "user action" (see User
     Activation; Activation).
 * **Activation / Activatability**: this refers to the notion that an element
@@ -33,8 +34,8 @@ with possibly out-of-date explainers.
   actions. Examples of this include find-in-page, scrollIntoView(), tab
   navigation. Notably, this does *not* include UA activation when the element is
   scrolled into view.
-* **Visibilty Activation**: this refers to activation caused by the element
-  entering the visible region of the page.
+* **Viewport Activation**: this refers to activation caused by the element
+  entering the visible region of the page (i.e. intersection with the viewport).
 * **content-size**: this refers to a complementary CSS feature called content-size,
   which allows the developer to specify a placeholder size while size
   containment is present (which `rendersubtree=invisible` puts into place).
@@ -43,7 +44,7 @@ with possibly out-of-date explainers.
 
 * **Activation**: As of [this patch](https://chromium-review.googlesource.com/c/chromium/src/+/1853854),
   activation is the default behavior, which can be disabled with
-  `skip-activation` or `skip-visibility-activation`
+  `skip-activation` or `skip-viewport-activation`
 
 * **Containment**: The presence of the `rendersubtree` attribute forces
   `contain: layout style;` *in addition* to any other containment. If the
