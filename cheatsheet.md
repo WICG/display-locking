@@ -35,7 +35,7 @@ with possibly out-of-date explainers.
   scrolled into view.
 * **Visibilty Activation**: this refers to activation caused by the element
   entering the visible region of the page.
-* **content-size**: this refers to a complementary CSS features content-size
+* **content-size**: this refers to a complementary CSS feature called content-size,
   which allows the developer to specify a placeholder size while size
   containment is present (which `rendersubtree=invisible` puts into place).
 
