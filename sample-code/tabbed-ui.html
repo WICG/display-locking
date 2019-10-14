@@ -105,9 +105,9 @@ function initialize() {
       active_button.classList.replace("inactive", "active");
       active_content.classList.replace("inactive", "active");
     } else {
-      if (active_content.displayLock) {
+      if (active_content.renderSubtree) {
         content.classList.replace("inactive", "locked");
-        content.displayLock.acquire({ timeout: Infinity, activatable: true });
+        content.renderSubtree = "invisible";
       }
     }
   }  
@@ -120,11 +120,11 @@ function activate(button, content) {
   active_button = button;
   active_button.classList.replace("inactive", "active");
 
-  if (active_content.displayLock) {
-    active_content.displayLock.acquire({ timeout: Infinity, activatable: true });
+  if (active_content.renderSubtree) {
+    active_content.renderSubtree = "invisible";
     active_content.classList.replace("active", "locked");
     active_content = content;
-    active_content.displayLock.commit();
+    active_content.renderSubtree = "";
     active_content.classList.replace("locked", "active");
   } else {
     active_content.classList.replace("active", "inactive");
