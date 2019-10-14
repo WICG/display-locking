@@ -17,14 +17,14 @@ async function updateLockable() {
   element.id = "container";
   element.innerHTML = "Lorem ipsum."
 
-  element.displayLock && await element.displayLock.acquire();
+  element.renderSubtree = "invisible";
 
   // Attach the element.
   document.body.appendChild(element);
 
   // Update, which does co-operative updates. After that finishes, commit.
-  element.displayLock && element.displayLock.update().then(
-    () => { element.displayLock.commit(); });
+  element.updateRendering && element.updateRendering().then(
+    () => { element.renderSubtree = ""; });
 }
 
 window.onload = updateLockable;
