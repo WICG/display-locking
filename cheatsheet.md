@@ -44,7 +44,7 @@ with possibly out-of-date explainers.
 
 * **Activation**: As of [this patch](https://chromium-review.googlesource.com/c/chromium/src/+/1853854),
   activation is the default behavior, which can be disabled with
-  `skip-activation` or `skip-viewport-activation`
+  `skip-activation` or `skip-viewport-activation`. A `beforeactivate` event will be fired before showing the new content on-screen.
 
 * **Containment**: The presence of the `rendersubtree` attribute forces
   `contain: layout style;` *in addition* to any other containment. If the
