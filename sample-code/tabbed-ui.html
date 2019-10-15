@@ -91,9 +91,7 @@ function initialize() {
     button.addEventListener("click", (e) => {
       activate(button, content);
     });
-    console.log('init');
     content.addEventListener("beforeactivate", (e) => {
-      console.log(e);
       activate(button, content);
     });
     if (!active_button) {
@@ -104,7 +102,6 @@ function initialize() {
     } else {
       content.classList.replace("inactive", "locked");
       content.renderSubtree = "invisible skip-viewport-activation";
-      console.log(content.renderSubtree);
     }
   }  
 }
