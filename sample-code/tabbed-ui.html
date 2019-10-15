@@ -47,13 +47,8 @@
   left: 0;
   width: 100%;
   height: 100%;
-  contain: style layout;
   padding: 10px;
   overflow: auto;
-}
-.tab-contents.active {}
-.tab-contents.inactive {
-  visibility: hidden;
 }
 .locked {
   z-index: -1;
@@ -96,7 +91,9 @@ function initialize() {
     button.addEventListener("click", (e) => {
       activate(button, content);
     });
+    console.log('init');
     content.addEventListener("beforeactivate", (e) => {
+      console.log(e);
       activate(button, content);
     });
     if (!active_button) {
@@ -105,10 +102,9 @@ function initialize() {
       active_button.classList.replace("inactive", "active");
       active_content.classList.replace("inactive", "active");
     } else {
-      if (active_content.renderSubtree) {
-        content.classList.replace("inactive", "locked");
-        content.renderSubtree = "invisible";
-      }
+      content.classList.replace("inactive", "locked");
+      content.renderSubtree = "invisible skip-viewport-activation";
+      console.log(content.renderSubtree);
     }
   }  
 }
@@ -120,17 +116,10 @@ function activate(button, content) {
   active_button = button;
   active_button.classList.replace("inactive", "active");
 
-  if (active_content.renderSubtree) {
-    active_content.renderSubtree = "invisible";
-    active_content.classList.replace("active", "locked");
-    active_content = content;
-    active_content.renderSubtree = "";
-    active_content.classList.replace("locked", "active");
-  } else {
-    active_content.classList.replace("active", "inactive");
-    active_content = content;
-    active_content.classList.replace("inactive", "active");
-  }
+  active_content.renderSubtree = "invisible skip-viewport-activation";
+  active_content.classList.replace("active", "locked");
+  active_content = content;
+  active_content.classList.replace("locked", "active");
 }
 
 initialize();
