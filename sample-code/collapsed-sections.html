@@ -1,0 +1,127 @@
+<!doctype HTML>
+
+<style>
+.section {
+  width: 350px;
+  padding-left: 30px;
+  padding-right: 30px;
+  border: 1px solid grey;
+}
+.heading {
+  font-size: 16pt;
+  width: max-content;
+}
+.heading::before {
+  content: "*";
+  cursor: auto;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 50%;
+  background: lightgrey;
+}
+.heading.collapsed::before {
+  display: inline-block;
+  content: "v";
+  cursor: pointer;
+}
+.heading.expanded::before {
+  display: inline-block;
+  content: "^";
+  cursor: pointer;
+}
+.section {
+  overflow: hidden;
+}
+#warning {
+  background: sandybrown;
+}
+</style>
+
+<h1>Collapsed Sections Example</h1>
+
+<div class=heading>Summary</div>
+<div class=section>
+<p>
+In this examples, there is content that is considered <em>above the fold</em>, such as this text.
+It is visible on load and appears near the top of the page. It cannot be collapsed, as indicated
+by the asterisk next to the section title. Additional information is provided
+in sections located below. These sections are collapsed by default. They do not incur rendering
+cost since they are display-locked. However, they are still searchable via user interactions. For
+example, they are expandable by clicking the button next to the section title. They are also
+expandable via find-in-page.
+</p>
+<p>
+You can try this out by using find in page to find "github", for example.
+</p>
+<p id=warning style="display: none">
+Note that <code>rendersubtree</code> does not seem to be supported by your browser. This means
+that you will not be able to use find-in-page to navigate into collapsed sections.
+</p>
+</div>
+<div class="heading collapsed">Details</div>
+<div class="section collapsed" rendersubtree="invisible skip-viewport-activation">
+<p>
+Here you can find some details which are <em>below the fold</em>. They appear in a
+collapsed section, meaning that they are not immediately visible on page load.
+</p>
+<p>
+The collapsed sections have a <code>rendersubtree</code> attribute set
+to <code>invisible</code>. This means that it induces size containment. Since there is
+no competing sizing information, the section collapses "automatically". This behavior can be
+changed via attribute selectors.
+</div>
+
+<div class="heading collapsed">More information</div>
+<div class="section collapsed" rendersubtree="invisible skip-viewport-activation">
+<p>
+Here you can find additional information. Since you are reading this anyway, here you can
+find information on <code>rendersubtree</code> attribute:
+<a href="www.github.com/WICG/display-locking">github page</a>.
+</p>
+</div>
+<script>
+
+function renderSubtreeSupported() {
+  const test = document.createElement("div");
+  test.setAttribute("renderSubtree", "invisible");
+  return test.renderSubtree == "invisible";
+}
+
+function handleEvent(heading, section) {
+  if (heading.classList.contains("collapsed")) {
+    heading.classList.replace("collapsed", "expanded");
+    section.classList.replace("collapsed", "expanded");
+    section.renderSubtree = "";
+  } else {
+    heading.classList.replace("expanded", "collapsed");
+    section.classList.replace("expanded", "collapsed");
+    section.renderSubtree = "invisible skip-viewport-activation";
+  }
+}
+
+function init() {
+  const sections = document.getElementsByClassName("heading collapsed");
+  for (let i = 0; i < sections.length; ++i) {
+    const heading = sections[i];
+    const section = heading.nextElementSibling;
+
+    heading.addEventListener("click", (e) => {
+      handleEvent(heading, section);
+    });
+
+    section.addEventListener("beforeactivate", (e) => {
+      handleEvent(heading, section);
+    });
+  }
+}
+
+onload = () => {
+  if (!renderSubtreeSupported()) {
+    document.getElementById("warning").style.display = "block";
+    // How can we detect from CSS that the attribute is not supported?
+    document.styleSheets[0].insertRule(".section.collapsed > * { display: none; }", 0);
+  }
+  init();
+}
+
+</script>
