@@ -103,6 +103,8 @@ Actions that will trigger activation to an element and all of its ancestors, are
 
 Actions which cause the element to intersect the visibile viewport will also cause activation if neither `skip-viewport-activation` nor `skip-activation` is specified.
 
+Activation fires a new `beforeactivate` event before the rendering steps that draw updated content to the screen.
+
 ## Alternatives considered
 
 The `display:none` CSS property causes content subtrees not to render. However, there is no mechanism for User Agent features to cause these subtrees to render.
