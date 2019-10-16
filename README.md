@@ -40,7 +40,7 @@ Three new features are proposed:
 ## Example usage
 
 ```html
-<div id=target rendersubtree="invisible" style="content-size: 200px 200px">...content...</div>
+<div id=target rendersubtree="invisible skip-activation" style="content-size: 200px 200px">...content...</div>
 <script>
 target.setAttribute('rendersubtree', ''); // makes #target render
 </script>
@@ -48,9 +48,17 @@ target.setAttribute('rendersubtree', ''); // makes #target render
 This div's subtree is not rendered (but the div itself is; this allows the div to show fallback or "loading..." affordances), and there is no need for the browser to do any rendering lifecycle phases for the subtree of the div. The div lays out as if it had a single 200px by 200px child, which serves as a placeholder in order to take up the approximate layout size of the div's subtree. This allows page layout to be approximately correct, and preserves layout overflow size for scrolling. The browser may *not* render the content, even via a user-agent feature.
 
 ```html
-<div rendersubtree="invisible activatable"  style="content-size: 200px 200px">...content</div>
+<div rendersubtree="invisible skip-viewport-activation"  style="content-size: 200px 200px">...content</div>
 ```
 Same as above, except that user-agent features may change the `rendersubtree` attribute to the empty string, causing the div's subtree to get rendered. More on this on ["Element activation by the user agent"](https://github.com/rakina/display-locking#element-activation-by-the-user-agent)
+
+```html
+<div id=target rendersubtree="invisible" style="content-size: 200px 200px">...content...</div>
+<script>
+target.setAttribute('rendersubtree', ''); // makes #target render
+</script>
+```
+Same as above, except that user-agent will also activate when content enters vthe visible viewport.
 
 ```html
 <div id=target rendersubtree="invisible holdupgrades holdloads" style="content-size: 200px 200px">...content...</div>
@@ -93,7 +101,7 @@ Actions that will trigger activation to an element and all of its ancestors, are
 - Selections includes part of the element
 - Accessibility focus, press, selections, etc.
 
-Note that normal page scrolling to the element (not through explicitly calling `scrollIntoView()` on the element) does not trigger activation.
+Actions which cause the element to intersect the visibile viewport will also cause activation if neither `skip-viewport-activation` nor `skip-activation` is specified.
 
 ## Alternatives considered
 
