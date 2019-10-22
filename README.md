@@ -58,7 +58,7 @@ Same as above, except that user-agent features may change the `rendersubtree` at
 target.setAttribute('rendersubtree', ''); // makes #target render
 </script>
 ```
-Same as above, except that user-agent will also activate when content enters vthe visible viewport.
+Same as above, except that user-agent will also activate when content enters the visible viewport.
 
 ```html
 <div id=target rendersubtree="invisible holdupgrades holdloads" style="content-size: 200px 200px">...content...</div>
