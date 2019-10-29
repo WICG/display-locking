@@ -26,9 +26,17 @@
   height: 200px;
 
 }
+@supports (intrinsic-size: 1px 2px) {
+  .support-note {
+    display: none;
+  }
+}
 </style>
 
-<h1>Note: These examples only work with a browser that supports contain-size. Chrome Canary supports it if you turn on experimental features, via navigation to chrome://flags/#enable-experimental-web-platform-features.</h1>
+<h1 class=support-note>
+  Note: These examples only work with a browser that supports contain-size. Chrome Canary supports it if you turn on
+  experimental features, via navigation to chrome://flags/#enable-experimental-web-platform-features.
+</h1>
 
 
 <p>
@@ -43,11 +51,11 @@ Flexbox example: the inner elements' sizing affect the flexing of the root.
 </div>
 
 <p>
-With content-size to simulate inner.
+With intrinsic-size to simulate inner.
 <div class=root>
-  <div class=intermediate style="content-size: 200px 200px; contain: size;">
+  <div class=intermediate style="intrinsic-size: 200px 200px">
   </div>
-  <div class="intermediate intermediate2" style="content-size: 100px 200px; contain: size;">
+  <div class="intermediate intermediate2" style="intrinsic-size: 100px 200px">
   
   </div>
 </div>
