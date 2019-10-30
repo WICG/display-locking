@@ -52,7 +52,7 @@ of rendering costs, in order to improve web site performance.
 Another motivating use-case for `intrinsic-size` is to use it in cases when the
 layout of a subtree is *not available*. The layout can be unavailable in
 situations such as:
-* The subtree is not yet fully loaded from the network, or rendered into DOM by
+* The subtree is not yet fully loaded from the network, or rendered into DOM
 * a custom element or framework The User Agent has temporarily skipped rendering
   for the subtree as an optimization
 
