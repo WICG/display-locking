@@ -12,10 +12,17 @@
   width: 300px;
   height: 200px;
 }
+@supports (intrinsic-size: 1px 2px) {
+  .support-note {
+    display: none;
+  }
+}
 </style>
 
-<h1>Note: These examples only work with a browser that supports contain-size. Chrome Canary supports it if you turn on
-    experimental features, via navigation to chrome://flags/#enable-experimental-web-platform-features.</h1>
+<h1 class=support-note>
+  Note: These examples only work with a browser that supports intrinsic-size. Chrome Canary supports it if you turn on
+  experimental features, via navigation to chrome://flags/#enable-experimental-web-platform-features.
+</h1>
 
  <p>
 Example #1: intermediate is constrained by root's width to be narrower than inner.
@@ -26,23 +33,23 @@ Example #1: intermediate is constrained by root's width to be narrower than inne
 </div>
 
 <p>
-With content-size to simulate subtree of inner.
+With intrinsic-size to simulate subtree of inner.
 <div class=root>
-  <div class=intermediate style="content-size: 300px 200px; contain: size">
+  <div class=intermediate style="intrinsic-size: 300px 200px">
   </div>
 </div>
 
 <p>
 With width/height to simulate subtree of inner. Notice layout result is not as desired.
 <div class=root>
-  <div class=intermediate style="width: 300px; height: 200px;  contain: size">
+  <div class=intermediate style="width: 300px; height: 200px">
   </div>
 </div>
 
 <p>
 With min-width/min-height to simulate subtree of inner. Notice layout result is not as desired.
 <div class=root>
-  <div class=intermediate style="min-width: 300px; min-height: 200px;  contain: size">
+  <div class=intermediate style="min-width: 300px; min-height: 200px">
   </div>
 </div>
 
@@ -59,8 +66,8 @@ Example #2: outer div is not constrained to the width of the inner one.
 </div>
 
 <p>
-With content-size to simulate subtree of inner.
-<div class=outer style="content-size: 300px 200px; contain: size">
+With intrinsic-size to simulate subtree of inner.
+<div class=outer style="intrinsic-size: 300px 200px">
 </div>
 
 <p>
@@ -70,5 +77,5 @@ With width/min-height to simulate subtree of inner. Result has wrong width.
 
 <p>
 With min-width/min-height to simulate subtree of inner. In this case, the correct result is present.
-<div class=outer style="min-width: 300px; min-height: 200px; contain: size">
+<div class=outer style="min-width: 300px; min-height: 200px">
 </div>
