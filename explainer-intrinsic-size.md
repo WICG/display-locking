@@ -53,7 +53,7 @@ Another motivating use-case for `intrinsic-size` is to use it in cases when the
 layout of a subtree is *not available*. The layout can be unavailable in
 situations such as:
 * The subtree is not yet fully loaded from the network, or rendered into DOM
-* a custom element or framework The User Agent has temporarily skipped rendering
+* a custom element, framework or the User Agent has temporarily skipped rendering
   for the subtree as an optimization
 
 Note that these two cases can be seen as the same use case, if the concept of
