@@ -25,6 +25,11 @@ with possibly out-of-date explainers.
       tab-navigation to viewport activation, rename content-size to
       intrinsic-size</td>
 </tr>
+<tr>
+  <td>2019-11-18</td>
+  <td>Specify a 50% margin on viewport activation, update intrinsic-size status
+      (behind a flag), update activation status (default)</td>
+</tr>
 </table>
 
 ## Terminology
@@ -84,11 +89,17 @@ property is set to `""`. Note that `skip-activation` implies
   selected as well (disabled by `skip-viewport-activation`)
 * focus(): when focus() is called on an element, its locked ancestors are
   activated (disabled by `skip-activation`)
+
 ## Current status (Chromium)
 
-* **Activation**: As of [this patch](https://chromium-review.googlesource.com/c/chromium/src/+/1853854),
-  activation is the default behavior, which can be disabled with
-  `skip-activation` or `skip-viewport-activation`. A `beforeactivate` event will be fired before showing the new content on-screen.
+* **Activation**: Activation is the default behavior, which can be disabled with
+  `skip-activation` or `skip-viewport-activation`. A `beforeactivate` event will
+  be fired before showing the new content on-screen.
+
+* **Viewport Activation**: When considering activation due to viewport
+  intersection, the code considers a 50% viewport margin on the implicit root.
+  This means that if the element is clipped by the viewport, and it's within 50%
+  of the viewport width/height  away from the closest edge, it will be activated.
 
 * **Containment**: The presence of the `rendersubtree` attribute forces
   `contain: layout style;` *in addition* to any other containment. If the
@@ -97,4 +108,5 @@ property is set to `""`. Note that `skip-activation` implies
 
 * **Intent to Experiment** proposed and approved ([thread](https://groups.google.com/a/chromium.org/d/msg/blink-dev/-6Cp2osHn50/VZhPCrXHDAAJ))
 
-* **`intrinsic-size`** is in process of being implemented [patch](https://chromium-review.googlesource.com/c/chromium/src/+/1867043)
+* **`intrinsic-size`** is implemented, and is available behind the
+  CSSIntrinsicSize flag.
