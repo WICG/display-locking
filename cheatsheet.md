@@ -94,7 +94,7 @@ property is set to `""`. Note that `skip-activation` implies
 
 * **Activation**: Activation is the default behavior, which can be disabled with
   `skip-activation` or `skip-viewport-activation`. A `beforeactivate` event will
-  be fired before showing the new content on-screen.
+  be fired at animation frame timing (as of [this patch](https://chromium-review.googlesource.com/c/chromium/src/+/1924835)).
 
 * **Viewport Activation**: When considering activation due to viewport
   intersection, the code considers a 50% viewport margin on the implicit root.
