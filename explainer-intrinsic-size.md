@@ -74,10 +74,10 @@ renders.
 
 ## Working examples of `intrinsic-size`
 
-[Here](sample-code/intrinsic-size-block-flow-examples.html)
+[Here](https://wicg.github.io/display-locking/sample-code/intrinsic-size-block-flow-examples.html)
 is a page demonstrating some simple block-flow layout use-cases.
 
-[Here](sample-code/intrinsic-size-flexbox-examples.html)
+[Here](https://wicg.github.io/display-locking/sample-code/intrinsic-size-flexbox-examples.html)
 is a page demonstrating a basic flexbox use-case.
 
 ## Alternatives considered
