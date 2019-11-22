@@ -1,0 +1,750 @@
+<!doctype html>
+
+<!-- this is needed to make the page look nice in the devtools
+     device emulator 
+-->
+<meta name="viewport" content="width=device-width">
+<style>
+/* render-subtree support for find-in-page ability */
+@supports (render-subtree: invisible) {
+  .hidden {
+    render-subtree: invisible skip-viewport-activation;
+    /* Note that height here is optional. This is because the div which
+       has this style is unsized by any other style, or by flex-like
+       containers. So it will be 0 height anyway. However, in cases where
+       the render-subtree element might be sized, we need to either
+       specify width/height or intrinsic-size depending on the desired look.
+    */
+    height: 0;
+  }
+} 
+
+/* if we don't have render-subtree, fallback to display none */
+@supports not (render-subtree: invisible) {
+  .hidden {
+    display: none;
+  }
+}
+
+/* the rest of the styles here are uninteresting for render-subtree,
+   and only make the page Wikipedia-like in appearance
+*/
+body {
+  color: #222;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Lato, Helvetica, Arial, sans-serif;
+  font-stretch: 100%;
+  line-height: 1.65;
+}
+
+div,body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+#page {
+  margin: 0 16px;
+}
+.heading {
+  margin-bottom: 12px;
+  font-size: 16px;
+  border-bottom: 1px solid #eaecf0;
+}
+.main-heading {
+  border-bottom: 1px solid #c8ccd1;
+}
+h1 {
+  line-height: 1.3;
+  font-family: 'Linux Libertine', 'Georgia', 'Times', serif;
+  font-size: 1.7em;
+  font-weight: 400;
+}
+h2 {
+  display: table;
+  vertical-align: baseline;
+  margin: 0;
+  border-bottom: 1px solid #eaecf0;
+  margin-bottom: 0.5em;
+  position: relative;
+  clear: left;
+  cursor: pointer;
+  padding: 0.5em 0;
+  line-height: 1.3;
+  font-family: 'Linux Libertine', 'Georgia', 'Times', serif;
+  font-size: 1.5em;
+  font-weight: 400;
+  width: 100%;
+}
+h3 {
+  margin: 0;
+  padding: 0.5em 0;
+}
+.note {
+  padding: 5px 7px;
+  color: #54595d;
+  font-size: 0.8125em;
+  background-color: #f8f9fa;
+  margin-bottom: 1px;
+  overflow: hidden;
+}
+table {
+  font-size: 90%;
+  position: relative;
+  border: 1px solid #eaecf0;
+  margin-bottom: 2em;
+  background-color: #f8f9fa;
+  display: flex;
+  flex: 1 1 100%;
+  flex-flow: column nowrap;
+  margin-left: 0;
+  margin-right: 0;
+  border-collapse: collapse;
+}
+caption {
+  display: flex;
+  flex-flow: column nowrap;
+  padding: 10px 10px 0;
+  text-align: center;
+  font-weight: bold;
+}
+tr {
+  min-width: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  border-spacing: 2px;
+}
+th {
+  flex: 1 0;
+  padding: 7px 10px;
+  border: 0;
+  border-bottom: 1px solid #eaecf0;
+}
+td {
+  flex: 1 0;
+  padding: 7px 10px;
+  border: 0;
+  border-bottom: 1px solid #eaecf0;
+}
+sup {
+  font-size: 0.75em;
+  line-height: 1;
+  vertical-align: super;
+}
+.arrow {
+  margin-left: -0.5625em;
+  padding: 0.5625em;
+  width: 1em;
+  height: 1em;
+  line-height: 1em;
+  border-radius: 2px;
+  color: transparent;
+  font-size: initial;
+  position: relative;
+  display: inline-block;
+  box-sizing: content-box !important;
+  background-color: transparent;
+}
+.arrow.up::before {
+  transform: scaleY(-1);
+}
+.arrow.down::before {
+  transform: scaleY(1);
+}
+.arrow::before {
+  background-image: linear-gradient(transparent,transparent),url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2220%22 height=%2220%22 viewBox=%220 0 20 20%22%3E %3Ctitle%3E expand %3C/title%3E %3Cpath d=%22M17.5 4.75l-7.5 7.5-7.5-7.5L1 6.25l9 9 9-9z%22/%3E %3C/svg%3E");
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 1em;
+  min-height: 1em;
+  background-size: 1em 1em;
+  background-position: center;
+}
+span {
+  width: 100%;
+  display: table-cell;
+  vertical-align: middle;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  cursor: pointer;
+}
+</style>
+
+<!-- most of the page is just hardcoded chunks of Wikipedia's Wikipedia page
+     comment below are on render-subtree specific bits
+-->
+<div id=page>
+  <h1>Note that this is a demo page of direct integration of render-subtree property with Wikipedia.</h1>
+  <br>
+  <br>
+  <div class="main-heading">
+    <div class="heading">
+      <h1>Wikipedia</h1>
+    </div>
+  </div>
+  <div class=note>
+    This article is about the online encyclopedia. For Wikipedia's home page,
+    see Main Page. For Wikipedia's visitor introduction, see Wikimedia:About.
+    For other uses, see Wikipedia (disambiguation).
+  </div>
+  <div class=note>
+    "The Free Encyclopedia" redirects here. For other encyclopedias, see Lists
+    of encyclopedias.
+  </div>
+  <p>
+    <b>Wikipedia</b> (/ˌwɪkɪˈpiːdiə/ (listen) <i>wik-ih-PEE-dee-ə</i> or /ˌwɪkiˈpiːdiə/
+    (listen) <i>wik-ee-PEE-dee-ə</i>) is a multilingual online encyclopedia created and
+    maintained as an open collaboration project<sup>[3]</sup> by a community of volunteer
+    editors using a wiki-based editing system.<sup>[4]</sup> It is the largest and most
+    popular general reference work on the World Wide Web,<sup>[5][6][7]</sup> and is one of
+    the most popular websites ranked by Alexa as of October 2019.<sup>[8]</sup> It features
+    exclusively free content and no commercial ads, and is owned and supported
+    by the Wikimedia Foundation, a non-profit organization funded primarily
+    through donations.<sup>[9][10][11][12]</sup>
+  </p>
+  <table style="max-width: 500px">
+    <caption>Wikipedia</caption>
+    <tr>
+      <th>
+        <div style="padding: 0.1em 0; line-height: 1.2em; text-align: left">
+          Type of site
+        </div>
+      </th>
+      <td>
+        Online encyclopedia
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <div style="padding: 0.1em 0; line-height: 1.2em; text-align: left">
+          Available in
+        </div>
+      </th>
+      <td>
+        307 languages
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <div style="padding: 0.1em 0; line-height: 1.2em; text-align: left">
+          Owner
+        </div>
+      </th>
+      <td>
+        Wikimedia Foundation
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <div style="padding: 0.1em 0; line-height: 1.2em; text-align: left">
+          Created by
+        </div>
+      </th>
+      <td>
+        Jimmy Wales<br>
+        Larry Sanger<sup>[1]</sup>
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <div style="padding: 0.1em 0; line-height: 1.2em; text-align: left">
+          Website
+        </div>
+      </th>
+      <td>
+        www.wikipedia.org
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <div style="padding: 0.1em 0; line-height: 1.2em; text-align: left">
+          Alexa rank
+        </div>
+      </th>
+      <td>
+        9 (Global, November 2019)
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <div style="padding: 0.1em 0; line-height: 1.2em; text-align: left">
+          Commercial
+        </div>
+      </th>
+      <td>
+        No
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <div style="padding: 0.1em 0; line-height: 1.2em; text-align: left">
+          Registration
+        </div>
+      </th>
+      <td>
+        Optional<sup>[note 1]</sup>
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <div style="padding: 0.1em 0; line-height: 1.2em; text-align: left">
+          Users
+        </div>
+      </th>
+      <td>
+        &gt;313,871 active users<sup>[note 2]</sup> and &gt;85,534,289
+        registered users 1,145 administrators (English)
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <div style="padding: 0.1em 0; line-height: 1.2em; text-align: left">
+          Launched
+        </div>
+      </th>
+      <td>
+        January 15, 2001; 18 years ago
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <div style="padding: 0.1em 0; line-height: 1.2em; text-align: left">
+          Current status
+        </div>
+      </th>
+      <td>
+        Active
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <div style="padding: 0.1em 0; line-height: 1.2em; text-align: left">
+          Content license
+        </div>
+      </th>
+      <td>
+        CC Attribution / Share-Alike 3.0<br>
+        Most text is also dual-licensed under GFDL; media licensing varies.
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <div style="padding: 0.1em 0; line-height: 1.2em; text-align: left">
+          Written in
+        </div>
+      </th>
+      <td>
+        LAMP platform<sup>[2]</sup>
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <div style="padding: 0.1em 0; line-height: 1.2em; text-align: left">
+          OCLC number
+        </div>
+      </th>
+      <td>
+        52075003
+      </td>
+    </tr>
+  </table>
+  <p>
+    Wikipedia was launched on January 15, 2001, by Jimmy Wales and Larry
+    Sanger.<sup>[13]</sup> Sanger coined its name,<sup>[14][15]</sup> as a portmanteau of "wiki"
+    (the Hawaiian word for "quick"<sup>[16]</sup>) and "encyclopedia". While it was
+    Initially an English-language encyclopedia, versions in other languages
+    were quickly developed. With at least 5,972,764 articles,<sup>[note 3]</sup> the
+    English Wikipedia is the largest of the more than 290 Wikipedia
+    encyclopedias. Overall, Wikipedia comprises more than 40 million
+    articles in 301 different languages<sup>[17]</sup> and by February 2014 it had
+    reached 18 billion page views and nearly 500 million unique visitors
+    per month.<sup>[18]</sup>
+  </p>
+  <p>
+    In 2005, <i>Nature</i> published a peer review comparing 42 hard science
+    articles from <i>Encyclopædia Britannica</i> and Wikipedia and found that
+    Wikipedia's level of accuracy approached that of <i>Britannica</i>,<sup>[19]</sup>
+    although critics suggested that it might not have fared so well in a similar
+    study of a random sampling of all articles or one focused on social science
+    or contentious social issues.<sup>[20][21]</sup> The following year,
+    <i>Time</i> magazine stated that the open-door policy of allowing anyone
+    to edit had made Wikipedia the biggest and possibly the best encyclopedia
+    in the world, and was a testament to the vision of Jimmy Wales.<sup>[22]</sup>
+  </p>
+  <p>
+    Wikipedia has been criticized for exhibiting systemic bias, for presenting
+    a mixture of "truth, half truth, and some falsehoods",<sup>[23]</sup> and
+    for being subject to manipulation and spin in controversial topics.<sup>[24]</sup>
+    In addition, Wikipedia has gender bias, particularly on its English-language
+    site, where the dominant majority of editors are male. However, Edit-a-thons
+    have been held to encourage female editors and increase the coverage of
+    women's topics.<sup>[25][26]</sup> Facebook announced that by 2017 it would
+    help readers detect fake news by suggesting links to related Wikipedia
+    articles. YouTube announced a similar plan in 2018.<sup>[27]</sup>
+  </p>
+  <!-- note the onclick handler is toggle(n) where n is the section number -->
+  <h2 id="section_1" onclick="toggle(1)">
+    <div class="arrow down"></div>
+    <span>History</span>
+  </h2>
+  <!-- we add a onrendersubtreeactivation handler with exactly the same handler
+       as the onclick for the section above.
+  -->
+  <div id="content_1" class="hidden" onrendersubtreeactivation="toggle(1)">
+    <div class=note>
+      Main article: History of Wikipedia
+    </div>
+    <h3>Nupedia</h3>
+    <div class=note>
+      Main article: Nupedia
+    </div>
+    <p>
+      Other collaborative online encyclopedias were attempted before Wikipedia,
+      but none were as successful.<sup>[28]</sup> Wikipedia began as a
+      complementary project for Nupedia, a free online English-language encyclopedia
+      project whose articles were written by experts and reviewed under a formal
+      process.<sup>[29]</sup> It was founded on March 9, 2000, under the ownership
+      of Bomis, a web portal company. Its main figures were Bomis CEO Jimmy Wales
+      and Larry Sanger, editor-in-chief for Nupedia and later Wikipedia.<sup>[30][31]</sup>
+      Nupedia was initially licensed under its own Nupedia Open Content License,
+      but even before Wikipedia was founded, Nupedia switched to the GNU Free
+      Documentation License at the urging of Richard Stallman.<sup>[32]</sup> Wales
+      is credited with defining the goal of making a publicly editable encyclopedia,
+      <sup>[33][34]</sup> while Sanger is credited with the strategy of using a wiki
+      to reach that goal.<sup>[35]</sup> On January 10, 2001, Sanger proposed on the
+      Nupedia mailing list to create a wiki as a "feeder" project for Nupedia.<sup>[36]</sup>
+    </p>
+    <h3>Launch and early growth</h3>
+    <p>
+      The domains wikipedia.com and wikipedia.org were registered on January
+      12, 2001<sup>[37]</sup> and January 13, 2001<sup>[38]</sup>
+      respectively, and Wikipedia was launched on January 15,
+      2001,<sup>[29]</sup> as a single English-language edition at
+      www.wikipedia.com,<sup>[39]</sup> and announced by Sanger on the
+      Nupedia mailing list.<sup>[33]</sup> Wikipedia's policy of "neutral
+      point-of-view"<sup>[40]</sup> was codified in its first few months.
+      Otherwise, there were relatively few rules initially and Wikipedia
+      operated independently of Nupedia.<sup>[33]</sup> Originally, Bomis
+      intended to make Wikipedia a business for profit.<sup>[41]</sup>
+    </p>
+    <p>
+      Wikipedia gained early contributors from Nupedia, Slashdot postings,
+      and web search engine indexing. Language editions were also created,
+      with a total of 161 by the end of 2004.<sup>[42]</sup> Nupedia and
+      Wikipedia coexisted until the former's servers were taken down
+      permanently in 2003, and its text was incorporated into Wikipedia. The
+      English Wikipedia passed the mark of two million articles on September
+      9, 2007, making it the largest encyclopedia ever assembled, surpassing
+      the 1408 Yongle Encyclopedia, which had held the record for almost
+      600 years.<sup>[43]</sup>
+    </p>
+    <p>
+      Citing fears of commercial advertising and lack of control in
+      Wikipedia, users of the Spanish Wikipedia forked from Wikipedia to
+      create the Enciclopedia Libre in February 2002.<sup>[44]</sup> These
+      moves encouraged Wales to announce that Wikipedia would not display
+      advertisements, and to change Wikipedia's domain from wikipedia.com to
+      wikipedia.org.<sup>[45]</sup>
+    </p>
+    <p>
+      Though the English Wikipedia reached three million articles in August
+      2009, the growth of the edition, in terms of the numbers of new
+      articles and of contributors, appears to have peaked around early
+      2007.<sup>[46]</sup> Around 1,800 articles were added daily to the
+      encyclopedia in 2006; by 2013 that average was roughly
+      800.<sup>[47]</sup> A team at the Palo Alto Research Center attributed
+      this slowing of growth to the project's increasing exclusivity and
+      resistance to change.<sup>[48]</sup> Others suggest that the growth is
+      flattening naturally because articles that could be called
+      "low-hanging fruit"—topics that clearly merit an article—have already
+      been created and built up extensively.<sup>[49][50][51]</sup>
+    </p>
+    <p>
+      In November 2009, a researcher at the Rey Juan Carlos University in
+      Madrid found that the English Wikipedia had lost 49,000 editors during
+      the first three months of 2009; in comparison, the project lost only
+      4,900 editors during the same period in 2008.<sup>[52][53]</sup> The
+      Wall Street Journal cited the array of rules applied to editing and
+      disputes related to such content among the reasons for this
+      trend.<sup>[54]</sup> Wales disputed these claims in 2009, denying the
+      decline and questioning the methodology of the study.<sup>[55]</sup>
+      Two years later, in 2011, Wales acknowledged the presence of a slight
+      decline, noting a decrease from "a little more than 36,000 writers" in
+      June 2010 to 35,800 in June 2011. In the same interview, Wales also
+      claimed the number of editors was "stable and
+      sustainable".<sup>[56]</sup> A 2013 article titled "The Decline of
+      Wikipedia" in MIT's Technology Review questioned this claim. The
+      article revealed that since 2007, Wikipedia had lost a third of its
+      volunteer editors, and those still there have focused increasingly on
+      minutiae.<sup>[57]</sup> In July 2012, The Atlantic reported that the
+      number of administrators is also in decline.<sup>[58]</sup> In the
+      November 25, 2013, issue of New York magazine, Katherine Ward stated
+      "Wikipedia, the sixth-most-used website, is facing an internal
+      crisis".<sup>[59]</sup>
+    </p>
+    <h3>Milestones</h3>
+    <p>
+      In January 2007, Wikipedia entered for the first time the top-ten list
+      of the most popular websites in the US, according to comScore
+      Networks. With 42.9 million unique visitors, Wikipedia was ranked
+      number 9, surpassing The New York Times (#10) and Apple (#11). This
+      marked a significant increase over January 2006, when the rank was
+      number 33, with Wikipedia receiving around 18.3 million unique
+      visitors.<sup>[60]</sup> As of September 2019, Wikipedia has rank
+      9<sup>[8]</sup> among websites in terms of popularity according to
+      Alexa Internet. In 2014, it received 8 billion pageviews every
+      month.<sup>[61]</sup> On February 9, 2014, The New York Times reported
+      that Wikipedia has 18 billion page views and nearly 500 million unique
+      visitors a month, "according to the ratings firm
+      comScore."<sup>[18]</sup>
+    </p>
+    <p>
+      On January 18, 2012, the English Wikipedia participated in a series of
+      coordinated protests against two proposed laws in the United States
+      Congress—the Stop Online Piracy Act (SOPA) and the PROTECT IP Act
+      (PIPA)—by blacking out its pages for 24 hours.<sup>[62]</sup> More
+      than 162 million people viewed the blackout explanation page that
+      temporarily replaced Wikipedia content.<sup>[63][64]</sup>
+    </p>
+    <p>
+      Loveland and Reagle argue that, in process, Wikipedia follows a long
+      tradition of historical encyclopedias that accumulated improvements
+      piecemeal through "stigmergic accumulation".<sup>[65][66]</sup>
+    </p>
+    <p>
+      On January 20, 2014, Subodh Varma reporting for The Economic Times
+      indicated that not only had Wikipedia's growth stalled, but that it
+      "had lost nearly 10 per cent of its page views last year. There was a
+      decline of about 2 billion between December 2012 and December 2013.
+      Its most popular versions are leading the slide: page-views of the
+      English Wikipedia declined by 12 per cent, those of German version
+      slid by 17 per cent and the Japanese version lost 9 per
+      cent."<sup>[67]</sup> Varma added that, "While Wikipedia's managers
+      think that this could be due to errors in counting, other experts feel
+      that Google's Knowledge Graphs project launched last year may be
+      gobbling up Wikipedia users."<sup>[67]</sup> When contacted on this
+      matter, Clay Shirky, associate professor at New York University and
+      fellow at Harvard's Berkman Center for Internet and Security indicated
+      that he suspected much of the page view decline was due to Knowledge
+      Graphs, stating, "If you can get your question answered from the
+      search page, you don't need to click [any further]."<sup>[67]</sup>
+    </p>
+    <p>
+      By the end of December 2016, Wikipedia was ranked fifth in the most
+      popular websites globally.<sup>[68]</sup>
+    </p>
+    <p>
+      In January 2013, 274301 Wikipedia, an asteroid, was named after
+      Wikipedia; in October 2014, Wikipedia was honored with the Wikipedia
+      Monument; and, in July 2015, Wikipedia became available as 7,473 books
+      for $500,000. In 2019, a species of flowering plant was named Viola
+      wikipedia.<sup>[69]</sup>
+    </p>
+    <p>
+      In April 2019, an etched copy of Wikipedia is now on the Moon after
+      surviving a crash landing of Beresheet, a failed Israeli lunar lander,
+      according to experts.<sup>[70][71]</sup>
+    </p>
+    <p>
+      In June 2019, scientists reported that all 16 GB of Wikipedia have
+      been encoded into synthetic DNA.<sup>[72]</sup>
+    </p>
+    <p>
+      On November 17, 2019, Christina Koch made the first confirmed edit to
+      Wikipedia from space while aboard the International Space
+      Station.<sup>[73]</sup>
+    </p>
+  </div>
+  <!-- note the onclick handler is toggle(n) where n is the section number -->
+  <h2 id="section_2" onclick="toggle(2)">
+    <div class="arrow down"></div>
+    <span>Openness</span>
+  </h2>
+  <!-- we add a onrendersubtreeactivation handler with exactly the same handler
+       as the onclick for the section above.
+  -->
+  <div id="content_2" class="hidden" onrendersubtreeactivation="toggle(2)">
+    <p>
+      Unlike traditional encyclopedias, Wikipedia follows the
+      procrastination principle<sup>[note 4][75]</sup> regarding the
+      security of its content.<sup>[75]</sup> It started almost entirely
+      open—anyone could create articles, and any Wikipedia article could be
+      edited by any reader, even those who did not have a Wikipedia account.
+      Modifications to all articles would be published immediately. As a
+      result, any article could contain inaccuracies such as errors,
+      ideological biases, and nonsensical or irrelevant text.
+    </p>
+    <h3>Restrictions</h3>
+    <p>
+      Due to the increasing popularity of Wikipedia, some editions,
+      including the English version, have introduced editing restrictions in
+      some cases. For instance, on the English Wikipedia and some other
+      language editions, only registered users may create a new
+      article.<sup>[76]</sup> On the English Wikipedia, among others, some
+      particularly controversial, sensitive and/or vandalism-prone pages
+      have been protected to some degree.<sup>[77][78]</sup> A frequently
+      vandalized article can be semi-protected or extended confirmed
+      protected, meaning that only autoconfirmed or extended confirmed
+      editors are able to modify it.<sup>[79]</sup> A particularly
+      contentious article may be locked so that only administrators are able
+      to make changes.<sup>[80]</sup>
+    </p>
+    <p>
+      In certain cases, all editors are allowed to submit modifications, but
+      review is required for some editors, depending on certain conditions.
+      For example, the German Wikipedia maintains "stable versions" of
+      articles,<sup>[81]</sup> which have passed certain reviews. Following
+      protracted trials and community discussion, the English Wikipedia
+      introduced the "pending changes" system in December
+      2012.<sup>[82]</sup> Under this system, new and unregistered users'
+      edits to certain controversial or vandalism-prone articles are
+      reviewed by established users before they are
+      published.<sup>[83]</sup>
+    </p>
+    <h3>Review of changes</h3>
+    <p>
+      Although changes are not systematically reviewed, the software that
+      powers Wikipedia provides certain tools allowing anyone to review
+      changes made by others. The "History" page of each article links to
+      each revision.[note 5]<sup>[84]</sup> On most articles, anyone can
+      undo others' changes by clicking a link on the article's history page.
+      Anyone can view the latest changes to articles, and anyone may
+      maintain a "watchlist" of articles that interest them so they can be
+      notified of any changes. "New pages patrol" is a process whereby newly
+      created articles are checked for obvious problems.<sup>[85]</sup>
+    </p>
+    <p>
+      In 2003, economics PhD student Andrea Ciffolilli argued that the low
+      transaction costs of participating in a wiki create a catalyst for
+      collaborative development, and that features such as allowing easy
+      access to past versions of a page favor "creative construction" over
+      "creative destruction".<sup>[86]</sup>
+    </p>
+    <h3>Vandalism</h3>
+    <p>
+      Any change or edit that manipulates content in a way that purposefully
+      compromises the integrity of Wikipedia is considered vandalism. The
+      most common and obvious types of vandalism include additions of
+      obscenities and crude humor. Vandalism can also include advertising
+      and other types of spam.<sup>[87]</sup> Sometimes editors commit
+      vandalism by removing content or entirely blanking a given page. Less
+      common types of vandalism, such as the deliberate addition of
+      plausible but false information to an article can be more difficult to
+      detect. Vandals can introduce irrelevant formatting, modify page
+      semantics such as the page's title or categorization, manipulate the
+      underlying code of an article, or use images
+      disruptively.<sup>[88]</sup>
+    </p>
+    <p>
+      Obvious vandalism is generally easy to remove from Wikipedia articles;
+      the median time to detect and fix vandalism is a few
+      minutes.<sup>[89][90]</sup> However, some vandalism takes much longer
+      to repair.<sup>[91]</sup>
+    </p>
+    <p>
+      In the Seigenthaler biography incident, an anonymous editor introduced
+      false information into the biography of American political figure John
+      Seigenthaler in May 2005. Seigenthaler was falsely presented as a
+      suspect in the assassination of John F. Kennedy.<sup>[91]</sup> The
+      article remained uncorrected for four months.<sup>[91]</sup>
+      Seigenthaler, the founding editorial director of USA Today and founder
+      of the Freedom Forum First Amendment Center at Vanderbilt University,
+      called Wikipedia co-founder Jimmy Wales and asked whether he had any
+      way of knowing who contributed the misinformation. Wales replied that
+      he did not, although the perpetrator was eventually
+      traced.<sup>[92][93]</sup> After the incident, Seigenthaler described
+      Wikipedia as "a flawed and irresponsible research
+      tool".<sup>[91]</sup> This incident led to policy changes at
+      Wikipedia, specifically targeted at tightening up the verifiability of
+      biographical articles of living people.<sup>[94]</sup>
+    </p>
+    <h3>Edit warring</h3>
+    <p>
+      Wikipedians often have disputes regarding content, which may result in
+      repeatedly making opposite changes to an article, known as "edit
+      warring".<sup>[95][96]</sup> The process is a resource-consuming
+      scenario where no useful knowledge is added.<sup>[97]</sup> This
+      practice is also criticized as creating a competitive,<sup>[98]</sup>
+      conflict based<sup>[99]</sup> editing culture associated with
+      traditional masculine gender roles,<sup>[100]</sup> which contributes
+      to the gender bias on Wikipedia.
+    </p>
+    <p>
+      Special interest groups have engaged in edit wars to advance their own
+      political interests. Defending Israeli settlements in the West Bank,
+      numerous pro-occupation groups have launched "Zionist editing"
+      campaigns.<sup>[101]</sup> In 2010, the then director general of the
+      Yesha Council and former Israeli Cabinet Minister Naftali Bennett
+      described their goal "as not to make Wikipedia rightist but for it to
+      include our point of view".<sup>[102]</sup>
+    </p>
+  </div>
+  <!-- note the onclick handler is toggle(n) where n is the section number -->
+  <h2 id="section_3" onclick="toggle(3)">
+    <div class="arrow down"></div>
+    <span>Policies and laws</span>
+  </h2>
+  <!-- we add a onrendersubtreeactivation handler with exactly the same handler
+       as the onclick for the section above.
+  -->
+  <div id="content_3" class="hidden" onrendersubtreeactivation="toggle(3)">
+    <p>
+      Content in Wikipedia is subject to the laws (in particular, copyright
+      laws) of the United States and of the US state of Virginia, where the
+      majority of Wikipedia's servers are located. Beyond legal matters, the
+      editorial principles of Wikipedia are embodied in the "five pillars"
+      and in numerous policies and guidelines intended to appropriately
+      shape content. Even these rules are stored in wiki form, and Wikipedia
+      editors write and revise the website's policies and
+      guidelines.<sup>[103]</sup> Editors can enforce these rules by
+      deleting or modifying non-compliant material. Originally, rules on the
+      non-English editions of Wikipedia were based on a translation of the
+      rules for the English Wikipedia. They have since diverged to some
+      extent.<sup>[81]</sup>
+    </p>
+    <h3>Content policies and guidelines</h3>
+    <p>
+      According to the rules on the English Wikipedia, each entry in
+      Wikipedia must be about a topic that is encyclopedic and is not a
+      dictionary entry or dictionary-like.<sup>[104]</sup> A topic should
+      also meet Wikipedia's standards of "notability",<sup>[105]</sup> which
+      generally means that the topic must have been covered in mainstream
+      media or major academic journal sources that are independent of the
+      article's subject. Further, Wikipedia intends to convey only knowledge
+      that is already established and recognized.<sup>[106]</sup> It must
+      not present original research. A claim that is likely to be challenged
+      requires a reference to a reliable source. Among Wikipedia editors,
+      this is often phrased as "verifiability, not truth" to express the
+      idea that the readers, not the encyclopedia, are ultimately
+      responsible for checking the truthfulness of the articles and making
+      their own interpretations.<sup>[107]</sup> This can at times lead to
+      the removal of information that, though valid, is not properly
+      sourced.<sup>[108]</sup> Finally, Wikipedia must not take
+      sides.<sup>[109]</sup> All opinions and viewpoints, if attributable to
+      external sources, must enjoy an appropriate share of coverage within
+      an article. This is known as neutral point of view (NPOV).
+    </p>
+  </div>
+  <!-- more sections go here, but I think the idea is clear -->
+</div>
+
+<script>
+// This function toggles closed/open state of a section by changing classes for
+// the button and for the content. Note that this acts both as the onclick handler
+// for the section button/title, and as a rendersubtreeactivation callback for the
+// hidden section.
+function toggle(n) {
+  const arrow = document.getElementById("section_" + n).getElementsByClassName("arrow")[0];
+  if (arrow.classList.contains("down")) {
+    arrow.classList.remove("down");
+    arrow.classList.add("up");
+    document.getElementById("content_" + n).classList.remove("hidden");
+  } else {
+    arrow.classList.remove("up");
+    arrow.classList.add("down");
+    document.getElementById("content_" + n).classList.add("hidden");
+  }
+}
+</script>
