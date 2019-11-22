@@ -30,6 +30,10 @@ with possibly out-of-date explainers.
   <td>Specify a 50% margin on viewport activation, update intrinsic-size status
       (behind a flag), update activation status (default)</td>
 </tr>
+<tr>
+  <td>2019-11-22</td>
+  <td>renamed `beforeactivate` to `rendersubtreeactivation`</td>
+</tr>
 </table>
 
 ## Terminology
@@ -66,7 +70,7 @@ with possibly out-of-date explainers.
 ## Activation algorithms
 
 This is a list of algorithms that cause the element to activate. When activated,
-a `beforeactivate` signal is fired on the element and the `rendersubtree`
+a `rendersubtreeactivation` signal is fired on the element and the `rendersubtree`
 property is set to `""`. Note that `skip-activation` implies
 `skip-viewport-activation` when disabling a particular algorithm.
 
@@ -93,8 +97,8 @@ property is set to `""`. Note that `skip-activation` implies
 ## Current status (Chromium)
 
 * **Activation**: Activation is the default behavior, which can be disabled with
-  `skip-activation` or `skip-viewport-activation`. A `beforeactivate` event will
-  be fired at animation frame timing (as of [this patch](https://chromium-review.googlesource.com/c/chromium/src/+/1924835)).
+  `skip-activation` or `skip-viewport-activation`. A `rendersubtreeactivation` event will
+  be fired at animation frame timing.
 
 * **Viewport Activation**: When considering activation due to viewport
   intersection, the code considers a 50% viewport margin on the implicit root.
