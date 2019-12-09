@@ -24,10 +24,9 @@ The following use-cases motivate this work:
   Wikipedia)
 * Scrollers with a large amount of content, without resorting to virtualization
   (examples: twitter feed, codemirror documents)
-* Pre-loading and rendering of non-visible content asynchronously to prepare it
-  for future display (Example: improving latency to show content not currently
-  displayed but predicted to be soon, but *without jank*. Think search as you
-  type, tabbed UIs, hero element clicks.)
+* Single-page app transitions. (Example: improving latency to show content not
+  currently displayed but predicted to be soon, but *without jank*. Think search
+  as you type, tabbed UIs, hero element clicks.)
 * Layout measurement (examples: responsive design or animation setup)
 
 ## Motivation & background
