@@ -81,7 +81,7 @@ As the proposed features evolve, several competing API shapes might be
 considered at the same time, the decisions on particular behaviors might not be
 finalized, and some documentation may be out of date.
 
-For the latest agreed-upon behavior and API state, please consult the
+For the latest implemented behavior and API state, please consult the
 [cheatsheet](https://github.com/WICG/display-locking/blob/master/cheatsheet.md).
 
 For behaviors being discussed, as well as questions and other discussions,
