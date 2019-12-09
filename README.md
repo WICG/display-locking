@@ -87,7 +87,7 @@ For the latest implemented behavior and API state, please consult the
 For behaviors being discussed, as well as questions and other discussions,
 please look over the [issues](https://github.com/WICG/display-locking/issues)
 
-The rest of this document talks about one particular set of proposed features.
+The rest of this document talks about one particular implementation option.
 Whether or not this is the final proposed set of features is yet undecided.
 
 ## Summary
