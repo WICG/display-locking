@@ -7,35 +7,6 @@ and status. Note that this does not go into details on what each component
 represents and why. Instead, this acts as an easy way to map up-to-date concepts
 with possibly out-of-date explainers.
 
-## Revision log
-
-<table>
-<th style="width: 110px">date</th><th>description</th>
-<tr>
-  <td>2019-10-10</td>
-  <td>Initial version.</td>
-</tr>
-<tr>
-  <td>2019-10-11</td>
-  <td>s/skip-visibility-activation/skip-viewport-activation/</td>
-</tr>
-<tr>
-  <td>2019-10-23</td>
-  <td>add a section on activation, add selection &
-      tab-navigation to viewport activation, rename content-size to
-      intrinsic-size</td>
-</tr>
-<tr>
-  <td>2019-11-18</td>
-  <td>Specify a 50% margin on viewport activation, update intrinsic-size status
-      (behind a flag), update activation status (default)</td>
-</tr>
-<tr>
-  <td>2019-11-22</td>
-  <td>renamed `beforeactivate` to `rendersubtreeactivation`</td>
-</tr>
-</table>
-
 ## Terminology
 
 * **Display Locking**: this is the feature name. It refers to the fact that an
@@ -51,8 +22,9 @@ with possibly out-of-date explainers.
     fact that the UA can only activate the element on "viewport action" (see User
     Activation; Activation).
 * **Activation / Activatability**: this refers to the notion that an element
-  that is locked can be unlocked by the UA. Some examples of this are
-  find-in-page, or scrolling. Different rendersubtree tokens can control this
+  that is locked can be unlocked by the UA. This also includes sending the
+  `rendersubtreeactivation` event. Some examples of this are find-in-page,
+  focus navigation, or scrolling. Different rendersubtree tokens can control this
   behavior.
 * **User Activation**: this refers to activation caused by user or developer
   actions. Examples of this include find-in-page, scrollIntoView().
@@ -74,25 +46,42 @@ a `rendersubtreeactivation` signal is fired on the element and the `rendersubtre
 property is set to `""`. Note that `skip-activation` implies
 `skip-viewport-activation` when disabling a particular algorithm.
 
-* find-in-page: when find-in-page finds an element and makes it an active match
-  (current match), the locked ancestors of the element are activated. (disabled
-  by `skip-activation`)
-* viewport intersection: when a locked element enters the viewport, it is
-  activated (disabled by `skip-viewport-activation`)
-* scrollIntoView(): when scrollIntoView() is called on an element, the locked
-  ancestors of the element are activated (disabled by `skip-activation`)
-* accessibility: screen readers and other accessibility features activate
-  elements (disabled by `skip-activation`)
-* anchor link navigation: when fragment links (ie url.html#elementid) navigates
-  to an element, its locked ancestors are activated (disabled by
-  `skip-activation`)
-* tab order navigation: when an element is focused by tab navigation (forward or
-  backward), the locked ancestors of the focused element are activated (disabled
-  by `skip-viewport-activation`)
-* selection: when an element is selected, it is activated so its children can be
-  selected as well (disabled by `skip-viewport-activation`)
-* focus(): when focus() is called on an element, its locked ancestors are
-  activated (disabled by `skip-activation`)
+### Viewport intersection
+* When a locked element enters the viewport or nearing the viewport (50% margin), it will be activated.
+* Can be disabled with `skip-viewport-activation` or `skip-activation`.
+
+### Selection
+* When text in locked subtree gets selected, all of the text's locked ancestors will be activated.
+* Can be disabled with `skip-viewport-activation` or `skip-activation`.
+ 
+### Sequential/tab-order focus navigation
+* When an element is focused by sequential focus navigation (forward or backward),
+the locked ancestors of the focused element will be activated
+* Can disabled with `skip-viewport-activation` or `skip-activation`.
+
+### Find-in-page
+* Find-in-page will find text even if they are in a locked subtree (but will skip locked subtrees with `skip-activation`), counting them in the total match.
+* Find-in-page won't activate *all* text that match - it will only activate one main/currently-selected match (see below).
+* When find-in-page navigates to an active match (currently-highlighted/selected match) because it's the first match or through find-next/find-prev navigation, the locked ancestors of the active match text will be activated.
+* Can be disabled with `skip-activation`.
+
+### Accessibility
+* Nodes in locked subtree (except those with `skip-activation`) are included in the AX tree but are marked as offscreen and don't have layout values, and thus are exposed to assistive technologies.
+* AX selections, focus, scrolling/navigation to nodes in locked subtrees will activate the locked ancestors.
+* Can be disabled with `skip-activation`.
+* There's still an active discussion on this, please see https://github.com/WICG/display-locking/issues/102 for more.
+
+### Anchor link navigation:
+* When fragment link (ie url.html#elementid) navigation results in a navigation to an element in a locked subtree, its locked ancestors will be activated.
+* Can be disabled with `skip-activation`.
+
+#### focus():
+* When `focus()` is called on an element and the element can be focused, its locked ancestors will be activated.
+* Can disabled with `skip-activation`.
+  
+### scrollIntoView()
+* When `scrollIntoView()` is called on an element, the locked ancestors of the element will be activated.
+* Can be disabled with `skip-activation`.
 
 ## Current status (Chromium)
 
