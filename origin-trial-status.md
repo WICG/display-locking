@@ -8,6 +8,12 @@ In addition to participating via the origin trial, these APIs are available on C
 
 Example code is available [here](https://github.com/WICG/display-locking/tree/master/sample-code)
 
+To disable the display locking features locally for testing (e.g. to compare performance with and without the feature), pass the following on the command-line when running Chrome:
+
+```
+--disable-blink-features=DisplayLocking --origin-trial-disabled-features=DisplayLocking
+```
+
 ### `content-size`
 
 This property is fully implemented as specified [here](http://tabatkins.github.io/specs/css-content-size/).
