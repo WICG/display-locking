@@ -45,13 +45,16 @@ This is a list of algorithms that cause the element to activate. When activated,
 a `rendersubtreeactivation` signal is fired on the element and the `rendersubtree`
 property is set to `""`. Note that `skip-activation` implies
 `skip-viewport-activation` when disabling a particular algorithm.
+Note also that non-activatibility applies to every descendant of a locked element.
+An element within a non-activatable locked subtree is not activatable, even if it has
+other locked ancestors that are activatable.
 
 ### Viewport intersection
 * When a locked element enters the viewport or nearing the viewport (50% margin), it will be activated.
 * Can be disabled with `skip-viewport-activation` or `skip-activation`.
 
 ### Selection
-* When text in locked subtree gets selected, all of the text's locked ancestors will be activated.
+* When content (text, image, etc) in locked subtree gets selected, all of the content's locked ancestors will be activated.
 * Can be disabled with `skip-viewport-activation` or `skip-activation`.
  
 ### Sequential/tab-order focus navigation
@@ -60,7 +63,7 @@ the locked ancestors of the focused element will be activated
 * Can disabled with `skip-viewport-activation` or `skip-activation`.
 
 ### Find-in-page
-* Find-in-page will find text even if they are in a locked subtree (but will skip locked subtrees with `skip-activation`), counting them in the total match.
+* Find-in-page will find text even in locked subtrees, counting them in the total match.
 * Find-in-page won't activate *all* text that match - it will only activate one main/currently-selected match (see below).
 * When find-in-page navigates to an active match (currently-highlighted/selected match) because it's the first match or through find-next/find-prev navigation, the locked ancestors of the active match text will be activated.
 * Can be disabled with `skip-activation`.
