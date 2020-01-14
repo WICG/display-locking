@@ -9,13 +9,6 @@
 @supports (render-subtree: invisible) {
   .hidden {
     render-subtree: invisible skip-viewport-activation;
-    /* Note that height here is optional. This is because the div which
-       has this style is unsized by any other style, or by flex-like
-       containers. So it will be 0 height anyway. However, in cases where
-       the render-subtree element might be sized, we need to either
-       specify width/height or intrinsic-size depending on the desired look.
-    */
-    height: 0;
   }
 } 
 
