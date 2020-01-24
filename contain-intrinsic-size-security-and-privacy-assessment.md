@@ -1,7 +1,7 @@
 ### 2.1. What information might this feature expose to Web sites or other parties, and for what purposes is that exposure necessary?
 
 This feature exposes the intrinsic sizing control to web developers in order to
-better control layout.
+better control layout when size containment is present.
 
 ### 2.2. Is this specification exposing the minimum amount of information necessary to power the feature?
 

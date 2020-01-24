@@ -11,98 +11,103 @@ with possibly out-of-date explainers.
 
 * **Display Locking**: this is the feature name. It refers to the fact that an
   element can be "locked from being displayed".
-* **rendersubtree**: this is an alternative version of the feature name. It
-  refers to the element attribute `rendersubtree` which can be set to various
-  values in order to lock an element.
-  * `rendersubtree="invisible"`: this refers to the fact that this
-    element is currently locked (i.e. invisible)
-  * `rendersubtree="invisible skip-activation"`: this refers to the
-    fact that the UA cannot activate this element (see Activation)
-  * `rendersubtree="invisible skip-viewport-activation"`: this refers to the
-    fact that the UA can only activate the element on "viewport action" (see User
-    Activation; Activation).
-* **Activation / Activatability**: this refers to the notion that an element
-  that is locked can be unlocked by the UA. This also includes sending the
-  `rendersubtreeactivation` event. Some examples of this are find-in-page,
-  focus navigation, or scrolling. Different rendersubtree tokens can control this
-  behavior.
-* **User Activation**: this refers to activation caused by user or developer
-  actions. Examples of this include find-in-page, scrollIntoView().
-  Notably, this does *not* include UA activation caused by Viewport Activation
-  described below.
-* **Viewport Activation**: this refers to activation caused by the element
-  entering the visible region of the page (i.e. intersection with the viewport).
-  It also include user selection and tab navigation. In other words, if viewport
-  activation is skipped, then the element will not activate on user selection,
-  tab navigation, or viewport intersection.
-* **intrinsic-size**: this refers to a complementary CSS feature called
-  intrinsic-size, which allows the developer to specify a placeholder size when
-  rendersubtree makes the subtree invisible.
+* **Locked element**: the element's subtree is not being rendered or hit-tested.
+* **Unlocked element**: the element's subtree is being rendered and hit-tested.
+  Note that this state is independent of whether render-subtree: invisible
+  property applies to the element. See below for more information.
+* **render-subtree**: this is an alternative feature name. It refers to the CSS
+  property `render-subtree` which can take several values in order to lock an
+  element.
+  * `render-subtree: invisible`: this refers to the fact that this
+    element's locked state is being managed by the user-agent.  Specifically,
+    the user-agent will unlock elements as they approach the viewport and lock
+    them as they move away from the viewport. Locked content is discoverable by
+    user-agent algorithms which may bring the element into view, causing it to
+    be unlocked. This configuration is in the initial proposal.
+  * `render-subtree: invisible skip-activation`: this refers to the
+    fact that the subtree is locked and the user-agent will not manage the
+    state. The content is not discoverable by any user-agent algorithms.
+    This configuration is in the initial proposal.
+  * `render-subtree: invisible skip-viewport-activation`: this refers to the
+    fact that the subtree is locked and the user-agent will not manage the
+    state. The content is, however, discoverable by user-agent algorithms, which
+    may fire events with targets in the locked subtree.
+    This configuration is tentative and is not a part of the initial proposal.
+    Specifically, the details of the event have not been discussed in detail
+    yet.
+  * Note that all of the above configurations enforce `contain: style layout;`.
+    Additionally, if the element is locked it also enforces `contain: size;`.
+    This containment is additive and takes effect on top of any other
+    containment specified.
+* **contain-intrinsic-size**: this refers to a complementary CSS feature called
+  contain-intrinsic-size, which allows the developer to specify a placeholder size
+  when size containment is present, as it would be when the subtree is locked.
 
-## Activation algorithms
+## User-agent algorithms
 
-This is a list of algorithms that cause the element to activate. When activated,
-a `rendersubtreeactivation` signal is fired on the element and the `rendersubtree`
-property is set to `""`. Note that `skip-activation` implies
-`skip-viewport-activation` when disabling a particular algorithm.
-Note also that non-activatibility applies to every descendant of a locked element.
-An element within a non-activatable locked subtree is not activatable, even if it has
-other locked ancestors that are activatable.
+This is a list of algorithms that can bring an element into view or otherwise
+cause the user-agent to unlock the elements. Note that unless explicitly stated
+otherwise, the language below uses 'unlock' as the action since that is the
+action is performed on a `render-subtree: invisible` element. However, it should
+be understood that for `render-subtree: invisible skip-viewport-activation` the
+action is instead to fire an event while keeping the element locked. Similarly,
+for `render-subtree: invisible skip-activation`, the action is similar to that
+of a `display: none` subtree.
 
 ### Viewport intersection
-* When a locked element enters the viewport or nearing the viewport (50% margin), it will be activated.
-* Can be disabled with `skip-viewport-activation` or `skip-activation`.
+* When a locked element enters a region near the viewport (50% margin on the
+  viewport rect), it will be unlocked.
 
 ### Selection
-* When content (text, image, etc) in locked subtree gets selected, all of the content's locked ancestors will be activated.
-* Can be disabled with `skip-viewport-activation` or `skip-activation`.
- 
+* When content (text, image, etc) in locked subtree gets selected, all of the
+  content's locked ancestors will be unlocked. Note that this only applies to
+  `render-subtree: invisible` configuration; other configurations pay no special
+  attention to selection.
+
 ### Sequential/tab-order focus navigation
 * When an element is focused by sequential focus navigation (forward or backward),
-the locked ancestors of the focused element will be activated
-* Can disabled with `skip-viewport-activation` or `skip-activation`.
+  the locked ancestors of the focused element will be unlocked. Note that this
+  only applies to `render-subtree: invisible` configuration. other configurations
+  pay no special attention to sequential focus navigation.
 
 ### Find-in-page
-* Find-in-page will find text even in locked subtrees, counting them in the total match.
-* Find-in-page won't activate *all* text that match - it will only activate one main/currently-selected match (see below).
-* When find-in-page navigates to an active match (currently-highlighted/selected match) because it's the first match or through find-next/find-prev navigation, the locked ancestors of the active match text will be activated.
-* Can be disabled with `skip-activation`.
+* Find-in-page will find text even in locked subtrees if the configuration
+  allows for it. The active or main match will cause all of its locked ancestors
+  to be unlocked. Tentative design decision: for `render-subtree: invisible
+  skip-viewport-activation` cases, the find-in-page algorithm, upon finding an
+  active match in a locked subtree, will issue a signal and
+  yield until script had a chance to react to the signal. At this time, the
+  algorithm will resume and only consider the active match as valid if the
+  subtree is now unlocked. Otherwise, it will proceed with looking for other
+  matches outside of the current locked root.
 
 ### Accessibility
-* Nodes in locked subtree (except those with `skip-activation`) are included in the AX tree but are marked as offscreen and don't have layout values, and thus are exposed to assistive technologies.
-* AX selections, focus, scrolling/navigation to nodes in locked subtrees will activate the locked ancestors.
-* Can be disabled with `skip-activation`.
-* There's still an active discussion on this, please see https://github.com/WICG/display-locking/issues/102 for more.
+* Locked subtrees are omitted from the accessibility tree. Note that there may
+  be other ways of bringing the content into view from accessibility technology.
+  These algorithms should, for the most part, behave consistently with
+  non-accessibility ways of bringing content into view.
 
 ### Anchor link navigation:
-* When fragment link (ie url.html#elementid) navigation results in a navigation to an element in a locked subtree, its locked ancestors will be activated.
-* Can be disabled with `skip-activation`.
+* When fragment link (ie url.html#elementid or url.html#:~:text=foo) navigation
+  results in a navigation to an element in a locked subtree, its locked
+  ancestors will be unlocked. Tentative design: Similar situations as in
+  find-in-page cae should be considered. In particular, it may be prudent to
+  yield for script to be able to handle an event before proceeding with a
+  scroll.
 
 #### focus():
-* When `focus()` is called on an element and the element can be focused, its locked ancestors will be activated.
-* Can disabled with `skip-activation`.
-  
+* When `focus()` is called on an element and the element can be focused, its
+  locked ancestors will be unlocked.
+
 ### scrollIntoView()
-* When `scrollIntoView()` is called on an element, the locked ancestors of the element will be activated.
-* Can be disabled with `skip-activation`.
+* When `scrollIntoView()` is called on an element, the locked ancestors of the
+  element will be unlocked.
 
 ## Current status (Chromium)
 
-* **Activation**: Activation is the default behavior, which can be disabled with
-  `skip-activation` or `skip-viewport-activation`. A `rendersubtreeactivation` event will
-  be fired at animation frame timing.
+* Initial proposal configurations are implemented, enabled by
+  CSSIntrinsicSize runtime flag.
 
-* **Viewport Activation**: When considering activation due to viewport
-  intersection, the code considers a 50% viewport margin on the implicit root.
-  This means that if the element is clipped by the viewport, and it's within 50%
-  of the viewport width/height  away from the closest edge, it will be activated.
+* contain-intrinsic-size is not implemented; it is recommended to use
+  min-height/min-width in the interim.
 
-* **Containment**: The presence of the `rendersubtree` attribute forces
-  `contain: layout style;` *in addition* to any other containment. If the
-  `invisible` token is present, it also forces `contain: size` in addition to
-  layout, style and any other containment already present.
-
-* **Intent to Experiment** proposed and approved ([thread](https://groups.google.com/a/chromium.org/d/msg/blink-dev/-6Cp2osHn50/VZhPCrXHDAAJ))
-
-* **`intrinsic-size`** is implemented, and is available behind the
-  CSSIntrinsicSize flag.

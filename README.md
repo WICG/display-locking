@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Display locking is a set of API changes that make it straightforward for
+Render Subtree (a.k.a. Display Locking) is a CSS property designed to allow
 developers and browsers to easily scale to large amount of content and control
 when rendering [\[1\]](#foot-notes) work happens. More concretely, the goals
 are:
@@ -13,21 +13,14 @@ are:
   and all layout algorithms (e.g. responsive design, flexbox, grid) for this
   content
 
-* Support developer-controlled pre-loading, pre-rendering and measurement of
-  content without having to fully render it to the screen
-
 The following use-cases motivate this work:
 
-* Fast display of large HTML documents (examples: HTML one-page spec, other long
+* Fast display of large HTML documents (examples: HTML one-page spec; other long
   documents)
 * Deep links and searchability into pages with hidden content (example: mobile
-  Wikipedia)
+  Wikipedia; scroll-to-text support for collapsed sections)
 * Scrollers with a large amount of content, without resorting to virtualization
-  (examples: twitter feed, codemirror documents)
-* Single-page app transitions. (Example: improving latency to show content not
-  currently displayed but predicted to be soon, but *without jank*. Think search
-  as you type, tabbed UIs, hero element clicks.)
-* Layout measurement (examples: responsive design or animation setup)
+  (examples: facebook and twitter feeds, codemirror documents)
 
 ## Motivation & background
 
