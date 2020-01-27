@@ -82,10 +82,11 @@ of a `display: none` subtree.
   matches outside of the current locked root.
 
 ### Accessibility
-* Locked subtrees are omitted from the accessibility tree. Note that there may
-  be other ways of bringing the content into view from accessibility technology.
-  These algorithms should, for the most part, behave consistently with
-  non-accessibility ways of bringing content into view.
+* Subtrees in the `render-subtree: invisible` configuration are included in the
+  accessibility tree. Subtrees in other configurations are omitted. Note that
+  there may be other ways of bringing the content into view from accessibility
+  technology.  These algorithms should, for the most part, behave consistently
+  with non-accessibility ways of bringing content into view.
 
 ### Anchor link navigation:
 * When fragment link (ie url.html#elementid or url.html#:~:text=foo) navigation
