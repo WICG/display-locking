@@ -18,8 +18,8 @@ of element's children. This means that typically the intrinsic size will be 0x0,
 with some exceptions such as `display: grid` which also considers its tracks
 when determining the intrinsic size. 
 
-The contain-intrinsic-size extends size containment by allowing the developer to
-specify the size directly. In that sense, one motivation for the
+The `contain-intrinsic-size` property extends size containment by allowing the
+developer to specify the size directly. In that sense, one motivation for the
 `contain-intrinsic-size` property could be
 [explaining](https://extensiblewebmanifesto.org) these algorithms. One practical
 application could be its use in testing their behavior.

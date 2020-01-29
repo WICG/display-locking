@@ -11,8 +11,8 @@ with possibly out-of-date explainers.
 
 * **Display Locking**: this is the feature name. It refers to the fact that an
   element can be "locked from being displayed".
-* **Locked element**: the element's subtree is not being rendered or hit-tested.
-* **Unlocked element**: the element's subtree is being rendered and hit-tested.
+* **Locked element**: the element's subtree is invisible and is not hit-tested.
+* **Unlocked element**: the element's subtree is visible and hit-tested.
   Note that this state is independent of whether render-subtree: invisible
   property applies to the element. See below for more information.
 * **render-subtree**: this is an alternative feature name. It refers to the CSS
@@ -52,14 +52,15 @@ action is performed on a `render-subtree: invisible` element. However, it should
 be understood that for `render-subtree: invisible skip-viewport-activation` the
 action is instead to fire an event while keeping the element locked. Similarly,
 for `render-subtree: invisible skip-activation`, the action is similar to that
-of a `display: none` subtree.
+of a `display: none` subtree (although the subtree in this case has layout
+boxes which can be queried by script).
 
 ### Viewport intersection
 * When a locked element enters a region near the viewport (50% margin on the
   viewport rect), it will be unlocked.
 
 ### Selection
-* When content (text, image, etc) in locked subtree gets selected, all of the
+* When content (text, image, etc) in a locked subtree gets selected, all of the
   content's locked ancestors will be unlocked. Note that this only applies to
   `render-subtree: invisible` configuration; other configurations pay no special
   attention to selection.
@@ -86,15 +87,16 @@ of a `display: none` subtree.
   accessibility tree. Subtrees in other configurations are omitted. Note that
   there may be other ways of bringing the content into view from accessibility
   technology.  These algorithms should, for the most part, behave consistently
-  with non-accessibility ways of bringing content into view.
+  with non-accessibility ways of bringing content into view. Tentative design
+  decision: content that is locked is not present in the accessibility tree.
+  Unlocked content is present.
 
 ### Anchor link navigation:
 * When fragment link (ie url.html#elementid or url.html#:~:text=foo) navigation
   results in a navigation to an element in a locked subtree, its locked
-  ancestors will be unlocked. Tentative design: Similar situations as in
-  find-in-page cae should be considered. In particular, it may be prudent to
-  yield for script to be able to handle an event before proceeding with a
-  scroll.
+  ancestors will be unlocked. Tentative design decision: Similar situations as in
+  find-in-page case should be considered. Specifically, we need to yield
+  for script to be able to handle an event before proceeding with a scroll.
 
 #### focus():
 * When `focus()` is called on an element and the element can be focused, its
