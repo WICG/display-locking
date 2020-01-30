@@ -14,11 +14,10 @@ To disable the display locking features locally for testing (e.g. to compare per
 --disable-blink-features=DisplayLocking --origin-trial-disabled-features=DisplayLocking
 ```
 
-### `content-size`
-
-This property is fully implemented as specified [here](http://tabatkins.github.io/specs/css-content-size/).
-
 #### `rendersubtree`
+
+Note that this is an attribute version of the CSS feature described here which
+will be removed from the tip-of-tree Chromium in early February 2020.
 
 A draft (out of date) spec is [here](https://github.com/whatwg/html/pull/4862).
 The implementation currently supports the `invisible`, `skip-viewport-activation` and `skip-activation` keywords. Activation happens by default, but can be turned on with the two activation keywords mentioned. Before activation shows content, a `beforeactivate` event is fired.

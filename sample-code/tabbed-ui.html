@@ -54,6 +54,20 @@
   z-index: -1;
   user-select: none;
 }
+
+@supports (render-subtree: invisible) {
+  .locked {
+    render-subtree: invisible skip-viewport-activation;
+  }
+  .warning {
+    display: none;
+  }
+}
+@supports not (render-subtree: invisible) {
+  .locked {
+    display: none;
+  }
+}
 </style>
 
 <div class="container">
@@ -65,8 +79,10 @@
   <div class="tab-container">
     <div id=one class="tab-contents inactive">
       Contents of tab one.
-      Note that with display-locking, we can use find-in-page
+      Note that with render-subtee, we can use find-in-page
       to find contents of tabs two and three.
+      <p class=warning>Unfortunatelly, your browser does not
+      support render-subtree</p>
     </div>
     <div id=two class="tab-contents inactive">
       Contents of tab two.
@@ -91,7 +107,7 @@ function initialize() {
     button.addEventListener("click", (e) => {
       activate(button, content);
     });
-    content.addEventListener("beforeactivate", (e) => {
+    content.addEventListener("rendersubtreeactivation", (e) => {
       activate(button, content);
     });
     if (!active_button) {
@@ -101,7 +117,6 @@ function initialize() {
       active_content.classList.replace("inactive", "active");
     } else {
       content.classList.replace("inactive", "locked");
-      content.renderSubtree = "invisible skip-viewport-activation";
     }
   }  
 }
@@ -113,7 +128,6 @@ function activate(button, content) {
   active_button = button;
   active_button.classList.replace("inactive", "active");
 
-  active_content.renderSubtree = "invisible skip-viewport-activation";
   active_content.classList.replace("active", "locked");
   active_content = content;
   active_content.classList.replace("locked", "active");

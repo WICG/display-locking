@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Display locking is a set of API changes that make it straightforward for
+Render Subtree (a.k.a. Display Locking) is a CSS property designed to allow
 developers and browsers to easily scale to large amount of content and control
 when rendering [\[1\]](#foot-notes) work happens. More concretely, the goals
 are:
@@ -13,21 +13,14 @@ are:
   and all layout algorithms (e.g. responsive design, flexbox, grid) for this
   content
 
-* Support developer-controlled pre-loading, pre-rendering and measurement of
-  content without having to fully render it to the screen
-
 The following use-cases motivate this work:
 
-* Fast display of large HTML documents (examples: HTML one-page spec, other long
+* Fast display of large HTML documents (examples: HTML one-page spec; other long
   documents)
 * Deep links and searchability into pages with hidden content (example: mobile
-  Wikipedia)
+  Wikipedia; scroll-to-text support for collapsed sections)
 * Scrollers with a large amount of content, without resorting to virtualization
-  (examples: twitter feed, codemirror documents)
-* Single-page app transitions. (Example: improving latency to show content not
-  currently displayed but predicted to be soon, but *without jank*. Think search
-  as you type, tabbed UIs, hero element clicks.)
-* Layout measurement (examples: responsive design or animation setup)
+  (examples: facebook and twitter feeds, codemirror documents)
 
 ## Motivation & background
 
@@ -59,7 +52,8 @@ b. Caching intermediate rendering state is [hard
    performance limitations and cliffs that are not obvious to developers.
    Similarly, relying on the browser to avoid rendering for content that is clipped
    out or not visible is sometimes not reliable, as it's hard for the browser to
-   efficiently detect what content is actually visible.
+   efficiently detect what content is not visible and does not affect visible
+   content in any way.
 
 Previously adopted web APIs, in particular the
 [contain](https://developer.mozilla.org/en-US/docs/Web/CSS/contain) and
@@ -94,151 +88,143 @@ Whether or not this is the final proposed set of features is yet undecided.
 
 Three new features are proposed:
 
-* A new `rendersubtree` attribute (early draft spec
-  [here](https://chrishtr.github.io/html/output/#the-rendersubtree-attribute)).
-  This controls whether DOM subtrees do or do not render, and is the mechanism
-  by which rendering work can be avoided. User-agent features may modify this
-  attribute, causing on-demand rendering, if desired. The developer may listen
-  to this on-demand rendering via a MutationObserver and respond to it before
-  rendering occurs. `rendersubtree`, when present, forces `style` and `layout`
-  containment, plus `size` containment if invisible. This ensures minimal
-  invalidation of the rest of the document when rendering occurs.
+1. A new `render-subtree` CSS property (spec draft to be added soon).
+  This property controls whether DOM subtrees affected by the property do or do
+  not render, and is the mechanism by which rendering work can be avoided. Some
+  values of `render-subtree` allow the user-agent to automatically manage
+  whether subtrees affected are rendered or not. Other values give the developer
+  complete control of subtree rendering. Note that the names of the tokens are
+  being [discussed](https://github.com/WICG/display-locking/issues/110).
+  However, the brief description of the tokens is below:
+    * `render-subtree: invisible`: this configuration allows the user-agent to
+      automatically manage whether content is rendered or not.
+    * `render-subtree: invisible skip-activation`: this configuration gives the
+      developer complete control of when the subtree is rendered. Neither the
+      user-agent nor its features should need to process or render the subtree.
+    * `render-subtree: invisible skip-viewport-activation`: this configuration
+      allows the developer to control rendering, but it allows user-agent
+      features such as find-in-page to process the subtrees and fire the
+      activation event (described below).
 
-* A `content-size` attribute (early draft spec
-  [here](http://tabatkins.github.io/specs/css-content-size/) that specifies how
-  much space a subtree should take up. This is intended to allocate a
-  placeholder size for content marked as invisible by `rendersubtree` (since it
-  already has `size` containment, as mentioned above). (*Please note that this
-  property in particular has been discussed and changed quite a bit; the latest
-  discussion can be found [here](https://github.com/w3c/csswg-drafts/issues/4531)*)
+  It is also worth noting that when the element is not rendered, then
+  `contain: layout style size;` is added to its style to ensure that the
+  subtree content does not affect elements outside of the subtree.
+  Furthermore, when the element is rendered in the `render-subtree: invisible`
+  configuration (i.e. the user-agent decides to render the element), then
+  `contain: layout style;` applies to the element.
 
-* An `updateRendering` method on Element objects. This can be used to pre-render
-  content within a subtree marked with `rendersubtree` as invisible to make it
-  ready for display or measurement.
+2. A new `contain-intrinsic-size` CSS property (spec draf to be added soon). This
+  sizing property dictacts how much space should be reserved for the subtree
+  when it is not rendered. More specifically, it is an intrinsic size to apply
+  when `contain: size` style applies to the element. For more details, please
+  refer to [this
+  explainer](https://github.com/WICG/display-locking/blob/master/explainer-contain-intrinsic-size.md)
+
+3. A new event, tentatively named activation event, which is fired when
+  find-in-page locates text that becomes the active, or currently selected,
+  match.
 
 ## Example usage
 
 ```html
-<div id=target rendersubtree="invisible skip-activation" style="content-size: 200px 200px">...content...</div>
-<script>
-target.setAttribute('rendersubtree', ''); // makes #target render
-</script>
+<style>
+.locked {
+  render-subtree: invisible;
+  contain-intrinsic-size: 100px 200px;
+}
+</style>
+
+<div class=locked>
+  ... some content goes here ...
+</div>
 ```
 
-This div's subtree is not rendered (but the div itself is; this allows the div
-to show fallback or "loading..." affordances), and there is no need for the
-browser to do any rendering lifecycle phases for the subtree of the div. The div
-lays out as if it had a single 200px by 200px child, which serves as a
-placeholder in order to take up the approximate layout size of the div's
-subtree. This allows page layout to be approximately correct, and preserves
-layout overflow size for scrolling. The browser may *not* render the content,
-even via a user-agent feature.
+The `.locked` element's `render-subtree` configuration lets the user-agent
+manage rendering the subtree of the element. Specifically when this element is
+near the viewport, the user-agent will begin rendering the element. When the
+element moves away from the viewport, it will stop being rendered.
+
+Recall that when not rendered, the property also applies size containment to the
+element. This means that when not rendered, the element will use the specified
+`contain-intrinsic-size` making the element layout as if it had a single block
+child with 100px width and 200px height. This ensures that the element still
+occupies space when not rendered. At the same time, it lets the element size to
+its contents when the subtree is rendered (since size containment no longer
+applies).
+
 
 ```html
-<div rendersubtree="invisible skip-viewport-activation"  style="content-size: 200px 200px">...content</div>
+<style>
+.locked {
+  render-subtree: invisible skip-activation;
+  contain-intrinsic-size: 100px 200px;
+}
+</style>
+
+<div class=locked>
+  ... some content goes here ...
+</div>
 ```
 
-Same as above, except that user-agent features may change the `rendersubtree`
-attribute to the empty string, causing the div's subtree to get rendered. More
-on this on ["Element activation by the user agent"](https://github.com/rakina/display-locking#element-activation-by-the-user-agent)
-(this is also covered in the [cheatsheet](https://github.com/WICG/display-locking/blob/master/cheatsheet.md)).
+In this case, the rendering of the subtree is managed by the developer only.
+This means that if script does not modify the value, the element's subtree will
+remain unrendered, and it will use the `contain-intrinsic-size` input when
+deciding how to size the element.
 
 ```html
-<div id=target rendersubtree="invisible" style="content-size: 200px 200px">...content...</div>
-<script>
-target.setAttribute('rendersubtree', ''); // makes #target render
-</script>
+<style>
+.locked {
+  render-subtree: invisible skip-viewport-activation;
+}
+</style>
+
+<div class=locked>
+  ... some content goes here ...
+</div>
 ```
 
-Same as above, except that user-agent will also activate when content comes
-close to entering the visible viewport. Note that conceptually this is meant to
-make the element visible by the time it enters the viewport. Due to the fact
-that rendering work takes some time, the user-agent may make the element visible
-_before_ it enters the viewport to allow more time for the rendering steps to
-take place.
+Similar to above, the render of the subtree is managed by the developer.
+However, it allows find-in-page to search for text within the subtree and fire
+the activation signal if the active match is found. 
 
-```html
-<div id=target rendersubtree="invisible holdupgrades holdloads" style="content-size: 200px 200px">...content...</div>
-```
+The intended effect of this configuration is that the subtree is hidden and
+"collapsed" (note the absense of `contain-intrinsic-size` which makes size
+containment use empty size for intrinsic sizing). This is common when content is
+paginated and the developer allows the user to expand certain sections with
+button clicks. In the `render-subtree` case the developer may also listen to the
+activation event and start rendering the subtree when the event targets the
+element in the subtree. This means that find-in-page is able to expand an
+otherwise collapsed section when it finds a match.
 
-Same as just having the `invisible` value, but custom element upgrades are not
-performed and resources are not loaded. Note that these values can also be used
-without the `invisible` value also.
 
-```html
-<div rendersubtree style="content-size: 200px 200px">...content</div>
-```
-
-This div and its subtree render, but still has `style` and `layout` containment.
-`content-size` has no effect because it doesn't have `size` containment. This
-existence of `rendersubtree` is valuable beause when the div later becomes
-invisible, invalidations of rendering state are minimized.
-
-```html
-<div id=target rendersubtree="invisible skip-activation" style="content-size: 200px 200px">...content...</div>
-<script>
-target.updateRendering().then(() => console.log(target.firstElementChild.offsetTop)); // fast!
-</script>
-```
-The div's subtree does not render to the screen, but when updateRendering is
-called, the browser does work in the background to prepare to render it quickly
-in the future. This includes loading external resources referred to in the
-subtree and custom element upgrades. It also may include running the rendering
-lifecycle steps for the subtree up to and including style, layout, paint and
-raster. When the returned promise resolves, reading layout or style-inducing
-properties on the subtree is expected to be fast. Removing the `invisible` token
-from the `rendersubtree` attribute is also expected to render the content
-quickly.
-
-## Element activation by the user agent
-
-When an element is not rendered because it's a part of a not-rendered subtree
-caused by `rendersubtree`, there are some actions in the page that might require
-the element (and its ancestors) to be rendered to work properly. If all of the
-element's ancestors with `rendersubtree=invisible` attribute allow activation
-(as dictated by skip-activation and skip-viewport-activation tokens), then the
-user agent can *activate* the element. This will change all of the non-null
-`rendersubtree` value of all of its inclusive ancestors to the empty string -
-causing the element and its ancestors to get rendered.
-
-```html
-<div id="focusable" rendersubtree="invisible" tabindex=0>Focus me!</div>
-<script>
- focusable.focus(); // Will cause the element to render, and will change the rendersubtree value to "" (empty string)
-</script>
-```
-
-Note that if any of the element's ancestor is not activatable (the
-`rendersubtree` is not null but, for example, also contains `skip-activation`)
-then the element is not activatable.
-
-Actions that will trigger activation to an element and all of its ancestors, are
-listed in the [cheatsheet](https://github.com/WICG/display-locking/blob/master/cheatsheet.md).
-
-Activation fires a new `rendersubtreeactivation` event when the element is
-activated. The event fires at the beginning of the animation frame, prior to
-requestAnimationFrame callbacks.
 
 ## Alternatives considered
 
-The `display:none` CSS property causes content subtrees not to render. However,
+The `display: none` CSS property causes content subtrees not to render. However,
 there is no mechanism for user-agent features to cause these subtrees to render.
+Additionally, the cost of hiding and showing content cannot be eliminated since
+`display: none` does not preserve the layout state of the subtree.
 
 `visibility: hidden` causes subtrees to not paint, but they still need style and
 layout, as the subtree takes up layout space and descendants may be `visibility:
 visible`. Second, there is no mechanism for user-agent features to cause
-subtrees to render.
+subtrees to render. Note that with sufficient containment and intersection
+observer, the functionality provided by `render-subtree` may be mimicked with
+some exceptions: find-in-page functionality does not work in unrendered content;
+this relies on more browser heuristics to ensure contained invisible content is
+cheap -- `render-subtree` is a stronger signal to the user-agent that work
+should be skipped.
 
-`contain: strict` allows the browser to automatically detect subtrees that are
-definitely offscreen, and therefore that don't need to be rendered. However,
-`contain:strict` is not flexible enough to allow for responsive design layouts
-that grow elements to fit their content. (To work around this, content could be
-marked as `contain:strict` when offscreen and then some other value when
-on-screen (this is similar to `rendersubtree`).) Second, `contain:strict` may or
-may not result in rendering work, depending on whether the browser detects the
-content is actually offscreen. Third, it does not support pre-rendering or
-user-agent features in cases when it is not actually rendered to the user in the
-current application view.
+Similar to `visibility: hidden`, `contain: strict` allows the browser to
+automatically detect subtrees that are definitely offscreen, and therefore that
+don't need to be rendered. However, `contain: strict` is not flexible enough to
+allow for responsive design layouts that grow elements to fit their content. To
+work around this, content could be marked as `contain: strict` when offscreen
+and then some other value when on-screen (this is similar to `render-subtree`).
+Second, `contain: strict` may or may not result in rendering work, depending on
+whether the browser detects the content is actually offscreen. Third, it does
+not support user-agent features in cases when it is not actually rendered to the
+user in the current application view.
 
 <a name="foot-notes"></a>
 

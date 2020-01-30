@@ -29,11 +29,25 @@
   content: "^";
   cursor: pointer;
 }
+@supports (render-subtree: invisible skip-viewport-activation) {
+  .section.collapsed {
+    render-subtree: invisible skip-viewport-activation;
+  }
+  #warning {
+    display: none;
+  }
+}
+@supports not (render-subtree: invisible skip-viewport-activation) {
+  .section.collapsed > * {
+    display: none;
+  }
+  #warning {
+    background: sandybrown;
+  }
+}
+
 .section {
   overflow: hidden;
-}
-#warning {
-  background: sandybrown;
 }
 </style>
 
@@ -53,49 +67,40 @@ expandable via find-in-page.
 <p>
 You can try this out by using find in page to find "github", for example.
 </p>
-<p id=warning style="display: none">
-Note that <code>rendersubtree</code> does not seem to be supported by your browser. This means
+<p id=warning>
+Note that <code>render-subtree</code> does not seem to be supported by your browser. This means
 that you will not be able to use find-in-page to navigate into collapsed sections.
 </p>
 </div>
 <div class="heading collapsed">Details</div>
-<div class="section collapsed" rendersubtree="invisible skip-viewport-activation">
+<div class="section collapsed">
 <p>
 Here you can find some details which are <em>below the fold</em>. They appear in a
 collapsed section, meaning that they are not immediately visible on page load.
 </p>
 <p>
-The collapsed sections have a <code>rendersubtree</code> attribute set
-to <code>invisible</code>. This means that it induces size containment. Since there is
-no competing sizing information, the section collapses "automatically". This behavior can be
-changed via attribute selectors.
+The collapsed sections have a <code>render-subtree</code> CSS attribute applied with an invisible
+token. This means that it induces size containment. Since there is
+no competing sizing information, the section collapses "automatically".
 </div>
 
 <div class="heading collapsed">More information</div>
-<div class="section collapsed" rendersubtree="invisible skip-viewport-activation">
+<div class="section collapsed">
 <p>
 Here you can find additional information. Since you are reading this anyway, here you can
-find information on <code>rendersubtree</code> attribute:
+find information on <code>render-subtree</code> property:
 <a href="www.github.com/WICG/display-locking">github page</a>.
 </p>
 </div>
 <script>
 
-function renderSubtreeSupported() {
-  const test = document.createElement("div");
-  test.setAttribute("renderSubtree", "invisible");
-  return test.renderSubtree == "invisible";
-}
-
 function handleEvent(heading, section) {
   if (heading.classList.contains("collapsed")) {
     heading.classList.replace("collapsed", "expanded");
     section.classList.replace("collapsed", "expanded");
-    section.renderSubtree = "";
   } else {
     heading.classList.replace("expanded", "collapsed");
     section.classList.replace("expanded", "collapsed");
-    section.renderSubtree = "invisible skip-viewport-activation";
   }
 }
 
@@ -109,14 +114,14 @@ function init() {
       handleEvent(heading, section);
     });
 
-    section.addEventListener("beforeactivate", (e) => {
+    section.addEventListener("rendersubtreeactivation", (e) => {
       handleEvent(heading, section);
     });
   }
 }
 
 onload = () => {
-  if (!renderSubtreeSupported()) {
+  if (!CSS.supports("render-subtree: invisible skip-viewport-activation")) {
     document.getElementById("warning").style.display = "block";
     // How can we detect from CSS that the attribute is not supported?
     document.styleSheets[0].insertRule(".section.collapsed > * { display: none; }", 0);
