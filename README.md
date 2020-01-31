@@ -7,7 +7,7 @@ developers and browsers to easily scale to large amount of content and control
 when rendering [\[1\]](#foot-notes) work happens. More concretely, the goals
 are:
 
-* Avoid loading [\[2\]](#foot-notes) and rendering work for content not visible
+* Avoid rendering work for content not visible
   to the user.
 * Support [user-agent features](https://github.com/WICG/display-locking/blob/master/user-agent-features.md)
   and all layout algorithms (e.g. responsive design, flexbox, grid) for this
@@ -33,15 +33,15 @@ time to render on the same machine.
 
 For these reasons, web developers need ways to reduce loading and rendering time
 of web apps that have a lot of DOM. Two common techniques are to mark
-non-visible DOM as "invisible" [\[3\]](#foot-notes), or to use virtualization
-[\[4\]](#foot-notes). Browser implementors also want to reduce loading and
+non-visible DOM as "invisible" [\[2\]](#foot-notes), or to use virtualization
+[\[3\]](#foot-notes). Browser implementors also want to reduce loading and
 rendering time of web apps. Common techniques to do so include adding caching of
-rendering state [\[5\]](#foot-notes), and avoiding rendering work
-[\[6\]](#foot-notes) for content that is not visible.
+rendering state [\[4\]](#foot-notes), and avoiding rendering work
+[\[5\]](#foot-notes) for content that is not visible.
 
 These techniques can work in many cases but have drawbacks and limitations:
 
-a. [\[3\]](#foot-notes) and [\[4\]](#foot-notes) usually means that such content
+a. [\[2\]](#foot-notes) and [\[3\]](#foot-notes) usually means that such content
    is not available to user-agent features, such as find-in-page functionality.
    Also, content that is merely placed offscreen may or may not have rendering
    cost (it depends on browser heuristics), which makes the technique
@@ -232,19 +232,17 @@ user in the current application view.
 part](https://github.com/chrishtr/rendering/blob/master/rendering-event-loop.md)
 of the browser event loop.
 
-[2]: Examples: fetching images off the network, custom element upgrade callbacks
-
-[3]: Examples: placing `display:none` CSS on DOM subtrees, or by placing content
+[2]: Examples: placing `display:none` CSS on DOM subtrees, or by placing content
 far offscreen via tricks like `margin-left: -10000px`
 
-[4]: In this context, virtualization means representing content outside of the
+[3]: In this context, virtualization means representing content outside of the
 DOM, and inserting it into the DOM only when visible. This is most commonly used
 for virtual or infinite scrollers.
 
-[5]: Examples: caching the computed style of DOM elements, the output of text /
+[4]: Examples: caching the computed style of DOM elements, the output of text /
 block layout, and display list output of paint.
 
-[6]: Examples: detecting elements that are clipped out by ancestors, or not
+[5]: Examples: detecting elements that are clipped out by ancestors, or not
 visible in the viewport, and avoiding some or most rendering [lifecycle
 phases](https://github.com/WICG/display-locking/blob/master/lifecycle.md) for
 such content.
