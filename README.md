@@ -8,7 +8,7 @@ when rendering [\[1\]](#foot-notes) work happens. More concretely, the goals
 are:
 
 * Avoid rendering work for content not visible
-  to the user.
+  to the user
 * Support [user-agent features](https://github.com/WICG/display-locking/blob/master/user-agent-features.md)
   and all layout algorithms (e.g. responsive design, flexbox, grid) for this
   content
