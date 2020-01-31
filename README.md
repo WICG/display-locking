@@ -114,7 +114,7 @@ Three new features are proposed:
   configuration (i.e. the user-agent decides to render the element), then
   `contain: layout style;` applies to the element.
 
-2. A new `contain-intrinsic-size` CSS property (spec draf to be added soon). This
+2. A new `contain-intrinsic-size` CSS property (spec draft to be added soon). This
   sizing property dictacts how much space should be reserved for the subtree
   when it is not rendered. More specifically, it is an intrinsic size to apply
   when `contain: size` style applies to the element. For more details, please
