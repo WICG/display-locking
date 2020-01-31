@@ -27,12 +27,13 @@ The following use-cases motivate this work:
 On the one hand, faster web page loads and interactions directly improve the
 user experience of the web. On the other hand, web sites each year grow larger
 and more complex than the last, in part because they support more and more use
-cases, and contain more information. This leads to pages with a lot of DOM, and
-since the DOM presently renders atomically, it inherently takes more and more
-time to render on the same machine.
+cases, and contain more information, and the most common UI pattern for the
+web is scrolling. This leads to pages with a lot of non-visible (offscreen or
+hidden) DOM, and since the DOM presently renders atomically, it inherently
+takes more and more time to render on the same machine.
 
 For these reasons, web developers need ways to reduce loading and rendering time
-of web apps that have a lot of DOM. Two common techniques are to mark
+of web apps that have a lot of non-visible DOM. Two common techniques are to mark
 non-visible DOM as "invisible" [\[2\]](#foot-notes), or to use virtualization
 [\[3\]](#foot-notes). Browser implementors also want to reduce loading and
 rendering time of web apps. Common techniques to do so include adding caching of
