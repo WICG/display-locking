@@ -119,7 +119,7 @@ Three new features are proposed:
   when it is not rendered. More specifically, it is an intrinsic size to apply
   when `contain: size` style applies to the element. For more details, please
   refer to [this
-  explainer](https://github.com/WICG/display-locking/blob/master/explainer-contain-intrinsic-size.md)
+  explainer](https://github.com/WICG/display-locking/blob/master/explainer-contain-intrinsic-size.md).
 
 3. A new event, tentatively named activation event, which is fired when
   find-in-page locates text that becomes the active, or currently selected,
