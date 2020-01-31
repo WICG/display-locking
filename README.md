@@ -20,7 +20,7 @@ The following use-cases motivate this work:
 * Deep links and searchability into pages with hidden content (example: mobile
   Wikipedia; scroll-to-text support for collapsed sections)
 * Scrollers with a large amount of content, without resorting to virtualization
-  (examples: Facebook and Wwitter feeds, CodeMirror documents)
+  (examples: Facebook and Twitter feeds, CodeMirror documents)
 
 ## Motivation & background
 
