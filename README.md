@@ -147,12 +147,13 @@ element moves away from the viewport, it will stop being rendered.
 
 Recall that when not rendered, the property also applies size containment to the
 element. This means that when not rendered, the element will use the specified
-`contain-intrinsic-size` making the element layout as if it had a single block
+`contain-intrinsic-size`, making the element layout as if it had a single block
 child with 100px width and 200px height. This ensures that the element still
 occupies space when not rendered. At the same time, it lets the element size to
-its contents when the subtree is rendered (since size containment no longer
-applies).
-
+its true contents when the subtree is rendered (since size containment no longer
+applies), thus removing the concern that estimates like 100x200 are sometimes
+inaccurate (which would otherwise result in displaying incorrect layout for
+on-screen content).
 
 ```html
 <style>
