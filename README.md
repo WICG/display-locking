@@ -7,7 +7,7 @@ developers and browsers to easily scale to large amount of content and control
 when rendering [\[1\]](#foot-notes) work happens. More concretely, the goals
 are:
 
-* Avoid rendering work for content not visible
+* Avoid rendering and layout measurement work for content not visible
   to the user
 * Support [user-agent features](https://github.com/WICG/display-locking/blob/master/user-agent-features.md)
   and all layout algorithms (e.g. responsive design, flexbox, grid) for this
@@ -15,12 +15,29 @@ are:
 
 The following use-cases motivate this work:
 
-* Fast display of large HTML documents (examples: HTML one-page spec; other long
+a. Fast display of large HTML documents (examples: HTML one-page spec; other long
   documents)
-* Deep links and searchability into pages with hidden content (example: mobile
+b. Deep links and searchability into pages with hidden content (example: mobile
   Wikipedia; scroll-to-text support for collapsed sections)
-* Scrollers with a large amount of content, without resorting to virtualization
+c. Scrollers with a large amount of content, without resorting to virtualization
   (examples: Facebook and Twitter feeds, CodeMirror documents)
+d. Measuring layout for content not visible on screen
+e. Optimizing single-page-app transition performance
+
+## Quick summary
+
+In the below, "invisible to rendering/hit-test" means not drawn or hit-tested, and also having `contain: size`.
+"via event" means that an event is fired, but otherwise the content is not automatically rendered.
+
+| CSS property                                        | Use-cases           | Applies `contain: style layout`? | Invisible to rendering/hittest? | Available to UA algorithms? |         
+| `render-subtree: invisible`                         | (a), (c), (e)   | Y | Yes                              | Yes, except when in viewport    | Yes                             |
+| | --------------------------------------------------|---------------------|----------------------------------|---------------------------------|--------------------------------|
+_|
+| `render-subtree: invisible skip-viewport-actvation` | (b), (c), (e)       | Yes                              | Yes                               | Via event                       |
+| ----------------------------------------------------|---------------------|----------------------------------|---------------------------------|--------------------------------|
+| `render-subtree: invisible skip-activation`         | (d), (e)            | Yes                              | Yes                              | No                               |
+| ----------------------------------------------------|---------------------|----------------------------------|---------------------------------|--------------------------------|
+| `contain-intrinsic-size: <length> <length>`         | (a), (c)            | No                               | N/A                              | N/A                            |
 
 ## Motivation & background
 
@@ -85,7 +102,7 @@ please look over the [issues](https://github.com/WICG/display-locking/issues)
 The rest of this document talks about one particular implementation option.
 Whether or not this is the final proposed set of features is yet undecided.
 
-## Summary
+## Description of proposal
 
 Three new features are proposed:
 
@@ -155,6 +172,11 @@ applies), thus removing the concern that estimates like 100x200 are sometimes
 inaccurate (which would otherwise result in displaying incorrect layout for
 on-screen content).
 
+One intended use-case for this configuration is to make it easy for developers to
+avoid rendering work for off-screen content.
+
+A second use-case is to support simple scroll virtualization.
+
 ```html
 <style>
 .locked {
@@ -171,7 +193,12 @@ on-screen content).
 In this case, the rendering of the subtree is managed by the developer only.
 This means that if script does not modify the value, the element's subtree will
 remain unrendered, and it will use the `contain-intrinsic-size` input when
-deciding how to size the element.
+deciding how to size the element. However, the developer can still call methods such
+as `getBoundingClientRect()` to query and measure layout for the invisible content.
+
+One intended use-case for this mode are measuring layout geomery for content not displayed.
+
+A second use-case is preserving rendering state for [single-page app](https://en.wikipedia.org/wiki/Single-page_application) content that is not currently visible to the user, but may be displayed again soon via user interaction.
 
 ```html
 <style>
@@ -189,7 +216,7 @@ Similar to above, the render of the subtree is managed by the developer.
 However, it allows find-in-page to search for text within the subtree and fire
 the activation signal if the active match is found. 
 
-The intended effect of this configuration is that the subtree is hidden and
+One intended use-case for this configuration is that the subtree is hidden and
 "collapsed" (note the absense of `contain-intrinsic-size` which makes size
 containment use empty size for intrinsic sizing). This is common when content is
 paginated and the developer allows the user to expand certain sections with
@@ -198,7 +225,7 @@ activation event and start rendering the subtree when the event targets the
 element in the subtree. This means that find-in-page is able to expand an
 otherwise collapsed section when it finds a match.
 
-
+Another intended use-case is a developer-managed virtual scroller.
 
 ## Alternatives considered
 
