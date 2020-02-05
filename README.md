@@ -15,43 +15,40 @@ are:
 
 The following use-cases motivate this work:
 
-a. Fast display of large HTML documents (examples: HTML one-page spec; other long
+1. Fast display of large HTML documents (examples: HTML one-page spec; other long
   documents)
-b. Deep links and searchability into pages with hidden content (example: mobile
+2. Deep links and searchability into pages with hidden content (example: mobile
   Wikipedia; scroll-to-text support for collapsed sections)
-c. Scrollers with a large amount of content, without resorting to virtualization
+3. Scrollers with a large amount of content, without resorting to virtualization
   (examples: Facebook and Twitter feeds, CodeMirror documents)
-d. Measuring layout for content not visible on screen
-e. Optimizing single-page-app transition performance
+4. Measuring layout for content not visible on screen
+5. Optimizing single-page-app transition performance
 
 ## Quick summary
-
-| abc | def |
-|-----|-----|
 
 In the below, "invisible to rendering/hit-test" means not drawn or hit-tested, and also having `contain: size`.
 "via event" means that an event is fired, but otherwise the content is not automatically rendered. "visible to UA algorithms" means that find-in-page, link navigation, etc can find the element.
 
 `render-subtree: invisible` - avoid rendering cost when offscreen
-* Use cases: (a), (c), (e)
+* Use cases: (1), (3), (5)
 * Applies `contain: style layout`, plus `contain: size` when invsible
-* Invisible to user/ht testing, except when subtree intersects viewport
+* Invisible to rendering/ht testing, except when subtree intersects viewport
 * Visible to UA agorithms
 
 `render-subtree: skip-viewport-activation` -allow developer to control toggles between invisible/not-invisible states
-* Use cases: (b), (c), (e)
+* Use cases: (2), (3), (5)
 * Applies `contain: style layout size`
-* Invisible to user/hit testing
+* Invisible to rendering/hit testing
 * Visible to UA agorithms. UA fires event when matched, but not automatically displayed.
 
 `render-subtree: skip-activation` - hide content, but preserve cached state and still support style/layout measurement APIs
-* Use cases: (d), (e)
+* Use cases: (4), (5)
 * Applies `contain: style layout size`
-* Invisible to user/hit testing
+* Invisible to rendering/hit testing
 * Not visible to UA algorithms
 
 `contain-intrinsic-size: <length> <length>` - placeholder sizing while invisible
-* Use cases: (a), (c)
+* Use cases: (1), (3)
 
 ## Motivation & background
 
