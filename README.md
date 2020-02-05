@@ -247,7 +247,8 @@ Additionally, the cost of hiding and showing content cannot be eliminated since
 
 `visibility: hidden` causes subtrees to not paint, but they still need style and
 layout, as the subtree takes up layout space and descendants may be `visibility:
-visible`. Second, there is no mechanism for user-agent features to cause
+visible`. (It's also possible for descendants to override visibility, creating
+another complication. Second, there is no mechanism for user-agent features to cause
 subtrees to render. Note that with sufficient containment and intersection
 observer, the functionality provided by `render-subtree` may be mimicked with
 some exceptions: find-in-page functionality does not work in unrendered content;
