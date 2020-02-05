@@ -39,7 +39,7 @@ In the below, "invisible to rendering/hit-test" means not drawn or hit-tested, a
 * Use cases: (2), (3), (5)
 * Applies `contain: style layout size`
 * Invisible to rendering/hit testing
-* Visible to UA agorithms. UA fires event when matched, but not automatically displayed.
+* Visible to UA agorithms. UA fires event when matched, but not automatically displayed
 
 `render-subtree: skip-activation` - hide content, but preserve cached state and still support style/layout measurement APIs
 * Use cases: (4), (5)
