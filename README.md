@@ -48,7 +48,7 @@ In the below, "invisible to rendering/hit-test" means not drawn or hit-tested, a
 * Not visible to UA algorithms
 
 `contain-intrinsic-size: <length> <length>` - placeholder sizing while invisible
-* Use cases: (1), (3)
+* Use cases: (1), (3), (5)
 
 ## Motivation & background
 
