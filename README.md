@@ -26,16 +26,29 @@ e. Optimizing single-page-app transition performance
 
 ## Quick summary
 
+| abc | def |
+|-----|-----|
+
 In the below, "invisible to rendering/hit-test" means not drawn or hit-tested, and also having `contain: size`.
 "via event" means that an event is fired, but otherwise the content is not automatically rendered.
 
-| CSS property                                        | Use-cases           | Applies `contain: style layout`? | Invisible to rendering/hittest? | Available to UA algorithms? |         
-| `render-subtree: invisible`                         | (a), (c), (e)   | Y | Yes                              | Yes, except when in viewport    | Yes                             |
-| | --------------------------------------------------|---------------------|----------------------------------|---------------------------------|--------------------------------|
-_|
-| `render-subtree: invisible skip-viewport-actvation` | (b), (c), (e)       | Yes                              | Yes                               | Via event                       |
+`render-subtree: invisible`
+* Use cases: (a), (c), (e)
+* Applies `contain: style layout`
+* Invisible to rendering/test, except when subtree intersects viewport
+* Visible to UA agorithms
+
+
+| CSS property                                        | Use-cases           | Applies `contain: style layout`? | Invisible to rendering/hittest? | Available to UA algorithms?    |
+
 | ----------------------------------------------------|---------------------|----------------------------------|---------------------------------|--------------------------------|
-| `render-subtree: invisible skip-activation`         | (d), (e)            | Yes                              | Yes                              | No                               |
+
+| `render-subtree: invisible`                         | (a), (c), (e)   | Y | Yes                              | Yes, except when in viewport   | Yes                            |
+
+
+| `render-subtree: invisible skip-viewport-actvation` | (b), (c), (e)       | Yes                              | Yes                              | Via event                      |
+| ----------------------------------------------------|---------------------|----------------------------------|---------------------------------|--------------------------------|
+| `render-subtree: invisible skip-activation`         | (d), (e)            | Yes                              | Yes                              | No                             |
 | ----------------------------------------------------|---------------------|----------------------------------|---------------------------------|--------------------------------|
 | `contain-intrinsic-size: <length> <length>`         | (a), (c)            | No                               | N/A                              | N/A                            |
 
