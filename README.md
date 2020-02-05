@@ -30,27 +30,28 @@ e. Optimizing single-page-app transition performance
 |-----|-----|
 
 In the below, "invisible to rendering/hit-test" means not drawn or hit-tested, and also having `contain: size`.
-"via event" means that an event is fired, but otherwise the content is not automatically rendered.
+"via event" means that an event is fired, but otherwise the content is not automatically rendered. "visible to UA algorithms" means that find-in-page, link navigation, etc can find the element.
 
-`render-subtree: invisible`
+`render-subtree: invisible` - avoid rendering cost when offscreen
 * Use cases: (a), (c), (e)
-* Applies `contain: style layout`
-* Invisible to rendering/test, except when subtree intersects viewport
+* Applies `contain: style layout`, plus `contain: size` when invsible
+* Invisible to user/ht testing, except when subtree intersects viewport
 * Visible to UA agorithms
 
+`render-subtree: skip-viewport-activation` -allow developer to control toggles between invisible/not-invisible states
+* Use cases: (b), (c), (e)
+* Applies `contain: style layout size`
+* Invisible to user/hit testing
+* Visible to UA agorithms. UA fires event when matched, but not automatically displayed.
 
-| CSS property                                        | Use-cases           | Applies `contain: style layout`? | Invisible to rendering/hittest? | Available to UA algorithms?    |
+`render-subtree: skip-activation` - hide content, but preserve cached state and still support style/layout measurement APIs
+* Use cases: (d), (e)
+* Applies `contain: style layout size`
+* Invisible to user/hit testing
+* Not visible to UA algorithms
 
-| ----------------------------------------------------|---------------------|----------------------------------|---------------------------------|--------------------------------|
-
-| `render-subtree: invisible`                         | (a), (c), (e)   | Y | Yes                              | Yes, except when in viewport   | Yes                            |
-
-
-| `render-subtree: invisible skip-viewport-actvation` | (b), (c), (e)       | Yes                              | Yes                              | Via event                      |
-| ----------------------------------------------------|---------------------|----------------------------------|---------------------------------|--------------------------------|
-| `render-subtree: invisible skip-activation`         | (d), (e)            | Yes                              | Yes                              | No                             |
-| ----------------------------------------------------|---------------------|----------------------------------|---------------------------------|--------------------------------|
-| `contain-intrinsic-size: <length> <length>`         | (a), (c)            | No                               | N/A                              | N/A                            |
+`contain-intrinsic-size: <length> <length>` - placeholder sizing while invisible
+* Use cases: (a), (c)
 
 ## Motivation & background
 
