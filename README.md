@@ -26,20 +26,20 @@ The following use-cases motivate this work:
 
 ## Quick summary
 
-In the below, "invisible to rendering/hit-test" means not drawn or hit-tested, and also having `contain: size`.
-"via event" means that an event is fired, but otherwise the content is not automatically rendered. "visible to UA algorithms" means that find-in-page, link navigation, etc can find the element.
+In the below, "invisible to rendering/hit testing" means not drawn or returned from any hit-testing algorithms;
+"visible to UA algorithms" means that find-in-page, link navigation, etc can find the element.
 
 `render-subtree: invisible` - avoid rendering cost when offscreen
 * Use cases: (1), (3), (5)
-* Applies `contain: style layout`, plus `contain: size` when invsible
-* Invisible to rendering/ht testing, except when subtree intersects viewport
-* Visible to UA agorithms
+* Applies `contain: style layout`, plus `contain: size` when invisible
+* Invisible to rendering/hit testing, except when subtree intersects viewport
+* Visible to UA algorithms
 
 `render-subtree: skip-viewport-activation` -allow developer to control toggles between invisible/not-invisible states
 * Use cases: (2), (3), (5)
 * Applies `contain: style layout size`
 * Invisible to rendering/hit testing
-* Visible to UA agorithms. UA fires event when matched, but not automatically displayed
+* Visible to UA algorithms. UA fires event when matched, but not automatically displayed
 
 `render-subtree: skip-activation` - hide content, but preserve cached state and still support style/layout measurement APIs
 * Use cases: (4), (5)
