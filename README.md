@@ -26,8 +26,9 @@ The following use-cases motivate this work:
 
 ## Quick summary
 
-In the below, "invisible to rendering/hit testing" means not drawn or returned from any hit-testing algorithms;
-"visible to UA algorithms" means that find-in-page, link navigation, etc can find the element.
+In the below, "invisible to rendering/hit testing" means not drawn or returned from any hit-testing algorithms. "not drawn" is in the same sense as `visibility: hidden`, where the content still conceptually has layout sizes, but is invisible to the user.
+
+Also, "visible to UA algorithms" means that find-in-page, link navigation, etc can find the element.
 
 `render-subtree: invisible` - avoid rendering cost when offscreen
 * Use cases: (1), (3), (5)
@@ -118,15 +119,16 @@ Whether or not this is the final proposed set of features is yet undecided.
 Three new features are proposed:
 
 1. A new `render-subtree` CSS property (spec draft to be added soon).
-  This property controls whether DOM subtrees affected by the property do or do
-  not render, and is the mechanism by which rendering work can be avoided. Some
-  values of `render-subtree` allow the user-agent to automatically manage
-  whether subtrees affected are rendered or not. Other values give the developer
-  complete control of subtree rendering. Note that the names of the tokens are
-  being [discussed](https://github.com/WICG/display-locking/issues/110).
+  This property controls whether DOM subtrees affected by the property are are are
+  not "invisible to rendering/hit testing" (in the same sense as `visibility: hidden`,
+  and is the mechanism by which rendering
+  work can be avoided. Some values of `render-subtree` allow the user-agent to
+  automatically manage whether subtrees affected are rendered or not. Other values
+  give the developer complete control of subtree rendering. Note that the names of the
+  tokens are being [discussed](https://github.com/WICG/display-locking/issues/110).
   However, the brief description of the tokens is below:
     * `render-subtree: invisible`: this configuration allows the user-agent to
-      automatically manage whether content is rendered or not.
+      automatically manage whether content is invisible to rendering/hit testing or not.
     * `render-subtree: invisible skip-activation`: this configuration gives the
       developer complete control of when the subtree is rendered. Neither the
       user-agent nor its features should need to process or render the subtree.
