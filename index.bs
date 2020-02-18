@@ -1,195 +1,134 @@
 <pre class='metadata'>
-Title: CSS Display Locking
-Shortname: css-display-locking
+Title: CSS Render Subtree
+Shortname: css-render-subtree
 Level: 1
 Status: UD
 Group: csswg
 Work Status: exploring
-URL: https://tabatkins.github.io/specs/css-display-locking
+URL: https://wicg.github.io/display-locking
 Editor: Tab Atkins-Bittner, Google
-Abstract: This spec introduces features for "display locking",
-	allowing authors to more easily control when rendering work occurs,
-	making large amounts of content more performant.
+Editor: Vladimir Levin, Google
+Abstract: This spec introduces features for "display locking", allowing authors
+          to provide rendering performance hints to the user-agent. The user-agent can
+          use the hints to optimize rendering performance, making interactions with large
+          amounts of content perform well.
 </pre>
 
 Introduction {#intro}
 =====================
 
-Render Subtree (a.k.a. Display Locking) is a CSS property
-designed to allow developers and browsers to easily scale to large amount of content
-and control when rendering <a href=#f1>[1]</a> work happens.
-More concretely, the goals are:
+Render Subtree (a.k.a. Display Locking) is a CSS property designed to allow
+developers and browsers to easily scale to large amount of content and provide
+strong hints which allow the user-agent to delay rendering <a href=#f1>[1]</a>
+work.  More concretely, the goals are:
 
-* Avoid rendering work for content not visible to the user
-* Support user-agent features and all layout algorithms
-	(e.g. responsive design, flexbox, grid)
-	for this content
+* Avoid rendering work for content not visible to the user Support user-agent
+* features and all layout algorithms (e.g. responsive design, flexbox, grid)
+    for this content
 
-The following use-cases motivate this work:
+Optimizing behavior and performance of the following use-cases motivate this work:
 
-* Fast display of large HTML documents
-	(examples: HTML one-page spec;
-	other long documents)
-* Deep links and searchability into pages with hidden content
-	(example: mobile Wikipedia;
-	scroll-to-text support for collapsed sections)
-* Scrollers with a large amount of content,
-	without resorting to virtualization
-	(examples: Facebook and Twitter feeds,
-	CodeMirror documents)
+* Fast display of large HTML documents (examples: HTML one-page spec; other
+    long documents)
+* Deep links and searchability into pages with hidden content (example: mobile
+    Wikipedia; scroll-to-text support for collapsed sections)
+* Scrollers with a large amount of content, without resorting to virtualization
+    (examples: Facebook and Twitter feeds, CodeMirror documents)
 
 Motivation & Background {#motivation}
 -----------------------
 
-On the one hand, faster web page loads and interactions
-directly improve the user experience of the web.
-On the other hand,
-web sites each year grow larger and more complex than the last,
-in part because they support more and more use cases,
-and contain more information,
-and the most common UI pattern for the web is scrolling.
-This leads to pages with a lot of non-visible (offscreen or hidden) DOM,
-and since the DOM presently renders atomically,
-it inherently takes more and more time to render on the same machine.
+On the one hand, faster web page loads and interactions directly improve the
+user experience of the web. On the other hand, web sites each year grow larger
+and more complex than the last, in part because they support more and more use
+cases, and contain more information. The most common UI pattern for the web is
+scrolling, which leads to pages with a lot of non-visible (off-screen or hidden)
+DOM. Since the DOM presently renders atomically, it inherently takes more and
+more time to render on the same machine.
 
-For these reasons, web developers need ways
-to reduce loading and rendering time of web apps that have a lot of non-visible DOM.
-Two common techniques are to mark non-visible DOM as "invisible" <a href=#f2>[2]</a>,
-or to use virtualization <a href=#f3>[3]</a>.
-Browser implementors also want to reduce loading and rendering time of web apps.
-Common techniques to do so include adding caching of rendering state <a href=#f4>[4]</a>,
-and avoiding rendering work <a href=#f5>[5]</a> for content that is not visible.
+Web developers are in a good position to know whether rendering a particular
+subtree that is off-screen is needed for the visual representation of their
+page. Specifically, if the layout of an off-screen box and its subtree has a
+visible and necessary effect on screen then such rendering is required.
+Otherwise, it is not. Since web developers are in a good position to have this
+information, they can provide the user-agent strong hints indicating that
+rendering for a given subtree is not required in certain cases.
+
+Traditionally, two techniques of providing this information to the user-agent
+are to mark non-visible DOM as "invisible" <a href=#f2>[2]</a>, or to use
+virtualization <a href=#f3>[3]</a>. Browser implementors also want to reduce
+loading and rendering time of web apps. Common techniques to do so include
+adding caching of rendering state <a href=#f4>[4]</a>, and avoiding rendering
+work <a href=#f5>[5]</a> for content that is not visible.
 
 These techniques can work in many cases but have drawbacks and limitations:
 
-* <a href=#f2>[2]</a> and <a href=#f3>[3]</a> usually means that such content is not available to user-agent features,
-	such as find-in-page functionality.
-	Also, content that is merely placed offscreen
-	may or may not have rendering cost
-	(it depends on browser heuristics),
-	which makes the technique unreliable.
+* <a href=#f2>[2]</a> and <a href=#f3>[3]</a> usually means that such content
+    is not available to user-agent features, such as find-in-page functionality.
+    Also, content that is merely placed off-screen may or may not have rendering
+    cost (it depends on browser heuristics), which makes the technique
+    unreliable.
 
-* Caching intermediate rendering state is hard work,
-	and often has performance limitations and cliffs
-	that are not obvious to developers.
-	Similarly, relying on the browser to avoid rendering
-	for content that is clipped out or not visible
-	is sometimes not reliable,
-	as it's hard for the browser to efficiently detect what content is not visible
-	and does not affect visible content in any way.
+* Caching intermediate rendering state is hard work, and often has performance
+    limitations and cliffs that are not obvious to developers.  Similarly,
+    relying on the browser to avoid rendering for content that is clipped out or
+    not visible is sometimes not reliable, as it's hard for the browser to
+    efficiently detect what content is not visible and does not affect visible
+    content in any way.
 
-Previously adopted web APIs,
-in particular the 'contain' and 'will-change' CSS properties,
-add ways to specify forms of rendering isolation or isolation hints,
-with the intention of them being a mechanism for the web developer
-to help the browser optimize rendering for the page.
+Previously adopted web APIs, in particular the 'contain' and 'will-change' CSS
+properties, add ways to specify forms of rendering isolation or isolation
+hints, with the intention of them being a mechanism for the web developer to
+help the browser optimize rendering for the page.
 
-While these forms of isolation help,
-they do not guarantee that isolated content does not need to be rendered at all.
-Ideally there would be a way for the developer to specify
-that specific parts of the DOM need not be rendered,
-and pair that with a guarantee that when later rendered,
-it would not invalidate more than a small amount of style, layout, or paint
-in the rest of the document.
+While these forms of isolation help, they do not guarantee that isolated
+content does not need to be rendered at all.  Ideally there would be a way for
+the developer to specify that specific parts of the DOM need not be rendered,
+and pair that with a guarantee that when later rendered, it would not
+invalidate more than a small amount of style, layout, or paint in the rest of
+the document.
 
-Disclaimer {#disclaimer}
-----------
-
-As the proposed features evolve,
-several competing API shapes might be considered at the same time,
-the decisions on particular behaviors might not be finalized,
-and some documentation may be out of date.
-
-For the latest implemented behavior and API state,
-please consult the cheatsheet.
-
-For behaviors being discussed,
-as well as questions and other discussions,
-please look over the issues.
-
-The rest of this document talks about one particular implementation option.
-Whether or not this is the final proposed set of features is yet undecided.
-
-
-Controlling Rendering Of A Subtree {#controlling-rendering}
-==================================
-
-Preventing Rendering: the 'render-subtree' property {#render-subtree}
----------------------------------------------------
+Rendering Hints: the 'render-subtree' property {#render-subtree}
+==============================================
 
 <pre class=propdef>
 Name: render-subtree
-Value: normal | visible | invisible && [ skip-activation | skip-viewport-activation ]?
+Value: normal | hidden && frozen?
 Initial: normal
 Inherited: no
 </pre>
 
-<dfn export>invisibly rendered</dfn>
-(unsure if this term is needed,
-it just seemed useful for 'contain-intrinsic-size'’s intro)
+<dl dfn-type value dfn-for=render-subtree>
+    : <dfn export>normal</dfn>
+    :: No effect; The element and its subtree are rendered as usual. This
+          provides no extra information or hints to the user-agent.
 
+    : <dfn export>hidden</dfn>
+    :: The element has [=layout containment=] and [=style containment=] applied
+         in addition to any existing containment values.
 
-Default Sizing: the 'contain-intrinsic-size' property {#contain-intrinsic-size}
------------------------------------------------------
+         Additionally, if the element is <dfn export>off-screen</dfn>, in the
+         sense that it is not intersecting the viewport (with a reasonable
+         user-agent specified margin), then element has [=size containment=]
+         applied in addition to any existing containment values and the
+         element's subtree is not painted or hit-tested. 
 
-<pre class=propdef>
-Name: contain-intrinsic-size
-Value: none | <<length>>{1,2}
-Initial: none
-Inherited: no
-Applies to: elements with [=size containment=]
-</pre>
+    : <dfn export>hidden frozen</dfn>
+    :: The element has [=layout containment=], [=style containment=], and
+         [=size containment=] applied in addition to any existing containment
+         values. Furthermore, the element's subtree is not painted or hit-tested.
 
-When an element is [=invisibly rendered=],
-one of the side-effects is that it automatically receives [=size containment=].
-This causes the element to lay out as if it was empty,
-meaning that the author would have to provide an explicit size
-if they wanted the element to take up space on the page
-while it was invisible
-(to reduce the amount of relayout when it is finally rendered,
-ensure scrollbars show a reasonable offset,
-etc).
-
-However, providing an explicit 'width' and 'height' has side effects:
-layout algorithms treat it as a strong signal about what size the element should be
-(overriding things like ''place-self: stretch''),
-and when the element is made visible again,
-the explicit 'width'/'height' has to be removed
-for the element to lay out at its natural content size again.
-
-To avoid these issues,
-but still provide a reasonable default layout size for elements with [=size containment=],
-the 'contain-intrinsic-size' property overrides the normal methods
-of determining an element's [=intrinsic sizes=].
-Values are defined as:
-
-<dl dfn-type=value dfn-for=contain-intrinsic-size>
-	: <dfn>none</dfn>
-	:: No effect;
-		the element is sized as usual.
-
-	: <<length>>{1,2}
-	::
-		If the element is not under [=size containment=],
-		this value has no effect.
-
-		Otherwise,
-		the first <<length>> specifies the [=min-content block size=] and [=max-content block size=]
-		of the element's [=principal box=],
-		and the second specifies the [=min-content inline size=] and [=max-content inline size=]
-		of the element’s [=principal box=].
-
-		If one <<length>> is provided,
-		the second defaults to the same <<length>>.
+    : more
+    :: Note that the token values are designed to be extensible. In other
+         words, it is possible for new values to be added if new effects are
+         desired.
 </dl>
 
-See also the <a href="https://github.com/WICG/display-locking/blob/master/explainer-contain-intrinsic-size.md">explainer for this property</a>
-for more information on why it exists.
-
-Issue: TODO provide example of using this with render-subtree
-
-Issue: TODO provide example of using this for async-loaded content to avoid major layout shifts
-
+Note that in situations where 'render-subtree' values cause the element's
+subtree not to be painted or hit-tested, the user-agent should avoid as much
+rendering work as possible. As an example, because of the containment applied,
+in most cases it should be possible to skip determining layout box sizes and
+positions unless explicitly requested by script.
 
 Examples {#examples}
 ========
@@ -197,121 +136,80 @@ Examples {#examples}
 <div class=example>
 	<xmp highlight=markup>
 		<style>
-		.locked {
-		  render-subtree: invisible;
-		  contain-intrinsic-size: 100px 200px;
+		.rs {
+		  render-subtree: hidden;
+      min-height: 50px;
 		}
 		</style>
 
-		<div class=locked>
+		<div class=rs>
 		  ... some content goes here ...
 		</div>
 	</xmp>
 
-	The .locked element's 'render-subtree' configuration
-	lets the user-agent manage rendering the subtree of the element.
-	Specifically when this element is near the viewport,
-	the user-agent will begin rendering the element.
-	When the element moves away from the viewport,
-	it will stop being rendered.
-
-	Recall that when not rendered,
-	the property also applies [=size containment=] to the element.
-	This means that when not rendered,
-	the element will use the specified 'contain-intrinsic-size',
-	making the element layout as if it had a single block child with 100px width and 200px height.
-	This ensures that the element still occupies space when not rendered.
-	At the same time,
-	it lets the element size to its true contents when the subtree is rendered
-	(since [=size containment=] no longer applies),
-	thus removing the concern that estimates like 100x200 are sometimes inaccurate
-	(which would otherwise result in displaying incorrect layout for on-screen content).
+  The .rs element's 'render-subtree' value [=hidden=] lets the user-agent manage
+  whether to paint and hit-test the element's subtree.  Specifically when this
+  element is near the viewport, the user-agent will begin painting the element.
+  When the element moves away from the viewport, it will stop being painted. In
+  addition, the user-agent should skip as much of the rendering work as
+  possible when the element is not painted or hit-tested.
 </div>
 
 <div class=example>
 	<xmp highlight=markup>
 		<style>
-		.locked {
-		  render-subtree: invisible skip-activation;
-		  contain-intrinsic-size: 100px 200px;
+		.rs {
+		  render-subtree: hidden frozen;
 		}
 		</style>
 
-		<div class=locked>
+		<div class=rs>
 		  ... some content goes here ...
 		</div>
 	</xmp>
 
-	In this case, the rendering of the subtree is managed by the developer only.
-	This means that if script does not modify the value,
-	the element's subtree will remain unrendered,
-	and it will use the 'contain-intrinsic-size' input when deciding how to size the element.
+  In this case, the element's subtree is not painted or hit-tested regardless
+  of viewport intersection. This means that the only way to have this subtree
+  painted is via script updating the value to remove render-subtree or change
+  its value. As before, the user-agent should skip as much of the rendering in
+  the subtree as possible. An additional effect of skipping rendering is that
+  the layout state of the subtree can be preserved, so that removing the
+  'render-subtree' property in the future will cause the subtree to be rendered
+  quicker than otherwise possible.
+
 </div>
-
-<div class=example>
-	<xmp highlight=markup>
-		<style>
-		.locked {
-		  render-subtree: invisible skip-viewport-activation;
-		}
-		</style>
-
-		<div class=locked>
-		  ... some content goes here ...
-		</div>
-	</xmp>
-
-	Similar to above, the render of the subtree is managed by the developer.
-	However, it allows find-in-page to search for text within the subtree
-	and fire the activation signal if the active match is found.
-
-	The intended effect of this configuration
-	is that the subtree is hidden and "collapsed"
-	(note the absense of 'contain-intrinsic-size'
-	which means that [=size containment=] will cause the element to act as if it's empty).
-	This is common when content is paginated
-	and the developer allows the user to expand certain sections with button clicks.
-	In the 'render-subtree' case the developer may also listen to the activation event
-	and start rendering the subtree when the event targets the element in the subtree.
-	This means that find-in-page is able to expand an otherwise collapsed section
-	when it finds a match.
-</div>
-
 
 Alternatives Considered {#alternatives}
 =======================
 
 The ''display: none'' CSS property causes content subtrees not to render.
-However, there is no mechanism for user-agent features to cause these subtrees to render.
-Additionally, the cost of hiding and showing content cannot be eliminated
-since ''display: none'' does not preserve the layout state of the subtree.
+However, there is no mechanism for user-agent features to cause these subtrees
+to render.  Additionally, the cost of hiding and showing content cannot be
+eliminated since ''display: none'' does not preserve the layout state of the
+subtree.
 
-''visibility: hidden'' causes subtrees to not paint,
-but they still need style and layout,
-as the subtree takes up layout space
-and descendants may be ''visibility: visible''.
-Second, there is no mechanism for user-agent features to cause subtrees to render.
-Note that with sufficient containment and intersection observer,
-the functionality provided by 'render-subtree' may be mimicked with some exceptions:
-find-in-page functionality does not work in unrendered content;
-this relies on more browser heuristics to ensure contained invisible content is cheap--
-'render-subtree' is a stronger signal to the user-agent that work should be skipped.
+''visibility: hidden'' causes subtrees to not paint, but they still need style
+and layout, as the subtree takes up layout space and descendants may be
+''visibility: visible''.  Second, there is no mechanism for user-agent features
+to cause subtrees to render.  Note that with sufficient containment and
+intersection observer, the functionality provided by 'render-subtree' may be
+mimicked. Some planned extensions to this property are still not possible: for
+instance, one possibility is to have the non-painted subtree still be processed
+by user-agent find-in-page algorithms; this would not be possible with
+visibility: hidden. Overall, 'render-subtree' property is a stronger signal
+allowing the user-agent to optimize rendering.
 
-Similar to ''visibility: hidden'',
-''contain: strict'' allows the browser
-to automatically detect subtrees that are definitely offscreen,
-and therefore that don't need to be rendered.
-However, ''contain: strict'' is not flexible enough
-to allow for responsive design layouts
-that grow elements to fit their content.
-To work around this,
-content could be marked as ''contain: strict'' when offscreen
-and then some other value when on-screen
-(this is similar to 'render-subtree').
-Second, ''contain: strict'' may or may not result in rendering work,
-depending on whether the browser detects the content is actually offscreen.
-Third, it does not support user-agent features
-in cases when it is not actually rendered to the user in the current application view.
+Similar to ''visibility: hidden'', ''contain: strict'' allows the browser to
+automatically detect subtrees that are definitely off-screen, and therefore
+that don't need to be rendered.  However, ''contain: strict'' on its own is not
+flexible enough to allow for responsive design layouts that grow elements to
+fit their content.  To work around this, content could be marked as ''contain:
+strict'' when off-screen and then some other value when on-screen (this is
+similar to 'render-subtree').  Second, ''contain: strict'' may or may not
+result in rendering work, depending on whether the browser detects the content
+is actually off-screen.  Third, it does not support user-agent features in
+cases when it is not actually rendered to the user in the current application
+view.
 
 
 Privacy & Security Considerations {#priv-sec}
@@ -327,7 +225,7 @@ Footnotes {#footnotes}
 
 <p id=f2>[2]: Examples:
 placing ''display:none'' CSS on DOM subtrees,
-or by placing content far offscreen via tricks like ''margin-left: -10000px''
+or by placing content far off-screen via tricks like ''margin-left: -10000px''
 
 <p id=f3>[3]: In this context,
 virtualization means representing content outside of the DOM,

@@ -1,17 +1,17 @@
 <!doctype html><html lang="en">
  <head>
   <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-  <title>CSS Display Locking</title>
+  <title>CSS Render Subtree</title>
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
   <meta content="exploring" name="csswg-work-status">
   <meta content="UD" name="w3c-status">
-  <meta content="This spec introduces features for &quot;display locking&quot;,  	allowing authors to more easily control when rendering work occurs,  	making large amounts of content more performant." name="abstract">
+  <meta content="This spec introduces features for &quot;display locking&quot;, allowing authors            to provide rendering performance hints to the user-agent. The user-agent can            use the hints to optimize rendering performance, making interactions with large            amounts of content perform well." name="abstract">
   <link href="../default.css" rel="stylesheet" type="text/css">
   <link href="../csslogo.ico" rel="shortcut icon" type="image/x-icon">
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-UD" rel="stylesheet" type="text/css">
-  <meta content="Bikeshed version 8bc2fccb49a45a0af18c5e75ce18049d75f824b6" name="generator">
-  <link href="https://tabatkins.github.io/specs/css-display-locking" rel="canonical">
-  <meta content="7ba6674f8c64ec757433bee7cc1ab70d201cdbc2" name="document-revision">
+  <meta content="Bikeshed version b43aa594f5014ff14748da1aace9afaa73d2b3e6" name="generator">
+  <link href="https://wicg.github.io/display-locking" rel="canonical">
+  <meta content="39a959884ddc218b9c03706f57c93cb76ab375c8" name="document-revision">
 <style>/* style-md-lists */
 
 /* This is a weird hack for me not yet following the commonmark spec
@@ -257,19 +257,19 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
  <body class="h-entry">
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
-   <h1 class="p-name no-ref" id="title">CSS Display Locking</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Unofficial Proposal Draft, <time class="dt-updated" datetime="2020-01-31">31 January 2020</time></span></h2>
+   <h1 class="p-name no-ref" id="title">CSS Render Subtree</h1>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Unofficial Proposal Draft, <time class="dt-updated" datetime="2020-02-18">18 February 2020</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
-     <dd><a class="u-url" href="https://tabatkins.github.io/specs/css-display-locking">https://tabatkins.github.io/specs/css-display-locking</a>
-     <dt>Issue Tracking:
-     <dd><a href="#issues-index">Inline In Spec</a>
-     <dd><a href="https://github.com/w3c/csswg-drafts/labels/css-display-locking-1">GitHub Issues</a>
-     <dt class="editor">Editor:
+     <dd><a class="u-url" href="https://wicg.github.io/display-locking">https://wicg.github.io/display-locking</a>
+     <dt class="editor">Editors:
      <dd class="editor p-author h-card vcard"><span class="p-name fn">Tab Atkins-Bittner</span> (<span class="p-org org">Google</span>)
+     <dd class="editor p-author h-card vcard"><span class="p-name fn">Vladimir Levin</span> (<span class="p-org org">Google</span>)
      <dt>Suggest an Edit for this Spec:
-     <dd><a href="https://github.com/w3c/csswg-drafts/blob/master/css-display-locking-1/Overview.bs">GitHub Editor</a>
+     <dd><a href="https://github.com/w3c/csswg-drafts/blob/master/css-render-subtree-1/Overview.bs">GitHub Editor</a>
+     <dt>Issue Tracking:
+     <dd><a href="https://github.com/w3c/csswg-drafts/labels/css-render-subtree-1">GitHub Issues</a>
     </dl>
    </div>
    <div data-fill-with="warning"></div>
@@ -278,10 +278,11 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   </div>
   <div class="p-summary" data-fill-with="abstract">
    <h2 class="no-num no-toc no-ref heading settled" id="abstract"><span class="content">Abstract</span></h2>
-   <p>This spec introduces features for "display locking",
+   <p>This spec introduces features for "display locking", allowing authors
 
-	allowing authors to more easily control when rendering work occurs,
-	making large amounts of content more performant.</p>
+          to provide rendering performance hints to the user-agent. The user-agent can
+          use the hints to optimize rendering performance, making interactions with large
+          amounts of content perform well.</p>
     <a href="https://www.w3.org/TR/CSS/">CSS</a> is a language for describing the rendering of structured documents
 (such as HTML and XML)
 on screen, on paper, etc. 
@@ -298,14 +299,8 @@ on screen, on paper, etc.
      <a href="#intro"><span class="secno">1</span> <span class="content">Introduction</span></a>
      <ol class="toc">
       <li><a href="#motivation"><span class="secno">1.1</span> <span class="content">Motivation &amp; Background</span></a>
-      <li><a href="#disclaimer"><span class="secno">1.2</span> <span class="content">Disclaimer</span></a>
      </ol>
-    <li>
-     <a href="#controlling-rendering"><span class="secno">2</span> <span class="content">Controlling Rendering Of A Subtree</span></a>
-     <ol class="toc">
-      <li><a href="#render-subtree"><span class="secno">2.1</span> <span class="content">Preventing Rendering: the <span class="property">render-subtree</span> property</span></a>
-      <li><a href="#contain-intrinsic-size"><span class="secno">2.2</span> <span class="content">Default Sizing: the <span class="property">contain-intrinsic-size</span> property</span></a>
-     </ol>
+    <li><a href="#render-subtree"><span class="secno">2</span> <span class="content">Rendering Hints: the <span class="property">render-subtree</span> property</span></a>
     <li><a href="#examples"><span class="secno">3</span> <span class="content">Examples</span></a>
     <li><a href="#alternatives"><span class="secno">4</span> <span class="content">Alternatives Considered</span></a>
     <li><a href="#priv-sec"><span class="secno">5</span> <span class="content">Privacy &amp; Security Considerations</span></a>
@@ -335,102 +330,80 @@ on screen, on paper, etc.
       <li><a href="#normative"><span class="secno"></span> <span class="content">Normative References</span></a>
      </ol>
     <li><a href="#property-index"><span class="secno"></span> <span class="content">Property Index</span></a>
-    <li><a href="#issues-index"><span class="secno"></span> <span class="content">Issues Index</span></a>
    </ol>
   </nav>
   <main>
    <h2 class="heading settled" data-level="1" id="intro"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href="#intro"></a></h2>
-   <p>Render Subtree (a.k.a. Display Locking) is a CSS property
-designed to allow developers and browsers to easily scale to large amount of content
-and control when rendering <a href="#f1">[1]</a> work happens.
-More concretely, the goals are:</p>
+   <p>Render Subtree (a.k.a. Display Locking) is a CSS property designed to allow
+developers and browsers to easily scale to large amount of content and provide
+strong hints which allow the user-agent to delay rendering <a href="#f1">[1]</a> work.  More concretely, the goals are:</p>
    <ul>
     <li data-md>
-     <p>Avoid rendering work for content not visible to the user</p>
+     <p>Avoid rendering work for content not visible to the user Support user-agent</p>
     <li data-md>
-     <p>Support user-agent features and all layout algorithms
-(e.g. responsive design, flexbox, grid)
+     <p>features and all layout algorithms (e.g. responsive design, flexbox, grid)
 for this content</p>
    </ul>
-   <p>The following use-cases motivate this work:</p>
+   <p>Optimizing behavior and performance of the following use-cases motivate this work:</p>
    <ul>
     <li data-md>
-     <p>Fast display of large HTML documents
-(examples: HTML one-page spec;
-other long documents)</p>
+     <p>Fast display of large HTML documents (examples: HTML one-page spec; other
+long documents)</p>
     <li data-md>
-     <p>Deep links and searchability into pages with hidden content
-(example: mobile Wikipedia;
-scroll-to-text support for collapsed sections)</p>
+     <p>Deep links and searchability into pages with hidden content (example: mobile
+Wikipedia; scroll-to-text support for collapsed sections)</p>
     <li data-md>
-     <p>Scrollers with a large amount of content,
-without resorting to virtualization
-(examples: Facebook and Twitter feeds,
-CodeMirror documents)</p>
+     <p>Scrollers with a large amount of content, without resorting to virtualization
+(examples: Facebook and Twitter feeds, CodeMirror documents)</p>
    </ul>
    <h3 class="heading settled" data-level="1.1" id="motivation"><span class="secno">1.1. </span><span class="content">Motivation &amp; Background</span><a class="self-link" href="#motivation"></a></h3>
-   <p>On the one hand, faster web page loads and interactions
-directly improve the user experience of the web.
-On the other hand,
-web sites each year grow larger and more complex than the last,
-in part because they support more and more use cases,
-and contain more information,
-and the most common UI pattern for the web is scrolling.
-This leads to pages with a lot of non-visible (offscreen or hidden) DOM,
-and since the DOM presently renders atomically,
-it inherently takes more and more time to render on the same machine.</p>
-   <p>For these reasons, web developers need ways
-to reduce loading and rendering time of web apps that have a lot of non-visible DOM.
-Two common techniques are to mark non-visible DOM as "invisible" <a href="#f2">[2]</a>,
-or to use virtualization <a href="#f3">[3]</a>.
-Browser implementors also want to reduce loading and rendering time of web apps.
-Common techniques to do so include adding caching of rendering state <a href="#f4">[4]</a>,
-and avoiding rendering work <a href="#f5">[5]</a> for content that is not visible.</p>
+   <p>On the one hand, faster web page loads and interactions directly improve the
+user experience of the web. On the other hand, web sites each year grow larger
+and more complex than the last, in part because they support more and more use
+cases, and contain more information. The most common UI pattern for the web is
+scrolling, which leads to pages with a lot of non-visible (off-screen or hidden)
+DOM. Since the DOM presently renders atomically, it inherently takes more and
+more time to render on the same machine.</p>
+   <p>Web developers are in a good position to know whether rendering a particular
+subtree that is off-screen is needed for the visual representation of their
+page. Specifically, if the layout of an off-screen box and its subtree has a
+visible and necessary effect on screen then such rendering is required.
+Otherwise, it is not. Since web developers are in a good position to have this
+information, they can provide the user-agent strong hints indicating that
+rendering for a given subtree is not required in certain cases.</p>
+   <p>Traditionally, two techniques of providing this information to the user-agent
+are to mark non-visible DOM as "invisible" <a href="#f2">[2]</a>, or to use
+virtualization <a href="#f3">[3]</a>. Browser implementors also want to reduce
+loading and rendering time of web apps. Common techniques to do so include
+adding caching of rendering state <a href="#f4">[4]</a>, and avoiding rendering
+work <a href="#f5">[5]</a> for content that is not visible.</p>
    <p>These techniques can work in many cases but have drawbacks and limitations:</p>
    <ul>
     <li data-md>
-     <p><a href="#f2">[2]</a> and <a href="#f3">[3]</a> usually means that such content is not available to user-agent features,
-such as find-in-page functionality.
-Also, content that is merely placed offscreen
-may or may not have rendering cost
-(it depends on browser heuristics),
-which makes the technique unreliable.</p>
+     <p><a href="#f2">[2]</a> and <a href="#f3">[3]</a> usually means that such content
+is not available to user-agent features, such as find-in-page functionality.
+Also, content that is merely placed off-screen may or may not have rendering
+cost (it depends on browser heuristics), which makes the technique
+unreliable.</p>
     <li data-md>
-     <p>Caching intermediate rendering state is hard work,
-and often has performance limitations and cliffs
-that are not obvious to developers.
-Similarly, relying on the browser to avoid rendering
-for content that is clipped out or not visible
-is sometimes not reliable,
-as it’s hard for the browser to efficiently detect what content is not visible
-and does not affect visible content in any way.</p>
+     <p>Caching intermediate rendering state is hard work, and often has performance
+limitations and cliffs that are not obvious to developers.  Similarly,
+relying on the browser to avoid rendering for content that is clipped out or
+not visible is sometimes not reliable, as it’s hard for the browser to
+efficiently detect what content is not visible and does not affect visible
+content in any way.</p>
    </ul>
-   <p>Previously adopted web APIs,
-in particular the <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css-contain-2/#propdef-contain" id="ref-for-propdef-contain">contain</a> and <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css-will-change-1/#propdef-will-change" id="ref-for-propdef-will-change">will-change</a> CSS properties,
-add ways to specify forms of rendering isolation or isolation hints,
-with the intention of them being a mechanism for the web developer
-to help the browser optimize rendering for the page.</p>
-   <p>While these forms of isolation help,
-they do not guarantee that isolated content does not need to be rendered at all.
-Ideally there would be a way for the developer to specify
-that specific parts of the DOM need not be rendered,
-and pair that with a guarantee that when later rendered,
-it would not invalidate more than a small amount of style, layout, or paint
-in the rest of the document.</p>
-   <h3 class="heading settled" data-level="1.2" id="disclaimer"><span class="secno">1.2. </span><span class="content">Disclaimer</span><a class="self-link" href="#disclaimer"></a></h3>
-   <p>As the proposed features evolve,
-several competing API shapes might be considered at the same time,
-the decisions on particular behaviors might not be finalized,
-and some documentation may be out of date.</p>
-   <p>For the latest implemented behavior and API state,
-please consult the cheatsheet.</p>
-   <p>For behaviors being discussed,
-as well as questions and other discussions,
-please look over the issues.</p>
-   <p>The rest of this document talks about one particular implementation option.
-Whether or not this is the final proposed set of features is yet undecided.</p>
-   <h2 class="heading settled" data-level="2" id="controlling-rendering"><span class="secno">2. </span><span class="content">Controlling Rendering Of A Subtree</span><a class="self-link" href="#controlling-rendering"></a></h2>
-   <h3 class="heading settled" data-level="2.1" id="render-subtree"><span class="secno">2.1. </span><span class="content">Preventing Rendering: the <a class="property" data-link-type="propdesc" href="#propdef-render-subtree" id="ref-for-propdef-render-subtree">render-subtree</a> property</span><a class="self-link" href="#render-subtree"></a></h3>
+   <p>Previously adopted web APIs, in particular the <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css-contain-2/#propdef-contain" id="ref-for-propdef-contain">contain</a> and <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css-will-change-1/#propdef-will-change" id="ref-for-propdef-will-change">will-change</a> CSS
+properties, add ways to specify forms of rendering isolation or isolation
+hints, with the intention of them being a mechanism for the web developer to
+help the browser optimize rendering for the page.</p>
+   <p>While these forms of isolation help, they do not guarantee that isolated
+content does not need to be rendered at all.  Ideally there would be a way for
+the developer to specify that specific parts of the DOM need not be rendered,
+and pair that with a guarantee that when later rendered, it would not
+invalidate more than a small amount of style, layout, or paint in the rest of
+the document.</p>
+   <h2 class="heading settled" data-level="2" id="render-subtree"><span class="secno">2. </span><span class="content">Rendering Hints: the <a class="property" data-link-type="propdesc" href="#propdef-render-subtree" id="ref-for-propdef-render-subtree">render-subtree</a> property</span><a class="self-link" href="#render-subtree"></a></h2>
    <table class="def propdef" data-link-for-hint="render-subtree">
     <tbody>
      <tr>
@@ -438,7 +411,7 @@ Whether or not this is the final proposed set of features is yet undecided.</p>
       <td><dfn class="dfn-paneled css" data-dfn-type="property" data-export id="propdef-render-subtree">render-subtree</dfn>
      <tr class="value">
       <th><a href="https://drafts.csswg.org/css-values/#value-defs">Value:</a>
-      <td class="prod">normal <a data-link-type="grammar" href="https://drafts.csswg.org/css-values-4/#comb-one" id="ref-for-comb-one">|</a> visible <span id="ref-for-comb-one①">|</span> invisible <a data-link-type="grammar" href="https://drafts.csswg.org/css-values-4/#comb-all" id="ref-for-comb-all">&amp;&amp;</a> [ skip-activation <span id="ref-for-comb-one②">|</span> skip-viewport-activation ]<a data-link-type="grammar" href="https://drafts.csswg.org/css-values-4/#mult-opt" id="ref-for-mult-opt">?</a>
+      <td class="prod">normal <a data-link-type="grammar" href="https://drafts.csswg.org/css-values-4/#comb-one" id="ref-for-comb-one">|</a> hidden <a data-link-type="grammar" href="https://drafts.csswg.org/css-values-4/#comb-all" id="ref-for-comb-all">&amp;&amp;</a> frozen<a data-link-type="grammar" href="https://drafts.csswg.org/css-values-4/#mult-opt" id="ref-for-mult-opt">?</a>
      <tr>
       <th><a href="https://drafts.csswg.org/css-cascade/#initial-values">Initial:</a>
       <td>normal
@@ -461,187 +434,108 @@ Whether or not this is the final proposed set of features is yet undecided.</p>
       <th><a href="https://drafts.csswg.org/web-animations/#animation-type">Animation type:</a>
       <td>discrete
    </table>
-   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="invisibly-rendered">invisibly rendered</dfn> (unsure if this term is needed,
-it just seemed useful for <a class="property" data-link-type="propdesc" href="#propdef-contain-intrinsic-size" id="ref-for-propdef-contain-intrinsic-size">contain-intrinsic-size</a>’s intro)</p>
-   <h3 class="heading settled" data-level="2.2" id="contain-intrinsic-size"><span class="secno">2.2. </span><span class="content">Default Sizing: the <a class="property" data-link-type="propdesc" href="#propdef-contain-intrinsic-size" id="ref-for-propdef-contain-intrinsic-size①">contain-intrinsic-size</a> property</span><a class="self-link" href="#contain-intrinsic-size"></a></h3>
-   <table class="def propdef" data-link-for-hint="contain-intrinsic-size">
-    <tbody>
-     <tr>
-      <th>Name:
-      <td><dfn class="dfn-paneled css" data-dfn-type="property" data-export id="propdef-contain-intrinsic-size">contain-intrinsic-size</dfn>
-     <tr class="value">
-      <th><a href="https://drafts.csswg.org/css-values/#value-defs">Value:</a>
-      <td class="prod">none <a data-link-type="grammar" href="https://drafts.csswg.org/css-values-4/#comb-one" id="ref-for-comb-one③">|</a> <a class="production css" data-link-type="type" href="https://drafts.csswg.org/css-values-3/#length-value" id="ref-for-length-value" title="Expands to: em | vb | ch | cm | vh | vi | in | ex | vw | ic | pt | px | lh | pc | rem | rlh | vmax | advance measure | vmin | mm | cap | q">&lt;length></a><a data-link-type="grammar" href="https://drafts.csswg.org/css-values-4/#mult-num-range" id="ref-for-mult-num-range">{1,2}</a>
-     <tr>
-      <th><a href="https://drafts.csswg.org/css-cascade/#initial-values">Initial:</a>
-      <td>none
-     <tr>
-      <th>Applies to:
-      <td>elements with <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment">size containment</a>
-     <tr>
-      <th><a href="https://drafts.csswg.org/css-cascade/#inherited-property">Inherited:</a>
-      <td>no
-     <tr>
-      <th><a href="https://drafts.csswg.org/css-values/#percentages">Percentages:</a>
-      <td>n/a
-     <tr>
-      <th><a href="https://drafts.csswg.org/css-cascade/#computed">Computed value:</a>
-      <td>as specified
-     <tr>
-      <th>Canonical order:
-      <td>per grammar
-     <tr>
-      <th><a href="https://drafts.csswg.org/web-animations/#animation-type">Animation type:</a>
-      <td>discrete
-   </table>
-   <p>When an element is <a data-link-type="dfn" href="#invisibly-rendered" id="ref-for-invisibly-rendered">invisibly rendered</a>,
-one of the side-effects is that it automatically receives <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment①">size containment</a>.
-This causes the element to lay out as if it was empty,
-meaning that the author would have to provide an explicit size
-if they wanted the element to take up space on the page
-while it was invisible
-(to reduce the amount of relayout when it is finally rendered,
-ensure scrollbars show a reasonable offset,
-etc).</p>
-   <p>However, providing an explicit <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css2/visudet.html#propdef-width" id="ref-for-propdef-width">width</a> and <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css2/visudet.html#propdef-height" id="ref-for-propdef-height">height</a> has side effects:
-layout algorithms treat it as a strong signal about what size the element should be
-(overriding things like <a class="css" data-link-type="propdesc" href="https://drafts.csswg.org/css-align-3/#propdef-place-self" id="ref-for-propdef-place-self">place-self: stretch</a>),
-and when the element is made visible again,
-the explicit <span class="property" id="ref-for-propdef-width①">width</span>/<span class="property" id="ref-for-propdef-height①">height</span> has to be removed
-for the element to lay out at its natural content size again.</p>
-   <p>To avoid these issues,
-but still provide a reasonable default layout size for elements with <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment②">size containment</a>,
-the <a class="property" data-link-type="propdesc" href="#propdef-contain-intrinsic-size" id="ref-for-propdef-contain-intrinsic-size②">contain-intrinsic-size</a> property overrides the normal methods
-of determining an element’s <a data-link-type="dfn" href="https://drafts.csswg.org/css-sizing-3/#dfn-intrinsic-sizes" id="ref-for-dfn-intrinsic-sizes">intrinsic sizes</a>.
-Values are defined as:</p>
-   <dl>
-    <dt data-md><dfn class="css" data-dfn-for="contain-intrinsic-size" data-dfn-type="value" data-export id="valdef-contain-intrinsic-size-none">none<a class="self-link" href="#valdef-contain-intrinsic-size-none"></a></dfn>
+   <dl value>
+    <dt data-md><dfn data-dfn-for="render-subtree" data-dfn-type="dfn" data-export id="render-subtree-normal">normal<a class="self-link" href="#render-subtree-normal"></a></dfn>
     <dd data-md>
-     <p>No effect;
-the element is sized as usual.</p>
-    <dt data-md><a class="production css" data-link-type="type" href="https://drafts.csswg.org/css-values-3/#length-value" id="ref-for-length-value①" title="Expands to: em | vb | ch | cm | vh | vi | in | ex | vw | ic | pt | px | lh | pc | rem | rlh | vmax | advance measure | vmin | mm | cap | q">&lt;length></a>{1,2}
+     <p>No effect; The element and its subtree are rendered as usual. This
+  provides no extra information or hints to the user-agent.</p>
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="render-subtree" data-dfn-type="dfn" data-export id="render-subtree-hidden">hidden</dfn>
     <dd data-md>
-     <p>If the element is not under <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment③">size containment</a>,
-this value has no effect.</p>
-     <p>Otherwise,
-the first <a class="production css" data-link-type="type" href="https://drafts.csswg.org/css-values-3/#length-value" id="ref-for-length-value②" title="Expands to: em | vb | ch | cm | vh | vi | in | ex | vw | ic | pt | px | lh | pc | rem | rlh | vmax | advance measure | vmin | mm | cap | q">&lt;length></a> specifies the <a data-link-type="dfn" href="https://drafts.csswg.org/css-sizing-3/#min-content-block-size" id="ref-for-min-content-block-size">min-content block size</a> and <a data-link-type="dfn" href="https://drafts.csswg.org/css-sizing-3/#max-content-block-size" id="ref-for-max-content-block-size">max-content block size</a> of the element’s <a data-link-type="dfn" href="https://drafts.csswg.org/css-display-3/#principal-box" id="ref-for-principal-box">principal box</a>,
-and the second specifies the <a data-link-type="dfn" href="https://drafts.csswg.org/css-sizing-3/#min-content-inline-size" id="ref-for-min-content-inline-size">min-content inline size</a> and <a data-link-type="dfn" href="https://drafts.csswg.org/css-sizing-3/#max-content-inline-size" id="ref-for-max-content-inline-size">max-content inline size</a> of the element’s <span id="ref-for-principal-box①">principal box</span>.</p>
-     <p>If one <a class="production css" data-link-type="type" href="https://drafts.csswg.org/css-values-3/#length-value" id="ref-for-length-value③" title="Expands to: em | vb | ch | cm | vh | vi | in | ex | vw | ic | pt | px | lh | pc | rem | rlh | vmax | advance measure | vmin | mm | cap | q">&lt;length></a> is provided,
-the second defaults to the same <span class="production" id="ref-for-length-value④" title="Expands to: em | vb | ch | cm | vh | vi | in | ex | vw | ic | pt | px | lh | pc | rem | rlh | vmax | advance measure | vmin | mm | cap | q">&lt;length></span>.</p>
+     <p>The element has <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#layout-containment" id="ref-for-layout-containment">layout containment</a> and <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#style-containment" id="ref-for-style-containment">style containment</a> applied
+ in addition to any existing containment values.</p>
+     <p>Additionally, if the element is <dfn data-dfn-for="render-subtree" data-dfn-type="dfn" data-export id="render-subtree-off-screen">off-screen<a class="self-link" href="#render-subtree-off-screen"></a></dfn>, in the
+ sense that it is not intersecting the viewport (with a reasonable
+ user-agent specified margin), then element has <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment">size containment</a> applied in addition to any existing containment values and the
+ element’s subtree is not painted or hit-tested.</p>
+    <dt data-md><dfn data-dfn-for="render-subtree" data-dfn-type="dfn" data-export id="render-subtree-hidden-frozen">hidden frozen<a class="self-link" href="#render-subtree-hidden-frozen"></a></dfn>
+    <dd data-md>
+     <p>The element has <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#layout-containment" id="ref-for-layout-containment①">layout containment</a>, <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#style-containment" id="ref-for-style-containment①">style containment</a>, and <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment①">size containment</a> applied in addition to any existing containment
+ values. Furthermore, the element’s subtree is not painted or hit-tested.</p>
+    <dt data-md>more
+    <dd data-md>
+     <p>Note that the token values are designed to be extensible. In other
+ words, it is possible for new values to be added if new effects are
+ desired.</p>
    </dl>
-   <p>See also the <a href="https://github.com/WICG/display-locking/blob/master/explainer-contain-intrinsic-size.md">explainer for this property</a> for more information on why it exists.</p>
-   <p class="issue" id="issue-f3bc9014"><a class="self-link" href="#issue-f3bc9014"></a> TODO provide example of using this with render-subtree</p>
-   <p class="issue" id="issue-b3245f4e"><a class="self-link" href="#issue-b3245f4e"></a> TODO provide example of using this for async-loaded content to avoid major layout shifts</p>
+   <p>Note that in situations where <a class="property" data-link-type="propdesc" href="#propdef-render-subtree" id="ref-for-propdef-render-subtree①">render-subtree</a> values cause the element’s
+subtree not to be painted or hit-tested, the user-agent should avoid as much
+rendering work as possible. As an example, because of the containment applied,
+in most cases it should be possible to skip determining layout box sizes and
+positions unless explicitly requested by script.</p>
    <h2 class="heading settled" data-level="3" id="examples"><span class="secno">3. </span><span class="content">Examples</span><a class="self-link" href="#examples"></a></h2>
-   <div class="example" id="example-41247658">
-    <a class="self-link" href="#example-41247658"></a> 
+   <div class="example" id="example-c5a55802">
+    <a class="self-link" href="#example-c5a55802"></a> 
 <pre class="highlight"><c- p>&lt;</c-><c- f>style</c-><c- p>></c->
-<c- p>.</c-><c- nc>locked</c-> <c- p>{</c->
-  <c- n>render-subtree</c-><c- p>:</c-> <c- n>invisible</c-><c- p>;</c->
-  <c- n>contain-intrinsic-size</c-><c- p>:</c-> <c- mi>100</c-><c- b>px</c-> <c- mi>200</c-><c- b>px</c-><c- p>;</c->
+<c- p>.</c-><c- nc>rs</c-> <c- p>{</c->
+  <c- n>render-subtree</c-><c- p>:</c-> <c- kc>hidden</c-><c- p>;</c->
+  <c- k>min-height</c-><c- p>:</c-> <c- mi>50</c-><c- b>px</c-><c- p>;</c->
 <c- p>}</c->
 <c- p>&lt;/</c-><c- f>style</c-><c- p>></c->
 
-<c- p>&lt;</c-><c- f>div</c-> <c- e>class</c-><c- o>=</c-><c- s>locked</c-><c- p>></c->
+<c- p>&lt;</c-><c- f>div</c-> <c- e>class</c-><c- o>=</c-><c- s>rs</c-><c- p>></c->
   ... some content goes here ...
 <c- p>&lt;/</c-><c- f>div</c-><c- p>></c->
 </pre>
-    <p>The .locked element’s <a class="property" data-link-type="propdesc" href="#propdef-render-subtree" id="ref-for-propdef-render-subtree①">render-subtree</a> configuration
-	lets the user-agent manage rendering the subtree of the element.
-	Specifically when this element is near the viewport,
-	the user-agent will begin rendering the element.
-	When the element moves away from the viewport,
-	it will stop being rendered.</p>
-    <p>Recall that when not rendered,
-	the property also applies <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment④">size containment</a> to the element.
-	This means that when not rendered,
-	the element will use the specified <a class="property" data-link-type="propdesc" href="#propdef-contain-intrinsic-size" id="ref-for-propdef-contain-intrinsic-size③">contain-intrinsic-size</a>,
-	making the element layout as if it had a single block child with 100px width and 200px height.
-	This ensures that the element still occupies space when not rendered.
-	At the same time,
-	it lets the element size to its true contents when the subtree is rendered
-	(since <span id="ref-for-size-containment⑤">size containment</span> no longer applies),
-	thus removing the concern that estimates like 100x200 are sometimes inaccurate
-	(which would otherwise result in displaying incorrect layout for on-screen content).</p>
+    <p>The .rs element’s <a class="property" data-link-type="propdesc" href="#propdef-render-subtree" id="ref-for-propdef-render-subtree②">render-subtree</a> value <a data-link-type="dfn" href="#render-subtree-hidden" id="ref-for-render-subtree-hidden">hidden</a> lets the user-agent manage
+  whether to paint and hit-test the element’s subtree.  Specifically when this
+  element is near the viewport, the user-agent will begin painting the element.
+  When the element moves away from the viewport, it will stop being painted. In
+  addition, the user-agent should skip as much of the rendering work as
+  possible when the element is not painted or hit-tested.</p>
    </div>
-   <div class="example" id="example-132a6590">
-    <a class="self-link" href="#example-132a6590"></a> 
+   <div class="example" id="example-be23c58a">
+    <a class="self-link" href="#example-be23c58a"></a> 
 <pre class="highlight"><c- p>&lt;</c-><c- f>style</c-><c- p>></c->
-<c- p>.</c-><c- nc>locked</c-> <c- p>{</c->
-  <c- n>render-subtree</c-><c- p>:</c-> <c- n>invisible</c-> <c- n>skip-activation</c-><c- p>;</c->
-  <c- n>contain-intrinsic-size</c-><c- p>:</c-> <c- mi>100</c-><c- b>px</c-> <c- mi>200</c-><c- b>px</c-><c- p>;</c->
+<c- p>.</c-><c- nc>rs</c-> <c- p>{</c->
+  <c- n>render-subtree</c-><c- p>:</c-> <c- kc>hidden</c-> <c- n>frozen</c-><c- p>;</c->
 <c- p>}</c->
 <c- p>&lt;/</c-><c- f>style</c-><c- p>></c->
 
-<c- p>&lt;</c-><c- f>div</c-> <c- e>class</c-><c- o>=</c-><c- s>locked</c-><c- p>></c->
+<c- p>&lt;</c-><c- f>div</c-> <c- e>class</c-><c- o>=</c-><c- s>rs</c-><c- p>></c->
   ... some content goes here ...
 <c- p>&lt;/</c-><c- f>div</c-><c- p>></c->
 </pre>
-    <p>In this case, the rendering of the subtree is managed by the developer only.
-	This means that if script does not modify the value,
-	the element’s subtree will remain unrendered,
-	and it will use the <a class="property" data-link-type="propdesc" href="#propdef-contain-intrinsic-size" id="ref-for-propdef-contain-intrinsic-size④">contain-intrinsic-size</a> input when deciding how to size the element.</p>
-   </div>
-   <div class="example" id="example-959c42f1">
-    <a class="self-link" href="#example-959c42f1"></a> 
-<pre class="highlight"><c- p>&lt;</c-><c- f>style</c-><c- p>></c->
-<c- p>.</c-><c- nc>locked</c-> <c- p>{</c->
-  <c- n>render-subtree</c-><c- p>:</c-> <c- n>invisible</c-> <c- n>skip-viewport-activation</c-><c- p>;</c->
-<c- p>}</c->
-<c- p>&lt;/</c-><c- f>style</c-><c- p>></c->
-
-<c- p>&lt;</c-><c- f>div</c-> <c- e>class</c-><c- o>=</c-><c- s>locked</c-><c- p>></c->
-  ... some content goes here ...
-<c- p>&lt;/</c-><c- f>div</c-><c- p>></c->
-</pre>
-    <p>Similar to above, the render of the subtree is managed by the developer.
-	However, it allows find-in-page to search for text within the subtree
-	and fire the activation signal if the active match is found.</p>
-    <p>The intended effect of this configuration
-	is that the subtree is hidden and "collapsed"
-	(note the absense of <a class="property" data-link-type="propdesc" href="#propdef-contain-intrinsic-size" id="ref-for-propdef-contain-intrinsic-size⑤">contain-intrinsic-size</a> which means that <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment⑥">size containment</a> will cause the element to act as if it’s empty).
-	This is common when content is paginated
-	and the developer allows the user to expand certain sections with button clicks.
-	In the <a class="property" data-link-type="propdesc" href="#propdef-render-subtree" id="ref-for-propdef-render-subtree②">render-subtree</a> case the developer may also listen to the activation event
-	and start rendering the subtree when the event targets the element in the subtree.
-	This means that find-in-page is able to expand an otherwise collapsed section
-	when it finds a match.</p>
+    <p>In this case, the element’s subtree is not painted or hit-tested regardless
+  of viewport intersection. This means that the only way to have this subtree
+  painted is via script updating the value to remove render-subtree or change
+  its value. As before, the user-agent should skip as much of the rendering in
+  the subtree as possible. An additional effect of skipping rendering is that
+  the layout state of the subtree can be preserved, so that removing the <a class="property" data-link-type="propdesc" href="#propdef-render-subtree" id="ref-for-propdef-render-subtree③">render-subtree</a> property in the future will cause the subtree to be rendered
+  quicker than otherwise possible.</p>
    </div>
    <h2 class="heading settled" data-level="4" id="alternatives"><span class="secno">4. </span><span class="content">Alternatives Considered</span><a class="self-link" href="#alternatives"></a></h2>
    <p>The <a class="css" data-link-type="propdesc" href="https://drafts.csswg.org/css-display-3/#propdef-display" id="ref-for-propdef-display">display: none</a> CSS property causes content subtrees not to render.
-However, there is no mechanism for user-agent features to cause these subtrees to render.
-Additionally, the cost of hiding and showing content cannot be eliminated
-since <span class="css" id="ref-for-propdef-display①">display: none</span> does not preserve the layout state of the subtree.</p>
-   <p><a class="css" data-link-type="propdesc" href="https://drafts.csswg.org/css2/visufx.html#propdef-visibility" id="ref-for-propdef-visibility">visibility: hidden</a> causes subtrees to not paint,
-but they still need style and layout,
-as the subtree takes up layout space
-and descendants may be <span class="css" id="ref-for-propdef-visibility①">visibility: visible</span>.
-Second, there is no mechanism for user-agent features to cause subtrees to render.
-Note that with sufficient containment and intersection observer,
-the functionality provided by <a class="property" data-link-type="propdesc" href="#propdef-render-subtree" id="ref-for-propdef-render-subtree③">render-subtree</a> may be mimicked with some exceptions:
-find-in-page functionality does not work in unrendered content;
-this relies on more browser heuristics to ensure contained invisible content is cheap—<wbr><span class="property" id="ref-for-propdef-render-subtree④">render-subtree</span> is a stronger signal to the user-agent that work should be skipped.</p>
-   <p>Similar to <a class="css" data-link-type="propdesc" href="https://drafts.csswg.org/css2/visufx.html#propdef-visibility" id="ref-for-propdef-visibility②">visibility: hidden</a>, <a class="css" data-link-type="propdesc" href="https://drafts.csswg.org/css-contain-2/#propdef-contain" id="ref-for-propdef-contain①">contain: strict</a> allows the browser
-to automatically detect subtrees that are definitely offscreen,
-and therefore that don’t need to be rendered.
-However, <span class="css" id="ref-for-propdef-contain②">contain: strict</span> is not flexible enough
-to allow for responsive design layouts
-that grow elements to fit their content.
-To work around this,
-content could be marked as <span class="css" id="ref-for-propdef-contain③">contain: strict</span> when offscreen
-and then some other value when on-screen
-(this is similar to <a class="property" data-link-type="propdesc" href="#propdef-render-subtree" id="ref-for-propdef-render-subtree⑤">render-subtree</a>).
-Second, <span class="css" id="ref-for-propdef-contain④">contain: strict</span> may or may not result in rendering work,
-depending on whether the browser detects the content is actually offscreen.
-Third, it does not support user-agent features
-in cases when it is not actually rendered to the user in the current application view.</p>
+However, there is no mechanism for user-agent features to cause these subtrees
+to render.  Additionally, the cost of hiding and showing content cannot be
+eliminated since <span class="css" id="ref-for-propdef-display①">display: none</span> does not preserve the layout state of the
+subtree.</p>
+   <p><a class="css" data-link-type="propdesc" href="https://drafts.csswg.org/css2/visufx.html#propdef-visibility" id="ref-for-propdef-visibility">visibility: hidden</a> causes subtrees to not paint, but they still need style
+and layout, as the subtree takes up layout space and descendants may be <span class="css" id="ref-for-propdef-visibility①">visibility: visible</span>.  Second, there is no mechanism for user-agent features
+to cause subtrees to render.  Note that with sufficient containment and
+intersection observer, the functionality provided by <a class="property" data-link-type="propdesc" href="#propdef-render-subtree" id="ref-for-propdef-render-subtree④">render-subtree</a> may be
+mimicked. Some planned extensions to this property are still not possible: for
+instance, one possibility is to have the non-painted subtree still be processed
+by user-agent find-in-page algorithms; this would not be possible with
+visibility: hidden. Overall, <span class="property" id="ref-for-propdef-render-subtree⑤">render-subtree</span> property is a stronger signal
+allowing the user-agent to optimize rendering.</p>
+   <p>Similar to <a class="css" data-link-type="propdesc" href="https://drafts.csswg.org/css2/visufx.html#propdef-visibility" id="ref-for-propdef-visibility②">visibility: hidden</a>, <a class="css" data-link-type="propdesc" href="https://drafts.csswg.org/css-contain-2/#propdef-contain" id="ref-for-propdef-contain①">contain: strict</a> allows the browser to
+automatically detect subtrees that are definitely off-screen, and therefore
+that don’t need to be rendered.  However, <span class="css" id="ref-for-propdef-contain②">contain: strict</span> on its own is not
+flexible enough to allow for responsive design layouts that grow elements to
+fit their content.  To work around this, content could be marked as ''contain:
+strict'' when off-screen and then some other value when on-screen (this is
+similar to <a class="property" data-link-type="propdesc" href="#propdef-render-subtree" id="ref-for-propdef-render-subtree⑥">render-subtree</a>).  Second, <span class="css" id="ref-for-propdef-contain③">contain: strict</span> may or may not
+result in rendering work, depending on whether the browser detects the content
+is actually off-screen.  Third, it does not support user-agent features in
+cases when it is not actually rendered to the user in the current application
+view.</p>
    <h2 class="heading settled" data-level="5" id="priv-sec"><span class="secno">5. </span><span class="content">Privacy &amp; Security Considerations</span><a class="self-link" href="#priv-sec"></a></h2>
    <p>tbd</p>
    <h2 class="heading settled" data-level="6" id="footnotes"><span class="secno">6. </span><span class="content">Footnotes</span><a class="self-link" href="#footnotes"></a></h2>
    <p id="f1">[1]: Meaning, the rendering part of the browser event loop. </p>
    <p id="f2">[2]: Examples:
 placing <span class="css">display:none</span> CSS on DOM subtrees,
-or by placing content far offscreen via tricks like <a class="css" data-link-type="propdesc" href="https://drafts.csswg.org/css-box-3/#propdef-margin-left" id="ref-for-propdef-margin-left">margin-left: -10000px</a> </p>
+or by placing content far off-screen via tricks like <a class="css" data-link-type="propdesc" href="https://drafts.csswg.org/css-box-3/#propdef-margin-left" id="ref-for-propdef-margin-left">margin-left: -10000px</a> </p>
    <p id="f3">[3]: In this context,
 virtualization means representing content outside of the DOM,
 and inserting it into the DOM only when visible.
@@ -747,17 +641,12 @@ and avoiding some or most rendering lifecycle phases for such content. </p>
   <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
   <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
-   <li><a href="#propdef-contain-intrinsic-size">contain-intrinsic-size</a><span>, in §2.2</span>
-   <li><a href="#invisibly-rendered">invisibly rendered</a><span>, in §2.1</span>
-   <li><a href="#valdef-contain-intrinsic-size-none">none</a><span>, in §2.2</span>
-   <li><a href="#propdef-render-subtree">render-subtree</a><span>, in §2.1</span>
+   <li><a href="#render-subtree-hidden">hidden</a><span>, in §2</span>
+   <li><a href="#render-subtree-hidden-frozen">hidden frozen</a><span>, in §2</span>
+   <li><a href="#render-subtree-normal">normal</a><span>, in §2</span>
+   <li><a href="#render-subtree-off-screen">off-screen</a><span>, in §2</span>
+   <li><a href="#propdef-render-subtree">render-subtree</a><span>, in §2</span>
   </ul>
-  <aside class="dfn-panel" data-for="term-for-propdef-place-self">
-   <a href="https://drafts.csswg.org/css-align-3/#propdef-place-self">https://drafts.csswg.org/css-align-3/#propdef-place-self</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-propdef-place-self">2.2. Default Sizing: the contain-intrinsic-size property</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="term-for-propdef-margin-left">
    <a href="https://drafts.csswg.org/css-box-3/#propdef-margin-left">https://drafts.csswg.org/css-box-3/#propdef-margin-left</a><b>Referenced in:</b>
    <ul>
@@ -768,14 +657,25 @@ and avoiding some or most rendering lifecycle phases for such content. </p>
    <a href="https://drafts.csswg.org/css-contain-2/#propdef-contain">https://drafts.csswg.org/css-contain-2/#propdef-contain</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-propdef-contain">1.1. Motivation &amp; Background</a>
-    <li><a href="#ref-for-propdef-contain①">4. Alternatives Considered</a> <a href="#ref-for-propdef-contain②">(2)</a> <a href="#ref-for-propdef-contain③">(3)</a> <a href="#ref-for-propdef-contain④">(4)</a>
+    <li><a href="#ref-for-propdef-contain①">4. Alternatives Considered</a> <a href="#ref-for-propdef-contain②">(2)</a> <a href="#ref-for-propdef-contain③">(3)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-layout-containment">
+   <a href="https://drafts.csswg.org/css-contain-2/#layout-containment">https://drafts.csswg.org/css-contain-2/#layout-containment</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-layout-containment">2. Rendering Hints: the render-subtree property</a> <a href="#ref-for-layout-containment①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-size-containment">
    <a href="https://drafts.csswg.org/css-contain-2/#size-containment">https://drafts.csswg.org/css-contain-2/#size-containment</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-size-containment">2.2. Default Sizing: the contain-intrinsic-size property</a> <a href="#ref-for-size-containment①">(2)</a> <a href="#ref-for-size-containment②">(3)</a> <a href="#ref-for-size-containment③">(4)</a>
-    <li><a href="#ref-for-size-containment④">3. Examples</a> <a href="#ref-for-size-containment⑤">(2)</a> <a href="#ref-for-size-containment⑥">(3)</a>
+    <li><a href="#ref-for-size-containment">2. Rendering Hints: the render-subtree property</a> <a href="#ref-for-size-containment①">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-style-containment">
+   <a href="https://drafts.csswg.org/css-contain-2/#style-containment">https://drafts.csswg.org/css-contain-2/#style-containment</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-style-containment">2. Rendering Hints: the render-subtree property</a> <a href="#ref-for-style-containment①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-propdef-display">
@@ -784,71 +684,22 @@ and avoiding some or most rendering lifecycle phases for such content. </p>
     <li><a href="#ref-for-propdef-display">4. Alternatives Considered</a> <a href="#ref-for-propdef-display①">(2)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-principal-box">
-   <a href="https://drafts.csswg.org/css-display-3/#principal-box">https://drafts.csswg.org/css-display-3/#principal-box</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-principal-box">2.2. Default Sizing: the contain-intrinsic-size property</a> <a href="#ref-for-principal-box①">(2)</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-dfn-intrinsic-sizes">
-   <a href="https://drafts.csswg.org/css-sizing-3/#dfn-intrinsic-sizes">https://drafts.csswg.org/css-sizing-3/#dfn-intrinsic-sizes</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dfn-intrinsic-sizes">2.2. Default Sizing: the contain-intrinsic-size property</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-max-content-block-size">
-   <a href="https://drafts.csswg.org/css-sizing-3/#max-content-block-size">https://drafts.csswg.org/css-sizing-3/#max-content-block-size</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-max-content-block-size">2.2. Default Sizing: the contain-intrinsic-size property</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-max-content-inline-size">
-   <a href="https://drafts.csswg.org/css-sizing-3/#max-content-inline-size">https://drafts.csswg.org/css-sizing-3/#max-content-inline-size</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-max-content-inline-size">2.2. Default Sizing: the contain-intrinsic-size property</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-min-content-block-size">
-   <a href="https://drafts.csswg.org/css-sizing-3/#min-content-block-size">https://drafts.csswg.org/css-sizing-3/#min-content-block-size</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-min-content-block-size">2.2. Default Sizing: the contain-intrinsic-size property</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-min-content-inline-size">
-   <a href="https://drafts.csswg.org/css-sizing-3/#min-content-inline-size">https://drafts.csswg.org/css-sizing-3/#min-content-inline-size</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-min-content-inline-size">2.2. Default Sizing: the contain-intrinsic-size property</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-length-value">
-   <a href="https://drafts.csswg.org/css-values-3/#length-value">https://drafts.csswg.org/css-values-3/#length-value</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-length-value">2.2. Default Sizing: the contain-intrinsic-size property</a> <a href="#ref-for-length-value①">(2)</a> <a href="#ref-for-length-value②">(3)</a> <a href="#ref-for-length-value③">(4)</a> <a href="#ref-for-length-value④">(5)</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="term-for-comb-all">
    <a href="https://drafts.csswg.org/css-values-4/#comb-all">https://drafts.csswg.org/css-values-4/#comb-all</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-comb-all">2.1. Preventing Rendering: the render-subtree property</a>
+    <li><a href="#ref-for-comb-all">2. Rendering Hints: the render-subtree property</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-mult-opt">
    <a href="https://drafts.csswg.org/css-values-4/#mult-opt">https://drafts.csswg.org/css-values-4/#mult-opt</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-mult-opt">2.1. Preventing Rendering: the render-subtree property</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-mult-num-range">
-   <a href="https://drafts.csswg.org/css-values-4/#mult-num-range">https://drafts.csswg.org/css-values-4/#mult-num-range</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-mult-num-range">2.2. Default Sizing: the contain-intrinsic-size property</a>
+    <li><a href="#ref-for-mult-opt">2. Rendering Hints: the render-subtree property</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-comb-one">
    <a href="https://drafts.csswg.org/css-values-4/#comb-one">https://drafts.csswg.org/css-values-4/#comb-one</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-comb-one">2.1. Preventing Rendering: the render-subtree property</a> <a href="#ref-for-comb-one①">(2)</a> <a href="#ref-for-comb-one②">(3)</a>
-    <li><a href="#ref-for-comb-one③">2.2. Default Sizing: the contain-intrinsic-size property</a>
+    <li><a href="#ref-for-comb-one">2. Rendering Hints: the render-subtree property</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-propdef-will-change">
@@ -857,31 +708,14 @@ and avoiding some or most rendering lifecycle phases for such content. </p>
     <li><a href="#ref-for-propdef-will-change">1.1. Motivation &amp; Background</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-propdef-height">
-   <a href="https://drafts.csswg.org/css2/visudet.html#propdef-height">https://drafts.csswg.org/css2/visudet.html#propdef-height</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-propdef-height">2.2. Default Sizing: the contain-intrinsic-size property</a> <a href="#ref-for-propdef-height①">(2)</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="term-for-propdef-visibility">
    <a href="https://drafts.csswg.org/css2/visufx.html#propdef-visibility">https://drafts.csswg.org/css2/visufx.html#propdef-visibility</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-propdef-visibility">4. Alternatives Considered</a> <a href="#ref-for-propdef-visibility①">(2)</a> <a href="#ref-for-propdef-visibility②">(3)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-propdef-width">
-   <a href="https://drafts.csswg.org/css2/visudet.html#propdef-width">https://drafts.csswg.org/css2/visudet.html#propdef-width</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-propdef-width">2.2. Default Sizing: the contain-intrinsic-size property</a> <a href="#ref-for-propdef-width①">(2)</a>
-   </ul>
-  </aside>
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
-   <li>
-    <a data-link-type="biblio">[css-align-3]</a> defines the following terms:
-    <ul>
-     <li><span class="dfn-paneled" id="term-for-propdef-place-self" style="color:initial">place-self</span>
-    </ul>
    <li>
     <a data-link-type="biblio">[css-box-3]</a> defines the following terms:
     <ul>
@@ -891,34 +725,20 @@ and avoiding some or most rendering lifecycle phases for such content. </p>
     <a data-link-type="biblio">[css-contain-2]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-propdef-contain" style="color:initial">contain</span>
+     <li><span class="dfn-paneled" id="term-for-layout-containment" style="color:initial">layout containment</span>
      <li><span class="dfn-paneled" id="term-for-size-containment" style="color:initial">size containment</span>
+     <li><span class="dfn-paneled" id="term-for-style-containment" style="color:initial">style containment</span>
     </ul>
    <li>
     <a data-link-type="biblio">[css-display-3]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-propdef-display" style="color:initial">display</span>
-     <li><span class="dfn-paneled" id="term-for-principal-box" style="color:initial">principal box</span>
-    </ul>
-   <li>
-    <a data-link-type="biblio">[css-sizing-3]</a> defines the following terms:
-    <ul>
-     <li><span class="dfn-paneled" id="term-for-dfn-intrinsic-sizes" style="color:initial">intrinsic sizes</span>
-     <li><span class="dfn-paneled" id="term-for-max-content-block-size" style="color:initial">max-content block size</span>
-     <li><span class="dfn-paneled" id="term-for-max-content-inline-size" style="color:initial">max-content inline size</span>
-     <li><span class="dfn-paneled" id="term-for-min-content-block-size" style="color:initial">min-content block size</span>
-     <li><span class="dfn-paneled" id="term-for-min-content-inline-size" style="color:initial">min-content inline size</span>
-    </ul>
-   <li>
-    <a data-link-type="biblio">[css-values-3]</a> defines the following terms:
-    <ul>
-     <li><span class="dfn-paneled" id="term-for-length-value" style="color:initial">&lt;length></span>
     </ul>
    <li>
     <a data-link-type="biblio">[css-values-4]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-comb-all" style="color:initial">&amp;&amp;</span>
      <li><span class="dfn-paneled" id="term-for-mult-opt" style="color:initial">?</span>
-     <li><span class="dfn-paneled" id="term-for-mult-num-range" style="color:initial">{a,b}</span>
      <li><span class="dfn-paneled" id="term-for-comb-one" style="color:initial">|</span>
     </ul>
    <li>
@@ -929,26 +749,18 @@ and avoiding some or most rendering lifecycle phases for such content. </p>
    <li>
     <a data-link-type="biblio">[CSS2]</a> defines the following terms:
     <ul>
-     <li><span class="dfn-paneled" id="term-for-propdef-height" style="color:initial">height</span>
      <li><span class="dfn-paneled" id="term-for-propdef-visibility" style="color:initial">visibility</span>
-     <li><span class="dfn-paneled" id="term-for-propdef-width" style="color:initial">width</span>
     </ul>
   </ul>
   <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
   <h3 class="no-num no-ref heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
   <dl>
-   <dt id="biblio-css-align-3">[CSS-ALIGN-3]
-   <dd>Elika Etemad; Tab Atkins Jr.. <a href="https://www.w3.org/TR/css-align-3/">CSS Box Alignment Module Level 3</a>. 6 December 2018. WD. URL: <a href="https://www.w3.org/TR/css-align-3/">https://www.w3.org/TR/css-align-3/</a>
    <dt id="biblio-css-box-3">[CSS-BOX-3]
    <dd>Elika Etemad. <a href="https://www.w3.org/TR/css-box-3/">CSS Box Model Module Level 3</a>. 18 December 2018. WD. URL: <a href="https://www.w3.org/TR/css-box-3/">https://www.w3.org/TR/css-box-3/</a>
    <dt id="biblio-css-contain-2">[CSS-CONTAIN-2]
    <dd>Tab Atkins Jr.; Florian Rivoal. <a href="https://www.w3.org/TR/css-contain-2/">CSS Containment Module Level 2</a>. 11 November 2019. WD. URL: <a href="https://www.w3.org/TR/css-contain-2/">https://www.w3.org/TR/css-contain-2/</a>
    <dt id="biblio-css-display-3">[CSS-DISPLAY-3]
    <dd>Tab Atkins Jr.; Elika Etemad. <a href="https://www.w3.org/TR/css-display-3/">CSS Display Module Level 3</a>. 11 July 2019. CR. URL: <a href="https://www.w3.org/TR/css-display-3/">https://www.w3.org/TR/css-display-3/</a>
-   <dt id="biblio-css-sizing-3">[CSS-SIZING-3]
-   <dd>Tab Atkins Jr.; Elika Etemad. <a href="https://www.w3.org/TR/css-sizing-3/">CSS Intrinsic &amp; Extrinsic Sizing Module Level 3</a>. 22 May 2019. WD. URL: <a href="https://www.w3.org/TR/css-sizing-3/">https://www.w3.org/TR/css-sizing-3/</a>
-   <dt id="biblio-css-values-3">[CSS-VALUES-3]
-   <dd>Tab Atkins Jr.; Elika Etemad. <a href="https://www.w3.org/TR/css-values-3/">CSS Values and Units Module Level 3</a>. 6 June 2019. CR. URL: <a href="https://www.w3.org/TR/css-values-3/">https://www.w3.org/TR/css-values-3/</a>
    <dt id="biblio-css-values-4">[CSS-VALUES-4]
    <dd>Tab Atkins Jr.; Elika Etemad. <a href="https://www.w3.org/TR/css-values-4/">CSS Values and Units Module Level 4</a>. 31 January 2019. WD. URL: <a href="https://www.w3.org/TR/css-values-4/">https://www.w3.org/TR/css-values-4/</a>
    <dt id="biblio-css-will-change-1">[CSS-WILL-CHANGE-1]
@@ -974,18 +786,8 @@ and avoiding some or most rendering lifecycle phases for such content. </p>
       <th scope="col">Com­puted value
     <tbody>
      <tr>
-      <th scope="row"><a class="css" data-link-type="property" href="#propdef-contain-intrinsic-size" id="ref-for-propdef-contain-intrinsic-size⑥">contain-intrinsic-size</a>
-      <td>none | &lt;length>{1,2}
-      <td>none
-      <td>elements with size containment
-      <td>no
-      <td>n/a
-      <td>discrete
-      <td>per grammar
-      <td>as specified
-     <tr>
-      <th scope="row"><a class="css" data-link-type="property" href="#propdef-render-subtree" id="ref-for-propdef-render-subtree⑥">render-subtree</a>
-      <td>normal | visible | invisible &amp;&amp; [ skip-activation | skip-viewport-activation ]?
+      <th scope="row"><a class="css" data-link-type="property" href="#propdef-render-subtree" id="ref-for-propdef-render-subtree⑦">render-subtree</a>
+      <td>normal | hidden &amp;&amp; frozen?
       <td>normal
       <td>all elements
       <td>no
@@ -995,31 +797,18 @@ and avoiding some or most rendering lifecycle phases for such content. </p>
       <td>as specified
    </table>
   </div>
-  <h2 class="no-num no-ref heading settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
-  <div style="counter-reset:issue">
-   <div class="issue"> TODO provide example of using this with render-subtree<a href="#issue-f3bc9014"> ↵ </a></div>
-   <div class="issue"> TODO provide example of using this for async-loaded content to avoid major layout shifts<a href="#issue-b3245f4e"> ↵ </a></div>
-  </div>
   <aside class="dfn-panel" data-for="propdef-render-subtree">
    <b><a href="#propdef-render-subtree">#propdef-render-subtree</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-propdef-render-subtree">2.1. Preventing Rendering: the render-subtree property</a>
-    <li><a href="#ref-for-propdef-render-subtree①">3. Examples</a> <a href="#ref-for-propdef-render-subtree②">(2)</a>
-    <li><a href="#ref-for-propdef-render-subtree③">4. Alternatives Considered</a> <a href="#ref-for-propdef-render-subtree④">(2)</a> <a href="#ref-for-propdef-render-subtree⑤">(3)</a>
+    <li><a href="#ref-for-propdef-render-subtree">2. Rendering Hints: the render-subtree property</a> <a href="#ref-for-propdef-render-subtree①">(2)</a>
+    <li><a href="#ref-for-propdef-render-subtree②">3. Examples</a> <a href="#ref-for-propdef-render-subtree③">(2)</a>
+    <li><a href="#ref-for-propdef-render-subtree④">4. Alternatives Considered</a> <a href="#ref-for-propdef-render-subtree⑤">(2)</a> <a href="#ref-for-propdef-render-subtree⑥">(3)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="invisibly-rendered">
-   <b><a href="#invisibly-rendered">#invisibly-rendered</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="render-subtree-hidden">
+   <b><a href="#render-subtree-hidden">#render-subtree-hidden</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-invisibly-rendered">2.2. Default Sizing: the contain-intrinsic-size property</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="propdef-contain-intrinsic-size">
-   <b><a href="#propdef-contain-intrinsic-size">#propdef-contain-intrinsic-size</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-propdef-contain-intrinsic-size">2.1. Preventing Rendering: the render-subtree property</a>
-    <li><a href="#ref-for-propdef-contain-intrinsic-size①">2.2. Default Sizing: the contain-intrinsic-size property</a> <a href="#ref-for-propdef-contain-intrinsic-size②">(2)</a>
-    <li><a href="#ref-for-propdef-contain-intrinsic-size③">3. Examples</a> <a href="#ref-for-propdef-contain-intrinsic-size④">(2)</a> <a href="#ref-for-propdef-contain-intrinsic-size⑤">(3)</a>
+    <li><a href="#ref-for-render-subtree-hidden">3. Examples</a>
    </ul>
   </aside>
 <script>/* script-dfn-panel */
