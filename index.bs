@@ -1,6 +1,6 @@
 <pre class='metadata'>
 Title: CSS Render Subtree
-Shortname: css-render-subtree
+Shortname: css-subtree-visibility
 Level: 1
 Status: UD
 Group: csswg
@@ -8,30 +8,29 @@ Work Status: exploring
 URL: https://wicg.github.io/display-locking
 Editor: Tab Atkins-Bittner, Google
 Editor: Vladimir Levin, Google
-Abstract: This spec introduces features for "display locking", allowing authors
-          to provide rendering performance hints to the user-agent. The user-agent can
-          use the hints to optimize rendering performance, making interactions with large
-          amounts of content perform well.
+Abstract: This spec introduces a subtree-visibility CSS property, allowing authors
+          to control element subtree visibility, while at the same time providing strong
+          rendering performance hints to the user-agent. The user-agent can use the hints
+          to optimize rendering performance, making interactions with large amounts of
+          content perform well.
 </pre>
 
 Introduction {#intro}
 =====================
 
-Render Subtree (a.k.a. Display Locking) is a CSS property designed to allow
+Subtree Visibility (a.k.a. Display Locking) is a CSS property designed to allow
 developers and browsers to easily scale to large amount of content and provide
 strong hints which allow the user-agent to delay rendering <a href=#f1>[1]</a>
 work.  More concretely, the goals are:
 
-* Avoid rendering work for content not visible to the user Support user-agent
-* features and all layout algorithms (e.g. responsive design, flexbox, grid)
-    for this content
+* Avoid rendering work for content not visible to the user.
+* Support user-agent features and all layout algorithms (e.g. responsive
+    design, flexbox, grid) for this content.
 
 Optimizing behavior and performance of the following use-cases motivate this work:
 
 * Fast display of large HTML documents (examples: HTML one-page spec; other
     long documents)
-* Deep links and searchability into pages with hidden content (example: mobile
-    Wikipedia; scroll-to-text support for collapsed sections)
 * Scrollers with a large amount of content, without resorting to virtualization
     (examples: Facebook and Twitter feeds, CodeMirror documents)
 
@@ -88,22 +87,22 @@ and pair that with a guarantee that when later rendered, it would not
 invalidate more than a small amount of style, layout, or paint in the rest of
 the document.
 
-Rendering Hints: the 'render-subtree' property {#render-subtree}
-==============================================
+The 'subtree-visibility' property {#subtree-visibility}
+=================================
 
 <pre class=propdef>
-Name: render-subtree
-Value: normal | hidden && frozen?
-Initial: normal
+Name: subtree-visibility
+Value: visible | auto | hidden
+Initial: visible
 Inherited: no
 </pre>
 
-<dl dfn-type value dfn-for=render-subtree>
-    : <dfn export>normal</dfn>
+<dl dfn-type value dfn-for=subtree-visibility>
+    : <dfn export>visible</dfn>
     :: No effect; The element and its subtree are rendered as usual. This
           provides no extra information or hints to the user-agent.
 
-    : <dfn export>hidden</dfn>
+    : <dfn export>auto</dfn>
     :: The element has [=layout containment=] and [=style containment=] applied
          in addition to any existing containment values.
 
@@ -113,22 +112,30 @@ Inherited: no
          applied in addition to any existing containment values and the
          element's subtree is not painted or hit-tested. 
 
-    : <dfn export>hidden frozen</dfn>
+         It is important to note that the contents of the subtree must be
+         accessible to user-agent features such as find-in-page, fragment
+         navigation, tab order navigation, etc. This is true regardless of
+         whether the element is currently on- or off-screen.
+
+    : <dfn export>hidden</dfn>
     :: The element has [=layout containment=], [=style containment=], and
          [=size containment=] applied in addition to any existing containment
          values. Furthermore, the element's subtree is not painted or hit-tested.
-
-    : more
-    :: Note that the token values are designed to be extensible. In other
-         words, it is possible for new values to be added if new effects are
-         desired.
 </dl>
 
-Note that in situations where 'render-subtree' values cause the element's
-subtree not to be painted or hit-tested, the user-agent should avoid as much
-rendering work as possible. As an example, because of the containment applied,
-in most cases it should be possible to skip determining layout box sizes and
-positions unless explicitly requested by script.
+<div class=note>
+  Note that in situations where 'subtree-visibility' value cause the element's
+  subtree not to be painted or hit-tested, it puts in three containment
+  values ([=layout containment=], [=style containment=], and [=size
+  containment=]) in addition to previously set containment.
+</div>
+
+When element's subtree is not painted or hit-tested, it is possible to avoid
+parts of rendering in the element's subtree. In these situations, the
+user-agent should avoid as much rendering work as possible. As an example,
+because of the containment applied, in most cases it should be possible to skip
+computing styles, or determining layout box sizes and positions, unless
+explicitly requested by script.
 
 Examples {#examples}
 ========
@@ -136,18 +143,18 @@ Examples {#examples}
 <div class=example>
 	<xmp highlight=markup>
 		<style>
-		.rs {
-		  render-subtree: hidden;
+		.sv {
+		  subtree-visibility: auto;
       min-height: 50px;
 		}
 		</style>
 
-		<div class=rs>
+		<div class=sv>
 		  ... some content goes here ...
 		</div>
 	</xmp>
 
-  The .rs element's 'render-subtree' value [=hidden=] lets the user-agent manage
+  The .sv element's 'subtree-visibility' value [=auto=] lets the user-agent manage
   whether to paint and hit-test the element's subtree.  Specifically when this
   element is near the viewport, the user-agent will begin painting the element.
   When the element moves away from the viewport, it will stop being painted. In
@@ -158,56 +165,110 @@ Examples {#examples}
 <div class=example>
 	<xmp highlight=markup>
 		<style>
-		.rs {
-		  render-subtree: hidden frozen;
+		.sv {
+		  subtree-visibility: hidden;
 		}
 		</style>
 
-		<div class=rs>
+		<div class=sv>
 		  ... some content goes here ...
 		</div>
 	</xmp>
 
   In this case, the element's subtree is not painted or hit-tested regardless
   of viewport intersection. This means that the only way to have this subtree
-  painted is via script updating the value to remove render-subtree or change
+  painted is via script updating the value to remove 'subtree-visibility' or change
   its value. As before, the user-agent should skip as much of the rendering in
   the subtree as possible. An additional effect of skipping rendering is that
-  the layout state of the subtree can be preserved, so that removing the
-  'render-subtree' property in the future will cause the subtree to be rendered
-  quicker than otherwise possible.
-
+  the layout state of the subtree can be preserved by the user-agent, so that
+  removing the 'subtree-visibility' property in the future will cause the subtree
+  to be rendered quicker than otherwise possible.
 </div>
+
+<div class=example>
+	<xmp highlight=markup>
+		<style>
+		.sv {
+		  subtree-visibility: hidden;
+		}
+		</style>
+
+		<div id=target class=sv>
+		  ... some content goes here ...
+		</div>
+    <script>
+      ...
+      target.firstElementChild.getBoundingClientRect();
+      ...
+    </script>
+	</xmp>
+
+  Similarly to the last example, the element's subtree is not painted or
+  hit-tested. The user-agent should avoid as much rendering work as possible.
+  However, in this example, at some point script accesses a layout value in the
+  element's subtree. In this situation, the user-agent cannot avoid rendering
+  work and has to process any previously skipped rendering work in order to
+  return a correct value to the caller. Note that repeated calls to the same
+  layout value should not cause any additional rendering work, since the
+  user-agent should retain the last updated rendering state.
+
+  Also note that this situation in which rendering work is required is not
+  unique. There may be other situations in which the user-agent cannot avoid
+  rendering work. 
+</div>
+
+Similarity to visibility {#similarity}
+========================
+
+Note that 'subtree-visibility' bears some similarity in naming to 'visibility'
+which is important to address. Like 'visibility', 'subtree-visibility' controls
+whether elements are painted and hit-tested. However, it has important
+distinctions that allow both adoption in a wider set of use-cases and ability
+for user-agents to optimize rendering behavior:
+
+* 'subtree-visibility' values cannot be reverted by descendant style. As an
+    example, when processing an element that has 'subtree-visibility' value
+    [=hidden=], the user-agent will not paint any of its subtree, even if one of
+    the elements in the subtree has 'subtree-visibility' value [=visible=]. This
+    is important as it makes it possible to skip style part of rendering in
+    these subtree, since no descendant value can override 'subtree-visibility'.
+* 'subtree-visibility' has an [=auto=] value, which allows the user-agent to
+    paint the element's subtree when it approaches the viewport. This allows easy
+    adoption of the feature. In contrast, if 'visibility' or ''display: none'' are
+    used instead, then it is up to the developer to toggle the values when they
+    approach the viewport.
+* 'subtree-visibility' adds in containment. This is an important part of the
+    property, which allows the user-agent to skip rendering work in the subtree,
+    since it can reason that when the element's subtree is not painted, then the
+    style and layout effects of the subtree will not affect any visible content.
 
 Alternatives Considered {#alternatives}
 =======================
 
 The ''display: none'' CSS property causes content subtrees not to render.
 However, there is no mechanism for user-agent features to cause these subtrees
-to render.  Additionally, the cost of hiding and showing content cannot be
+to render. Additionally, the cost of hiding and showing content cannot be
 eliminated since ''display: none'' does not preserve the layout state of the
 subtree.
 
 ''visibility: hidden'' causes subtrees to not paint, but they still need style
 and layout, as the subtree takes up layout space and descendants may be
-''visibility: visible''.  Second, there is no mechanism for user-agent features
-to cause subtrees to render.  Note that with sufficient containment and
-intersection observer, the functionality provided by 'render-subtree' may be
-mimicked. Some planned extensions to this property are still not possible: for
-instance, one possibility is to have the non-painted subtree still be processed
-by user-agent find-in-page algorithms; this would not be possible with
-visibility: hidden. Overall, 'render-subtree' property is a stronger signal
-allowing the user-agent to optimize rendering.
+''visibility: visible''. Note that with sufficient containment and intersection
+observer, the functionality provided by 'subtree-visibility' may be mimicked.
+However, ''subtree-visibility: auto'' also permits user-agent algorithms such
+as find-in-page and fragment navigation to access the element's subtree, which
+cannot be mimicked by ''visibility''. Overall, 'subtree-visibility' property is
+a stronger signal allowing the user-agent to optimize rendering.
 
 Similar to ''visibility: hidden'', ''contain: strict'' allows the browser to
 automatically detect subtrees that are definitely off-screen, and therefore
-that don't need to be rendered.  However, ''contain: strict'' on its own is not
+that don't need to be rendered. However, ''contain: strict'' on its own is not
 flexible enough to allow for responsive design layouts that grow elements to
-fit their content.  To work around this, content could be marked as ''contain:
+fit their content. To work around this, content could be marked as ''contain:
 strict'' when off-screen and then some other value when on-screen (this is
-similar to 'render-subtree').  Second, ''contain: strict'' may or may not
+similar to 'subtree-visibility'). Second, ''contain: strict'' may or may not
 result in rendering work, depending on whether the browser detects the content
-is actually off-screen.  Third, it does not support user-agent features in
+is actually off-screen. Third, it does not support user-agent features in
 cases when it is not actually rendered to the user in the current application
 view.
 
