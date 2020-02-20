@@ -167,4 +167,4 @@ The privacy aspect of the event should be discussed in more detail via formal se
 may be hidden from the user, it may still be useful to have that content be
 searchable.  One such approach is [`subtree-visibility:
 hidden-matchable`](https://github.com/WICG/display-locking), but there may be
-other proposed approaches for similar functionality.
+other ways to achieve hiding, for example via `overflow: hidden` plus `height: 0px`.
