@@ -28,7 +28,7 @@ hidden-matchable`](https://github.com/WICG/display-locking) subtrees.
 
 With the evolution of the web, there are always new and interesting ways that
 developers choose to organize the information on their pages. Some of these
-approaches (e.g. the common case of text scrolling), yield themselves naturally to
+approaches (e.g. the common case of text scrolling), lend themselves naturally to
 user-agent features like find-in-page. This is not an accident, since
 find-in-page was designed with common use-cases in mind.
 
