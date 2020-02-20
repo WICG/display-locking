@@ -14,7 +14,7 @@ following:
 * There is a scroll-to-text navigation, in which case the event is fired with
   the matched element as the target.
 
-Note that the 'matched element' in this document refer to one of the following:
+Note that the 'matched element' in this document refers to one of the following:
 * the element that contains the text which was matched by find-in-page or
   scroll-to-text navigation.
 * the element which was selected for the fragment link navigation.
