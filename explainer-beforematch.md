@@ -44,7 +44,7 @@ matchable](#footnotes) content, it will be possible to process text for
 find-in-page match in sections that are not visible. In turn, the `beforematch`
 event will be fired on hidden (a.k.a. collapsed) sections, allowing the
 developer to unhide the section. The net effect is that the user is able to use
-find-in-page to find content in a collapsed section -- something that is not
+find-in-page or link navigation to find content in collapsed sections -- something that is not
 currently possible.
 
 Even without hidden but matchable features, `beforematch` is useful signal to the
