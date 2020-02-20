@@ -44,8 +44,8 @@ matchable](#footnotes) content, it will be possible to process text for
 find-in-page match in sections that are not visible. In turn, the `beforematch`
 event will be fired on hidden (a.k.a. collapsed) sections, allowing the
 developer to unhide the section. The net effect is that the user is able to use
-find-in-page or link navigation to find content in collapsed sections -- something that is not
-currently possible.
+find-in-page or link navigation to find content in collapsed sections --
+something that is not currently possible.
 
 Even without hidden but matchable features, `beforematch` is useful signal to the
 page which allows custom styling of the matched element, which is now only
@@ -139,9 +139,8 @@ We use a `beforematch` event to highlight the section. Note that the highlighted
 element is the target element of the `beforematch` event, but we can also modify
 any related style or DOM based on the target's location.
 
-The effect of this example is that the section is briefly highlighted in
-cornsilk on an active find-in-page match. Any effect added by the developer happens in addition to the
-user-agent highlight the found match.
+The highlighting, and any other effect added by the developer, happens in
+addition to the user-agent highlighting the found match.
 
 ### Privacy Concerns
 
@@ -159,7 +158,8 @@ We believe that the benefit of providing this information to the site outweighs
 the potential risks. Moreover, the lower granularity information can already be
 approximated from scroll position and intersection observerations on the page.
 
-The privacy aspect of the event should be discussed in more detail via formal security reviews.
+The privacy aspect of the event should be discussed in more detail via formal
+security reviews.
 
 ### Footnotes
 
