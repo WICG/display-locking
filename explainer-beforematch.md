@@ -47,7 +47,7 @@ developer to unhide the section. The net effect is that the user is able to use
 find-in-page or link navigation to find content in collapsed sections --
 something that is not currently possible.
 
-Even without hidden but matchable features, `beforematch` is useful signal to the
+Even without hidden but matchable features, `beforematch` is a useful signal to the
 page which allows custom styling of the matched element, which is now only
 possible with approximations from scroll positions and intersection
 observations.
