@@ -159,7 +159,7 @@ We believe that the benefit of providing this information to the site outweighs
 the potential risks. Moreover, the lower granularity information can already be
 approximated from scroll position and intersection observerations on the page.
 
-The privacy aspect of the event should be discussed in more detail.
+The privacy aspect of the event should be discussed in more detail via formal security reviews.
 
 ### Footnotes
 
