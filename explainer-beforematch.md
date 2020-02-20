@@ -108,7 +108,7 @@ document.querySelectorAll(".collapsed").forEach(item => {
 ```
 
 In this example, most of the content of the page is hidden in collapsed section.
-It uses a display-locking property called `subtree-visibility` to hide the
+It uses the upcoming `subtree-visibility` CSS property to hide the
 content while letting it be searchable by find-in-page. When a match is found,
 and `beforematch` event is fired, we expand the section by removing the
 collapsed class.
