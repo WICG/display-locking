@@ -11,7 +11,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-UD" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version b43aa594f5014ff14748da1aace9afaa73d2b3e6" name="generator">
   <link href="https://wicg.github.io/display-locking" rel="canonical">
-  <meta content="ebf6f89c617eda6413920d26e6838b895872b32f" name="document-revision">
+  <meta content="c966dbf66742eddff39f72d30997555a84ad23c3" name="document-revision">
 <style>/* style-md-lists */
 
 /* This is a weird hack for me not yet following the commonmark spec
@@ -407,13 +407,13 @@ the document.</p>
    <ul>
     <li data-md>
      <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="off-screen">off-screen</dfn>: an element is considered to be off-screen if
-its border box does not intersect the viewport with a fixed, user-agent
+its border box does not intersect the visual viewport plus a user-agent
 specified, margin.</p>
-     <div class="note" role="note"> The the user-agent is free to consider a fixed margin
-  around the viewport when computing whether the element is off-screen. This
-  means that when an element is approaching the viewport, the user-agent can
-  start processing it in preparation of the element entering the
-  viewport. A 50% viewport margin is a reasonable implementation default </div>
+     <div class="note" role="note"> The the user-agent is free to consider any margin around the viewport
+  when computing whether the element is off-screen. The margin is meant to
+  allow the user-agent to start preparing the element ahead of time, before
+  it enters the viewport. A 50% viewport margin is a reasonable
+  implementation default </div>
     <li data-md>
      <p><dfn data-dfn-type="dfn" data-export id="on-screen">on-screen<a class="self-link" href="#on-screen"></a></dfn>: an element is considered to be on-screen if it
 is not <a data-link-type="dfn" href="#off-screen" id="ref-for-off-screen">off-screen</a></p>
@@ -479,14 +479,13 @@ other containment properties.</p>
  to user-agent features, such as find-in-page, tab order navigation,
  etc.</p>
    </dl>
-   <p>When element is <a data-link-type="dfn" href="#skipped" id="ref-for-skipped③">skipped</a>, it is possible to avoid parts of rendering in the
-element’s subtree. In these situations, the user-agent should avoid as much
-rendering work as possible. This also means that the user-agent should retain
-the previously computed layout state if possible.</p>
+   <p>Note that when the element is <a data-link-type="dfn" href="#skipped" id="ref-for-skipped③">skipped</a> and the rendering work is avoided,
+the user-agent should retain the previously computed layout state if possible.</p>
    <div class="note" role="note">
      Intuitively, a <a data-link-type="dfn" href="#subtree-visibility-hidden" id="ref-for-subtree-visibility-hidden">hidden</a> value means that the element behaves in a way that
-  does not expose the contents of its subtree to the user. Script interactions
-  are required for the content to appear to the user. 
+  does not expose the contents of its subtree to the user (but still has an
+  effect on layout, especially in conjunction with `contain-intrinsic-size`).
+  Script interactions are required for the content to appear to the user. 
     <p>In contrast, a value of <a data-link-type="dfn" href="#subtree-visibility-auto" id="ref-for-subtree-visibility-auto">auto</a> means that the element behaves as if the
   contents of the subtree are accessible to the user. The content can be
   interacted with in the usual ways: scrolling will reveal the content, tab
@@ -535,19 +534,37 @@ the previously computed layout state if possible.</p>
   subtree can be preserved by the user-agent, so that removing the <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility④">subtree-visibility</a> property in the future will cause the subtree to be
   rendered quicker than otherwise possible.</p>
    </div>
-   <div class="example" id="example-d95dc3c9">
-    <a class="self-link" href="#example-d95dc3c9"></a> 
+   <div class="example" id="example-536d29cb">
+    <a class="self-link" href="#example-536d29cb"></a> 
 <pre class="highlight"><c- p>&lt;</c-><c- f>style</c-><c- p>></c->
+<c- f>body</c-> <c- p>{</c->
+  <c- k>margin</c-><c- p>:</c-> <c- mi>0</c-><c- p>;</c->
+<c- p>}</c->
 <c- p>.</c-><c- nc>sv</c-> <c- p>{</c->
   <c- n>subtree-visibility</c-><c- p>:</c-> <c- kc>hidden</c-><c- p>;</c->
+
+  <c- k>position</c-><c- p>:</c-> <c- kc>relative</c-><c- p>;</c->
+  <c- k>left</c-><c- p>:</c-> <c- mi>10</c-><c- b>px</c-><c- p>;</c->
+  <c- k>top</c-><c- p>:</c-> <c- mi>20</c-><c- b>px</c-><c- p>;</c->
+<c- p>}</c->
+<c- p>#</c-><c- nn>child</c-> <c- p>{</c->
+  <c- k>position</c-><c- p>:</c-> <c- kc>relative</c-><c- p>;</c->
+  <c- k>left</c-><c- p>:</c-> <c- mi>1</c-><c- b>px</c-><c- p>;</c->
+  <c- k>top</c-><c- p>:</c-> <c- mi>2</c-><c- b>px</c-><c- p>;</c->
+
+  <c- k>width</c-><c- p>:</c-> <c- mi>100</c-><c- b>px</c-><c- p>;</c->
+  <c- k>height</c-><c- p>:</c-> <c- mi>200</c-><c- b>px</c-><c- p>;</c->
 <c- p>}</c->
 <c- p>&lt;/</c-><c- f>style</c-><c- p>></c->
 
 <c- p>&lt;</c-><c- f>div</c-> <c- e>id</c-><c- o>=</c-><c- s>target</c-> <c- e>class</c-><c- o>=</c-><c- s>sv</c-><c- p>></c->
-  ... some content goes here ...
+  <c- p>&lt;</c-><c- f>div</c-> <c- e>id</c-><c- o>=</c-><c- s>child</c-><c- p>>&lt;/</c-><c- f>div</c-><c- p>></c->
+  ... some other content goes here ...
 <c- p>&lt;/</c-><c- f>div</c-><c- p>></c->
 <c- p>&lt;</c-><c- f>script</c-><c- p>></c->
   <c- p>...</c->
+  <c- c1>// This will force rendering work, including layout,</c->
+  <c- c1>// if the UA previously avoided it.</c->
   target<c- p>.</c->firstElementChild<c- p>.</c->getBoundingClientRect<c- p>();</c->
   <c- p>...</c->
 <c- p>&lt;/</c-><c- f>script</c-><c- p>></c->
@@ -557,7 +574,9 @@ the previously computed layout state if possible.</p>
   at some point script accesses a layout value in the element’s subtree. In
   this situation, the user-agent cannot avoid rendering work and has to process
   any previously skipped rendering work in order to return a correct value to
-  the caller. Note that repeated calls to the same layout value should not
+  the caller. In this example, the result of getBoundingClientRect is a rect
+  positioned at (11, 22) with a size 100x200.</p>
+    <p>Note that repeated calls to the same layout value should not
   cause any additional rendering work, since the user-agent should retain the
   last updated rendering state.</p>
     <p>Also note that this situation in which rendering work is required is not

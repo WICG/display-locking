@@ -91,14 +91,14 @@ Definitions {#definitions}
 ===========
 
 * <dfn export>off-screen</dfn>: an element is considered to be off-screen if
-    its border box does not intersect the viewport with a fixed, user-agent
+    its border box does not intersect the visual viewport plus a user-agent
     specified, margin. 
     <div class=note>
-      The the user-agent is free to consider a fixed margin
-      around the viewport when computing whether the element is off-screen. This
-      means that when an element is approaching the viewport, the user-agent can
-      start processing it in preparation of the element entering the
-      viewport. A 50% viewport margin is a reasonable implementation default
+      The the user-agent is free to consider any margin around the viewport
+      when computing whether the element is off-screen. The margin is meant to
+      allow the user-agent to start preparing the element ahead of time, before
+      it enters the viewport. A 50% viewport margin is a reasonable
+      implementation default
     </div>
 * <dfn export>on-screen</dfn>: an element is considered to be on-screen if it
     is not [=off-screen=]
@@ -148,15 +148,14 @@ Inherited: no
          etc.
 </dl>
 
-When element is [=skipped=], it is possible to avoid parts of rendering in the
-element's subtree. In these situations, the user-agent should avoid as much
-rendering work as possible. This also means that the user-agent should retain
-the previously computed layout state if possible.
+Note that when the element is [=skipped=] and the rendering work is avoided,
+the user-agent should retain the previously computed layout state if possible.
 
 <div class=note>
   Intuitively, a [=hidden=] value means that the element behaves in a way that
-  does not expose the contents of its subtree to the user. Script interactions
-  are required for the content to appear to the user.
+  does not expose the contents of its subtree to the user (but still has an
+  effect on layout, especially in conjunction with `contain-intrinsic-size`).
+  Script interactions are required for the content to appear to the user.
 
   In contrast, a value of [=auto=] means that the element behaves as if the
   contents of the subtree are accessible to the user. The content can be
@@ -219,16 +218,34 @@ Examples {#examples}
 <div class=example>
 	<xmp highlight=markup>
 		<style>
+    body {
+      margin: 0;
+    }
 		.sv {
 		  subtree-visibility: hidden;
+
+      position: relative;
+      left: 10px;
+      top: 20px;
 		}
+    #child {
+      position: relative;
+      left: 1px;
+      top: 2px;
+
+      width: 100px;
+      height: 200px;
+    }
 		</style>
 
 		<div id=target class=sv>
-		  ... some content goes here ...
+      <div id=child></div>
+		  ... some other content goes here ...
 		</div>
     <script>
       ...
+      // This will force rendering work, including layout,
+      // if the UA previously avoided it.
       target.firstElementChild.getBoundingClientRect();
       ...
     </script>
@@ -239,7 +256,10 @@ Examples {#examples}
   at some point script accesses a layout value in the element's subtree. In
   this situation, the user-agent cannot avoid rendering work and has to process
   any previously skipped rendering work in order to return a correct value to
-  the caller. Note that repeated calls to the same layout value should not
+  the caller. In this example, the result of getBoundingClientRect is a rect
+  positioned at (11, 22) with a size 100x200.
+
+  Note that repeated calls to the same layout value should not
   cause any additional rendering work, since the user-agent should retain the
   last updated rendering state.
 
