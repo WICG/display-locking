@@ -166,5 +166,5 @@ The privacy aspect of the event should be discussed in more detail via formal se
 **Hidden but matchable** content refers to an idea that although some content
 may be hidden from the user, it may still be useful to have that content be
 searchable.  One such approach is [`subtree-visibility:
-hidden-matchable`](https://github.com/WICG/display-locking), but there may be
+hidden-matchable`](https://github.com/WICG/display-locking), but there are
 other ways to achieve hiding, for example via `overflow: hidden` plus `height: 0px`.
