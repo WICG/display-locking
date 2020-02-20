@@ -87,6 +87,37 @@ and pair that with a guarantee that when later rendered, it would not
 invalidate more than a small amount of style, layout, or paint in the rest of
 the document.
 
+Definitions {#definitions}
+===========
+
+* <dfn export>off-screen</dfn>: an element is considered to be off-screen if
+    its border box does not intersect the viewport with a fixed, user-agent
+    specified, margin. 
+    <div class=note>
+      The the user-agent is free to consider a fixed margin
+      around the viewport when computing whether the element is off-screen. This
+      means that when an element is approaching the viewport, the user-agent can
+      start processing it in preparation of the element entering the
+      viewport. A 50% viewport margin is a reasonable implementation default
+    </div>
+* <dfn export>on-screen</dfn>: an element is considered to be on-screen if it
+    is not [=off-screen=]
+* <dfn export>skipped</dfn>: an element is considered skipped if its subtree is
+    not painted or hit-tested. A skipped element has [=layout containment=],
+    [=paint containment=], and [=size containment=] applied to it in addition to
+    other containment values. The user-agent should avoid as much rendering work
+    in the skipped element's subtree as possible.
+    <div class=note>
+      Rendering work can be avoided due to the combination of
+      containment and the fact that the subtree is not painted.  As an example,
+      because of the containment applied, in most cases it should be possible to skip
+      computing styles, or determining layout box sizes and positions, unless
+      explicitly requested by script.
+    </div>
+* <dfn export>has containment</dfn>: an element has containment if it has
+    [=layout containment=] and [=style containment=] applied in addition to any
+    other containment properties.
+
 The 'subtree-visibility' property {#subtree-visibility}
 =================================
 
@@ -99,43 +130,41 @@ Inherited: no
 
 <dl dfn-type value dfn-for=subtree-visibility>
     : <dfn export>visible</dfn>
-    :: No effect; The element and its subtree are rendered as usual. This
-          provides no extra information or hints to the user-agent.
+    :: No effect. This provides no extra information or hints to the user-agent.
 
     : <dfn export>auto</dfn>
-    :: The element has [=layout containment=] and [=style containment=] applied
-         in addition to any existing containment values.
-
-         Additionally, if the element is <dfn export>off-screen</dfn>, in the
-         sense that it is not intersecting the viewport (with a reasonable
-         user-agent specified margin), then element has [=size containment=]
-         applied in addition to any existing containment values and the
-         element's subtree is not painted or hit-tested. 
+    :: The element [=has containment=]. If the element is [=off-screen=], it is [=skipped=].
 
          It is important to note that the contents of the subtree must be
-         accessible to user-agent features such as find-in-page, fragment
-         navigation, tab order navigation, etc. This is true regardless of
-         whether the element is currently on- or off-screen.
+         accessible to user-agent features such as find-in-page, tab order
+         navigation, etc. This is true regardless of whether the element is
+         [=skipped=] or not.
 
     : <dfn export>hidden</dfn>
-    :: The element has [=layout containment=], [=style containment=], and
-         [=size containment=] applied in addition to any existing containment
-         values. Furthermore, the element's subtree is not painted or hit-tested.
+    :: The element is [=skipped=].
+
+         Note that in this case, the contents of the subtree are not accessible
+         to user-agent features, such as find-in-page, tab order navigation,
+         etc.
 </dl>
 
-<div class=note>
-  Note that in situations where 'subtree-visibility' value cause the element's
-  subtree not to be painted or hit-tested, it puts in three containment
-  values ([=layout containment=], [=style containment=], and [=size
-  containment=]) in addition to previously set containment.
-</div>
+When element is [=skipped=], it is possible to avoid parts of rendering in the
+element's subtree. In these situations, the user-agent should avoid as much
+rendering work as possible. This also means that the user-agent should retain
+the previously computed layout state if possible.
 
-When element's subtree is not painted or hit-tested, it is possible to avoid
-parts of rendering in the element's subtree. In these situations, the
-user-agent should avoid as much rendering work as possible. As an example,
-because of the containment applied, in most cases it should be possible to skip
-computing styles, or determining layout box sizes and positions, unless
-explicitly requested by script.
+<div class=note>
+  Intuitively, a [=hidden=] value means that the element behaves in a way that
+  does not expose the contents of its subtree to the user. Script interactions
+  are required for the content to appear to the user.
+
+  In contrast, a value of [=auto=] means that the element behaves as if the
+  contents of the subtree are accessible to the user. The content can be
+  interacted with in the usual ways: scrolling will reveal the content, tab
+  order navigation will visit the subtree, find-in-page will find matches, etc.
+  The fact that [=off-screen=] elements with ''subtree-visibility: auto'' are
+  [=skipped=] is a rendering performance optimization.
+</div>
 
 Examples {#examples}
 ========
@@ -154,12 +183,12 @@ Examples {#examples}
 		</div>
 	</xmp>
 
-  The .sv element's 'subtree-visibility' value [=auto=] lets the user-agent manage
-  whether to paint and hit-test the element's subtree.  Specifically when this
-  element is near the viewport, the user-agent will begin painting the element.
-  When the element moves away from the viewport, it will stop being painted. In
+  The .sv element's 'subtree-visibility' value [=auto=] lets the user-agent
+  manage whether the element is [=skipped=].  Specifically when this element is
+  near the viewport, the user-agent will begin painting the element.  When the
+  element moves away from the viewport, it will stop being painted. In
   addition, the user-agent should skip as much of the rendering work as
-  possible when the element is not painted or hit-tested.
+  possible when the element is [=skipped=].
 </div>
 
 <div class=example>
@@ -175,14 +204,16 @@ Examples {#examples}
 		</div>
 	</xmp>
 
-  In this case, the element's subtree is not painted or hit-tested regardless
-  of viewport intersection. This means that the only way to have this subtree
-  painted is via script updating the value to remove 'subtree-visibility' or change
-  its value. As before, the user-agent should skip as much of the rendering in
-  the subtree as possible. An additional effect of skipping rendering is that
-  the layout state of the subtree can be preserved by the user-agent, so that
-  removing the 'subtree-visibility' property in the future will cause the subtree
-  to be rendered quicker than otherwise possible.
+  In this case, the element is [=skipped=] regardless of viewport intersection.
+  This means that the only way to have this subtree painted is via script
+  updating the value to remove 'subtree-visibility' or change its value. As
+  before, the user-agent should skip as much of the rendering in the subtree as
+  possible.
+
+  An additional effect of skipping rendering is that the layout state of the
+  subtree can be preserved by the user-agent, so that removing the
+  'subtree-visibility' property in the future will cause the subtree to be
+  rendered quicker than otherwise possible.
 </div>
 
 <div class=example>
@@ -203,14 +234,14 @@ Examples {#examples}
     </script>
 	</xmp>
 
-  Similarly to the last example, the element's subtree is not painted or
-  hit-tested. The user-agent should avoid as much rendering work as possible.
-  However, in this example, at some point script accesses a layout value in the
-  element's subtree. In this situation, the user-agent cannot avoid rendering
-  work and has to process any previously skipped rendering work in order to
-  return a correct value to the caller. Note that repeated calls to the same
-  layout value should not cause any additional rendering work, since the
-  user-agent should retain the last updated rendering state.
+  Similarly to the last example, the element is [=skipped=]. The user-agent
+  should avoid as much rendering work as possible.  However, in this example,
+  at some point script accesses a layout value in the element's subtree. In
+  this situation, the user-agent cannot avoid rendering work and has to process
+  any previously skipped rendering work in order to return a correct value to
+  the caller. Note that repeated calls to the same layout value should not
+  cause any additional rendering work, since the user-agent should retain the
+  last updated rendering state.
 
   Also note that this situation in which rendering work is required is not
   unique. There may be other situations in which the user-agent cannot avoid
@@ -222,9 +253,9 @@ Similarity to visibility {#similarity}
 
 Note that 'subtree-visibility' bears some similarity in naming to 'visibility'
 which is important to address. Like 'visibility', 'subtree-visibility' controls
-whether elements are painted and hit-tested. However, it has important
-distinctions that allow both adoption in a wider set of use-cases and ability
-for user-agents to optimize rendering behavior:
+whether the element, or its subtree, are painted and hit-tested. However, it
+has important distinctions that allow both adoption in a wider set of use-cases
+and ability for user-agents to optimize rendering performance:
 
 * 'subtree-visibility' values cannot be reverted by descendant style. As an
     example, when processing an element that has 'subtree-visibility' value

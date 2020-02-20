@@ -11,7 +11,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-UD" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version b43aa594f5014ff14748da1aace9afaa73d2b3e6" name="generator">
   <link href="https://wicg.github.io/display-locking" rel="canonical">
-  <meta content="337cb8d5415a5dd2530bfde4d5b4d843be287a98" name="document-revision">
+  <meta content="ebf6f89c617eda6413920d26e6838b895872b32f" name="document-revision">
 <style>/* style-md-lists */
 
 /* This is a weird hack for me not yet following the commonmark spec
@@ -258,7 +258,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">CSS Render Subtree</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Unofficial Proposal Draft, <time class="dt-updated" datetime="2020-02-19">19 February 2020</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Unofficial Proposal Draft, <time class="dt-updated" datetime="2020-02-20">20 February 2020</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -301,12 +301,13 @@ on screen, on paper, etc.
      <ol class="toc">
       <li><a href="#motivation"><span class="secno">1.1</span> <span class="content">Motivation &amp; Background</span></a>
      </ol>
-    <li><a href="#subtree-visibility"><span class="secno">2</span> <span class="content">The <span class="property">subtree-visibility</span> property</span></a>
-    <li><a href="#examples"><span class="secno">3</span> <span class="content">Examples</span></a>
-    <li><a href="#similarity"><span class="secno">4</span> <span class="content">Similarity to visibility</span></a>
-    <li><a href="#alternatives"><span class="secno">5</span> <span class="content">Alternatives Considered</span></a>
-    <li><a href="#priv-sec"><span class="secno">6</span> <span class="content">Privacy &amp; Security Considerations</span></a>
-    <li><a href="#footnotes"><span class="secno">7</span> <span class="content">Footnotes</span></a>
+    <li><a href="#definitions"><span class="secno">2</span> <span class="content">Definitions</span></a>
+    <li><a href="#subtree-visibility"><span class="secno">3</span> <span class="content">The <span class="property">subtree-visibility</span> property</span></a>
+    <li><a href="#examples"><span class="secno">4</span> <span class="content">Examples</span></a>
+    <li><a href="#similarity"><span class="secno">5</span> <span class="content">Similarity to visibility</span></a>
+    <li><a href="#alternatives"><span class="secno">6</span> <span class="content">Alternatives Considered</span></a>
+    <li><a href="#priv-sec"><span class="secno">7</span> <span class="content">Privacy &amp; Security Considerations</span></a>
+    <li><a href="#footnotes"><span class="secno">8</span> <span class="content">Footnotes</span></a>
     <li>
      <a href="#conformance"><span class="secno"></span> <span class="content"> Conformance</span></a>
      <ol class="toc">
@@ -402,7 +403,35 @@ the developer to specify that specific parts of the DOM need not be rendered,
 and pair that with a guarantee that when later rendered, it would not
 invalidate more than a small amount of style, layout, or paint in the rest of
 the document.</p>
-   <h2 class="heading settled" data-level="2" id="subtree-visibility"><span class="secno">2. </span><span class="content">The <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility">subtree-visibility</a> property</span><a class="self-link" href="#subtree-visibility"></a></h2>
+   <h2 class="heading settled" data-level="2" id="definitions"><span class="secno">2. </span><span class="content">Definitions</span><a class="self-link" href="#definitions"></a></h2>
+   <ul>
+    <li data-md>
+     <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="off-screen">off-screen</dfn>: an element is considered to be off-screen if
+its border box does not intersect the viewport with a fixed, user-agent
+specified, margin.</p>
+     <div class="note" role="note"> The the user-agent is free to consider a fixed margin
+  around the viewport when computing whether the element is off-screen. This
+  means that when an element is approaching the viewport, the user-agent can
+  start processing it in preparation of the element entering the
+  viewport. A 50% viewport margin is a reasonable implementation default </div>
+    <li data-md>
+     <p><dfn data-dfn-type="dfn" data-export id="on-screen">on-screen<a class="self-link" href="#on-screen"></a></dfn>: an element is considered to be on-screen if it
+is not <a data-link-type="dfn" href="#off-screen" id="ref-for-off-screen">off-screen</a></p>
+    <li data-md>
+     <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="skipped">skipped</dfn>: an element is considered skipped if its subtree is
+not painted or hit-tested. A skipped element has <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#layout-containment" id="ref-for-layout-containment">layout containment</a>, <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#paint-containment" id="ref-for-paint-containment">paint containment</a>, and <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment">size containment</a> applied to it in addition to
+other containment values. The user-agent should avoid as much rendering work
+in the skipped element’s subtree as possible.</p>
+     <div class="note" role="note"> Rendering work can be avoided due to the combination of
+  containment and the fact that the subtree is not painted.  As an example,
+  because of the containment applied, in most cases it should be possible to skip
+  computing styles, or determining layout box sizes and positions, unless
+  explicitly requested by script. </div>
+    <li data-md>
+     <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="has-containment">has containment</dfn>: an element has containment if it has <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#layout-containment" id="ref-for-layout-containment①">layout containment</a> and <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#style-containment" id="ref-for-style-containment">style containment</a> applied in addition to any
+other containment properties.</p>
+   </ul>
+   <h2 class="heading settled" data-level="3" id="subtree-visibility"><span class="secno">3. </span><span class="content">The <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility">subtree-visibility</a> property</span><a class="self-link" href="#subtree-visibility"></a></h2>
    <table class="def propdef" data-link-for-hint="subtree-visibility">
     <tbody>
      <tr>
@@ -436,38 +465,37 @@ the document.</p>
    <dl value>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="subtree-visibility" data-dfn-type="dfn" data-export id="subtree-visibility-visible">visible</dfn>
     <dd data-md>
-     <p>No effect; The element and its subtree are rendered as usual. This
-  provides no extra information or hints to the user-agent.</p>
+     <p>No effect. This provides no extra information or hints to the user-agent.</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="subtree-visibility" data-dfn-type="dfn" data-export id="subtree-visibility-auto">auto</dfn>
     <dd data-md>
-     <p>The element has <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#layout-containment" id="ref-for-layout-containment">layout containment</a> and <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#style-containment" id="ref-for-style-containment">style containment</a> applied
- in addition to any existing containment values.</p>
-     <p>Additionally, if the element is <dfn data-dfn-for="subtree-visibility" data-dfn-type="dfn" data-export id="subtree-visibility-off-screen">off-screen<a class="self-link" href="#subtree-visibility-off-screen"></a></dfn>, in the
- sense that it is not intersecting the viewport (with a reasonable
- user-agent specified margin), then element has <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment">size containment</a> applied in addition to any existing containment values and the
- element’s subtree is not painted or hit-tested.</p>
+     <p>The element <a data-link-type="dfn" href="#has-containment" id="ref-for-has-containment">has containment</a>. If the element is <a data-link-type="dfn" href="#off-screen" id="ref-for-off-screen①">off-screen</a>, it is <a data-link-type="dfn" href="#skipped" id="ref-for-skipped">skipped</a>.</p>
      <p>It is important to note that the contents of the subtree must be
- accessible to user-agent features such as find-in-page, fragment
- navigation, tab order navigation, etc. This is true regardless of
- whether the element is currently on- or off-screen.</p>
+ accessible to user-agent features such as find-in-page, tab order
+ navigation, etc. This is true regardless of whether the element is <a data-link-type="dfn" href="#skipped" id="ref-for-skipped①">skipped</a> or not.</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="subtree-visibility" data-dfn-type="dfn" data-export id="subtree-visibility-hidden">hidden</dfn>
     <dd data-md>
-     <p>The element has <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#layout-containment" id="ref-for-layout-containment①">layout containment</a>, <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#style-containment" id="ref-for-style-containment①">style containment</a>, and <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment①">size containment</a> applied in addition to any existing containment
- values. Furthermore, the element’s subtree is not painted or hit-tested.</p>
+     <p>The element is <a data-link-type="dfn" href="#skipped" id="ref-for-skipped②">skipped</a>.</p>
+     <p>Note that in this case, the contents of the subtree are not accessible
+ to user-agent features, such as find-in-page, tab order navigation,
+ etc.</p>
    </dl>
-   <div class="note" role="note"> Note that in situations where <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①">subtree-visibility</a> value cause the element’s
-  subtree not to be painted or hit-tested, it puts in three containment
-  values (<a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#layout-containment" id="ref-for-layout-containment②">layout containment</a>, <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#style-containment" id="ref-for-style-containment②">style containment</a>, and <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment②">size
-  containment</a>) in addition to previously set containment. </div>
-   <p>When element’s subtree is not painted or hit-tested, it is possible to avoid
-parts of rendering in the element’s subtree. In these situations, the
-user-agent should avoid as much rendering work as possible. As an example,
-because of the containment applied, in most cases it should be possible to skip
-computing styles, or determining layout box sizes and positions, unless
-explicitly requested by script.</p>
-   <h2 class="heading settled" data-level="3" id="examples"><span class="secno">3. </span><span class="content">Examples</span><a class="self-link" href="#examples"></a></h2>
-   <div class="example" id="example-522fc20a">
-    <a class="self-link" href="#example-522fc20a"></a> 
+   <p>When element is <a data-link-type="dfn" href="#skipped" id="ref-for-skipped③">skipped</a>, it is possible to avoid parts of rendering in the
+element’s subtree. In these situations, the user-agent should avoid as much
+rendering work as possible. This also means that the user-agent should retain
+the previously computed layout state if possible.</p>
+   <div class="note" role="note">
+     Intuitively, a <a data-link-type="dfn" href="#subtree-visibility-hidden" id="ref-for-subtree-visibility-hidden">hidden</a> value means that the element behaves in a way that
+  does not expose the contents of its subtree to the user. Script interactions
+  are required for the content to appear to the user. 
+    <p>In contrast, a value of <a data-link-type="dfn" href="#subtree-visibility-auto" id="ref-for-subtree-visibility-auto">auto</a> means that the element behaves as if the
+  contents of the subtree are accessible to the user. The content can be
+  interacted with in the usual ways: scrolling will reveal the content, tab
+  order navigation will visit the subtree, find-in-page will find matches, etc.
+  The fact that <a data-link-type="dfn" href="#off-screen" id="ref-for-off-screen②">off-screen</a> elements with <a class="css" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①">subtree-visibility: auto</a> are <a data-link-type="dfn" href="#skipped" id="ref-for-skipped④">skipped</a> is a rendering performance optimization.</p>
+   </div>
+   <h2 class="heading settled" data-level="4" id="examples"><span class="secno">4. </span><span class="content">Examples</span><a class="self-link" href="#examples"></a></h2>
+   <div class="example" id="example-6b713aeb">
+    <a class="self-link" href="#example-6b713aeb"></a> 
 <pre class="highlight"><c- p>&lt;</c-><c- f>style</c-><c- p>></c->
 <c- p>.</c-><c- nc>sv</c-> <c- p>{</c->
   <c- n>subtree-visibility</c-><c- p>:</c-> <c- kc>auto</c-><c- p>;</c->
@@ -479,15 +507,15 @@ explicitly requested by script.</p>
   ... some content goes here ...
 <c- p>&lt;/</c-><c- f>div</c-><c- p>></c->
 </pre>
-    <p>The .sv element’s <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility②">subtree-visibility</a> value <a data-link-type="dfn" href="#subtree-visibility-auto" id="ref-for-subtree-visibility-auto">auto</a> lets the user-agent manage
-  whether to paint and hit-test the element’s subtree.  Specifically when this
-  element is near the viewport, the user-agent will begin painting the element.
-  When the element moves away from the viewport, it will stop being painted. In
+    <p>The .sv element’s <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility②">subtree-visibility</a> value <a data-link-type="dfn" href="#subtree-visibility-auto" id="ref-for-subtree-visibility-auto①">auto</a> lets the user-agent
+  manage whether the element is <a data-link-type="dfn" href="#skipped" id="ref-for-skipped⑤">skipped</a>.  Specifically when this element is
+  near the viewport, the user-agent will begin painting the element.  When the
+  element moves away from the viewport, it will stop being painted. In
   addition, the user-agent should skip as much of the rendering work as
-  possible when the element is not painted or hit-tested.</p>
+  possible when the element is <span id="ref-for-skipped⑥">skipped</span>.</p>
    </div>
-   <div class="example" id="example-3135f610">
-    <a class="self-link" href="#example-3135f610"></a> 
+   <div class="example" id="example-d9055d5b">
+    <a class="self-link" href="#example-d9055d5b"></a> 
 <pre class="highlight"><c- p>&lt;</c-><c- f>style</c-><c- p>></c->
 <c- p>.</c-><c- nc>sv</c-> <c- p>{</c->
   <c- n>subtree-visibility</c-><c- p>:</c-> <c- kc>hidden</c-><c- p>;</c->
@@ -498,17 +526,17 @@ explicitly requested by script.</p>
   ... some content goes here ...
 <c- p>&lt;/</c-><c- f>div</c-><c- p>></c->
 </pre>
-    <p>In this case, the element’s subtree is not painted or hit-tested regardless
-  of viewport intersection. This means that the only way to have this subtree
-  painted is via script updating the value to remove <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility③">subtree-visibility</a> or change
-  its value. As before, the user-agent should skip as much of the rendering in
-  the subtree as possible. An additional effect of skipping rendering is that
-  the layout state of the subtree can be preserved by the user-agent, so that
-  removing the <span class="property" id="ref-for-propdef-subtree-visibility④">subtree-visibility</span> property in the future will cause the subtree
-  to be rendered quicker than otherwise possible.</p>
+    <p>In this case, the element is <a data-link-type="dfn" href="#skipped" id="ref-for-skipped⑦">skipped</a> regardless of viewport intersection.
+  This means that the only way to have this subtree painted is via script
+  updating the value to remove <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility③">subtree-visibility</a> or change its value. As
+  before, the user-agent should skip as much of the rendering in the subtree as
+  possible.</p>
+    <p>An additional effect of skipping rendering is that the layout state of the
+  subtree can be preserved by the user-agent, so that removing the <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility④">subtree-visibility</a> property in the future will cause the subtree to be
+  rendered quicker than otherwise possible.</p>
    </div>
-   <div class="example" id="example-93de9bbc">
-    <a class="self-link" href="#example-93de9bbc"></a> 
+   <div class="example" id="example-d95dc3c9">
+    <a class="self-link" href="#example-d95dc3c9"></a> 
 <pre class="highlight"><c- p>&lt;</c-><c- f>style</c-><c- p>></c->
 <c- p>.</c-><c- nc>sv</c-> <c- p>{</c->
   <c- n>subtree-visibility</c-><c- p>:</c-> <c- kc>hidden</c-><c- p>;</c->
@@ -524,32 +552,32 @@ explicitly requested by script.</p>
   <c- p>...</c->
 <c- p>&lt;/</c-><c- f>script</c-><c- p>></c->
 </pre>
-    <p>Similarly to the last example, the element’s subtree is not painted or
-  hit-tested. The user-agent should avoid as much rendering work as possible.
-  However, in this example, at some point script accesses a layout value in the
-  element’s subtree. In this situation, the user-agent cannot avoid rendering
-  work and has to process any previously skipped rendering work in order to
-  return a correct value to the caller. Note that repeated calls to the same
-  layout value should not cause any additional rendering work, since the
-  user-agent should retain the last updated rendering state.</p>
+    <p>Similarly to the last example, the element is <a data-link-type="dfn" href="#skipped" id="ref-for-skipped⑧">skipped</a>. The user-agent
+  should avoid as much rendering work as possible.  However, in this example,
+  at some point script accesses a layout value in the element’s subtree. In
+  this situation, the user-agent cannot avoid rendering work and has to process
+  any previously skipped rendering work in order to return a correct value to
+  the caller. Note that repeated calls to the same layout value should not
+  cause any additional rendering work, since the user-agent should retain the
+  last updated rendering state.</p>
     <p>Also note that this situation in which rendering work is required is not
   unique. There may be other situations in which the user-agent cannot avoid
   rendering work.</p>
    </div>
-   <h2 class="heading settled" data-level="4" id="similarity"><span class="secno">4. </span><span class="content">Similarity to visibility</span><a class="self-link" href="#similarity"></a></h2>
+   <h2 class="heading settled" data-level="5" id="similarity"><span class="secno">5. </span><span class="content">Similarity to visibility</span><a class="self-link" href="#similarity"></a></h2>
    <p>Note that <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility⑤">subtree-visibility</a> bears some similarity in naming to <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css2/visufx.html#propdef-visibility" id="ref-for-propdef-visibility">visibility</a> which is important to address. Like <span class="property" id="ref-for-propdef-visibility①">visibility</span>, <span class="property" id="ref-for-propdef-subtree-visibility⑥">subtree-visibility</span> controls
-whether elements are painted and hit-tested. However, it has important
-distinctions that allow both adoption in a wider set of use-cases and ability
-for user-agents to optimize rendering behavior:</p>
+whether the element, or its subtree, are painted and hit-tested. However, it
+has important distinctions that allow both adoption in a wider set of use-cases
+and ability for user-agents to optimize rendering performance:</p>
    <ul>
     <li data-md>
      <p><a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility⑦">subtree-visibility</a> values cannot be reverted by descendant style. As an
-example, when processing an element that has <span class="property" id="ref-for-propdef-subtree-visibility⑧">subtree-visibility</span> value <a data-link-type="dfn" href="#subtree-visibility-hidden" id="ref-for-subtree-visibility-hidden">hidden</a>, the user-agent will not paint any of its subtree, even if one of
+example, when processing an element that has <span class="property" id="ref-for-propdef-subtree-visibility⑧">subtree-visibility</span> value <a data-link-type="dfn" href="#subtree-visibility-hidden" id="ref-for-subtree-visibility-hidden①">hidden</a>, the user-agent will not paint any of its subtree, even if one of
 the elements in the subtree has <span class="property" id="ref-for-propdef-subtree-visibility⑨">subtree-visibility</span> value <a data-link-type="dfn" href="#subtree-visibility-visible" id="ref-for-subtree-visibility-visible">visible</a>. This
 is important as it makes it possible to skip style part of rendering in
 these subtree, since no descendant value can override <span class="property" id="ref-for-propdef-subtree-visibility①⓪">subtree-visibility</span>.</p>
     <li data-md>
-     <p><a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①①">subtree-visibility</a> has an <a data-link-type="dfn" href="#subtree-visibility-auto" id="ref-for-subtree-visibility-auto①">auto</a> value, which allows the user-agent to
+     <p><a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①①">subtree-visibility</a> has an <a data-link-type="dfn" href="#subtree-visibility-auto" id="ref-for-subtree-visibility-auto②">auto</a> value, which allows the user-agent to
 paint the element’s subtree when it approaches the viewport. This allows easy
 adoption of the feature. In contrast, if <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css2/visufx.html#propdef-visibility" id="ref-for-propdef-visibility②">visibility</a> or <a class="css" data-link-type="propdesc" href="https://drafts.csswg.org/css-display-3/#propdef-display" id="ref-for-propdef-display">display: none</a> are
 used instead, then it is up to the developer to toggle the values when they
@@ -560,7 +588,7 @@ property, which allows the user-agent to skip rendering work in the subtree,
 since it can reason that when the element’s subtree is not painted, then the
 style and layout effects of the subtree will not affect any visible content.</p>
    </ul>
-   <h2 class="heading settled" data-level="5" id="alternatives"><span class="secno">5. </span><span class="content">Alternatives Considered</span><a class="self-link" href="#alternatives"></a></h2>
+   <h2 class="heading settled" data-level="6" id="alternatives"><span class="secno">6. </span><span class="content">Alternatives Considered</span><a class="self-link" href="#alternatives"></a></h2>
    <p>The <a class="css" data-link-type="propdesc" href="https://drafts.csswg.org/css-display-3/#propdef-display" id="ref-for-propdef-display①">display: none</a> CSS property causes content subtrees not to render.
 However, there is no mechanism for user-agent features to cause these subtrees
 to render. Additionally, the cost of hiding and showing content cannot be
@@ -584,9 +612,9 @@ result in rendering work, depending on whether the browser detects the content
 is actually off-screen. Third, it does not support user-agent features in
 cases when it is not actually rendered to the user in the current application
 view.</p>
-   <h2 class="heading settled" data-level="6" id="priv-sec"><span class="secno">6. </span><span class="content">Privacy &amp; Security Considerations</span><a class="self-link" href="#priv-sec"></a></h2>
+   <h2 class="heading settled" data-level="7" id="priv-sec"><span class="secno">7. </span><span class="content">Privacy &amp; Security Considerations</span><a class="self-link" href="#priv-sec"></a></h2>
    <p>tbd</p>
-   <h2 class="heading settled" data-level="7" id="footnotes"><span class="secno">7. </span><span class="content">Footnotes</span><a class="self-link" href="#footnotes"></a></h2>
+   <h2 class="heading settled" data-level="8" id="footnotes"><span class="secno">8. </span><span class="content">Footnotes</span><a class="self-link" href="#footnotes"></a></h2>
    <p id="f1">[1]: Meaning, the rendering part of the browser event loop. </p>
    <p id="f2">[2]: Examples:
 placing <span class="css">display:none</span> CSS on DOM subtrees,
@@ -696,54 +724,63 @@ and avoiding some or most rendering lifecycle phases for such content. </p>
   <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
   <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
-   <li><a href="#subtree-visibility-auto">auto</a><span>, in §2</span>
-   <li><a href="#subtree-visibility-hidden">hidden</a><span>, in §2</span>
-   <li><a href="#subtree-visibility-off-screen">off-screen</a><span>, in §2</span>
-   <li><a href="#propdef-subtree-visibility">subtree-visibility</a><span>, in §2</span>
-   <li><a href="#subtree-visibility-visible">visible</a><span>, in §2</span>
+   <li><a href="#subtree-visibility-auto">auto</a><span>, in §3</span>
+   <li><a href="#has-containment">has containment</a><span>, in §2</span>
+   <li><a href="#subtree-visibility-hidden">hidden</a><span>, in §3</span>
+   <li><a href="#off-screen">off-screen</a><span>, in §2</span>
+   <li><a href="#on-screen">on-screen</a><span>, in §2</span>
+   <li><a href="#skipped">skipped</a><span>, in §2</span>
+   <li><a href="#propdef-subtree-visibility">subtree-visibility</a><span>, in §3</span>
+   <li><a href="#subtree-visibility-visible">visible</a><span>, in §3</span>
   </ul>
   <aside class="dfn-panel" data-for="term-for-propdef-margin-left">
    <a href="https://drafts.csswg.org/css-box-3/#propdef-margin-left">https://drafts.csswg.org/css-box-3/#propdef-margin-left</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-propdef-margin-left">7. Footnotes</a>
+    <li><a href="#ref-for-propdef-margin-left">8. Footnotes</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-propdef-contain">
    <a href="https://drafts.csswg.org/css-contain-2/#propdef-contain">https://drafts.csswg.org/css-contain-2/#propdef-contain</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-propdef-contain">1.1. Motivation &amp; Background</a>
-    <li><a href="#ref-for-propdef-contain①">5. Alternatives Considered</a> <a href="#ref-for-propdef-contain②">(2)</a> <a href="#ref-for-propdef-contain③">(3)</a>
+    <li><a href="#ref-for-propdef-contain①">6. Alternatives Considered</a> <a href="#ref-for-propdef-contain②">(2)</a> <a href="#ref-for-propdef-contain③">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-layout-containment">
    <a href="https://drafts.csswg.org/css-contain-2/#layout-containment">https://drafts.csswg.org/css-contain-2/#layout-containment</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-layout-containment">2. The subtree-visibility property</a> <a href="#ref-for-layout-containment①">(2)</a> <a href="#ref-for-layout-containment②">(3)</a>
+    <li><a href="#ref-for-layout-containment">2. Definitions</a> <a href="#ref-for-layout-containment①">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-paint-containment">
+   <a href="https://drafts.csswg.org/css-contain-2/#paint-containment">https://drafts.csswg.org/css-contain-2/#paint-containment</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-paint-containment">2. Definitions</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-size-containment">
    <a href="https://drafts.csswg.org/css-contain-2/#size-containment">https://drafts.csswg.org/css-contain-2/#size-containment</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-size-containment">2. The subtree-visibility property</a> <a href="#ref-for-size-containment①">(2)</a> <a href="#ref-for-size-containment②">(3)</a>
+    <li><a href="#ref-for-size-containment">2. Definitions</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-style-containment">
    <a href="https://drafts.csswg.org/css-contain-2/#style-containment">https://drafts.csswg.org/css-contain-2/#style-containment</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-style-containment">2. The subtree-visibility property</a> <a href="#ref-for-style-containment①">(2)</a> <a href="#ref-for-style-containment②">(3)</a>
+    <li><a href="#ref-for-style-containment">2. Definitions</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-propdef-display">
    <a href="https://drafts.csswg.org/css-display-3/#propdef-display">https://drafts.csswg.org/css-display-3/#propdef-display</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-propdef-display">4. Similarity to visibility</a>
-    <li><a href="#ref-for-propdef-display①">5. Alternatives Considered</a> <a href="#ref-for-propdef-display②">(2)</a>
+    <li><a href="#ref-for-propdef-display">5. Similarity to visibility</a>
+    <li><a href="#ref-for-propdef-display①">6. Alternatives Considered</a> <a href="#ref-for-propdef-display②">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-comb-one">
    <a href="https://drafts.csswg.org/css-values-4/#comb-one">https://drafts.csswg.org/css-values-4/#comb-one</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-comb-one">2. The subtree-visibility property</a> <a href="#ref-for-comb-one①">(2)</a>
+    <li><a href="#ref-for-comb-one">3. The subtree-visibility property</a> <a href="#ref-for-comb-one①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-propdef-will-change">
@@ -755,8 +792,8 @@ and avoiding some or most rendering lifecycle phases for such content. </p>
   <aside class="dfn-panel" data-for="term-for-propdef-visibility">
    <a href="https://drafts.csswg.org/css2/visufx.html#propdef-visibility">https://drafts.csswg.org/css2/visufx.html#propdef-visibility</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-propdef-visibility">4. Similarity to visibility</a> <a href="#ref-for-propdef-visibility①">(2)</a> <a href="#ref-for-propdef-visibility②">(3)</a>
-    <li><a href="#ref-for-propdef-visibility③">5. Alternatives Considered</a> <a href="#ref-for-propdef-visibility④">(2)</a> <a href="#ref-for-propdef-visibility⑤">(3)</a>
+    <li><a href="#ref-for-propdef-visibility">5. Similarity to visibility</a> <a href="#ref-for-propdef-visibility①">(2)</a> <a href="#ref-for-propdef-visibility②">(3)</a>
+    <li><a href="#ref-for-propdef-visibility③">6. Alternatives Considered</a> <a href="#ref-for-propdef-visibility④">(2)</a> <a href="#ref-for-propdef-visibility⑤">(3)</a>
    </ul>
   </aside>
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
@@ -771,6 +808,7 @@ and avoiding some or most rendering lifecycle phases for such content. </p>
     <ul>
      <li><span class="dfn-paneled" id="term-for-propdef-contain" style="color:initial">contain</span>
      <li><span class="dfn-paneled" id="term-for-layout-containment" style="color:initial">layout containment</span>
+     <li><span class="dfn-paneled" id="term-for-paint-containment" style="color:initial">paint containment</span>
      <li><span class="dfn-paneled" id="term-for-size-containment" style="color:initial">size containment</span>
      <li><span class="dfn-paneled" id="term-for-style-containment" style="color:initial">style containment</span>
     </ul>
@@ -840,32 +878,54 @@ and avoiding some or most rendering lifecycle phases for such content. </p>
       <td>as specified
    </table>
   </div>
+  <aside class="dfn-panel" data-for="off-screen">
+   <b><a href="#off-screen">#off-screen</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-off-screen">2. Definitions</a>
+    <li><a href="#ref-for-off-screen①">3. The subtree-visibility property</a> <a href="#ref-for-off-screen②">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="skipped">
+   <b><a href="#skipped">#skipped</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-skipped">3. The subtree-visibility property</a> <a href="#ref-for-skipped①">(2)</a> <a href="#ref-for-skipped②">(3)</a> <a href="#ref-for-skipped③">(4)</a> <a href="#ref-for-skipped④">(5)</a>
+    <li><a href="#ref-for-skipped⑤">4. Examples</a> <a href="#ref-for-skipped⑥">(2)</a> <a href="#ref-for-skipped⑦">(3)</a> <a href="#ref-for-skipped⑧">(4)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="has-containment">
+   <b><a href="#has-containment">#has-containment</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-has-containment">3. The subtree-visibility property</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="propdef-subtree-visibility">
    <b><a href="#propdef-subtree-visibility">#propdef-subtree-visibility</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-propdef-subtree-visibility">2. The subtree-visibility property</a> <a href="#ref-for-propdef-subtree-visibility①">(2)</a>
-    <li><a href="#ref-for-propdef-subtree-visibility②">3. Examples</a> <a href="#ref-for-propdef-subtree-visibility③">(2)</a> <a href="#ref-for-propdef-subtree-visibility④">(3)</a>
-    <li><a href="#ref-for-propdef-subtree-visibility⑤">4. Similarity to visibility</a> <a href="#ref-for-propdef-subtree-visibility⑥">(2)</a> <a href="#ref-for-propdef-subtree-visibility⑦">(3)</a> <a href="#ref-for-propdef-subtree-visibility⑧">(4)</a> <a href="#ref-for-propdef-subtree-visibility⑨">(5)</a> <a href="#ref-for-propdef-subtree-visibility①⓪">(6)</a> <a href="#ref-for-propdef-subtree-visibility①①">(7)</a> <a href="#ref-for-propdef-subtree-visibility①②">(8)</a>
-    <li><a href="#ref-for-propdef-subtree-visibility①③">5. Alternatives Considered</a> <a href="#ref-for-propdef-subtree-visibility①④">(2)</a> <a href="#ref-for-propdef-subtree-visibility①⑤">(3)</a> <a href="#ref-for-propdef-subtree-visibility①⑥">(4)</a>
+    <li><a href="#ref-for-propdef-subtree-visibility">3. The subtree-visibility property</a> <a href="#ref-for-propdef-subtree-visibility①">(2)</a>
+    <li><a href="#ref-for-propdef-subtree-visibility②">4. Examples</a> <a href="#ref-for-propdef-subtree-visibility③">(2)</a> <a href="#ref-for-propdef-subtree-visibility④">(3)</a>
+    <li><a href="#ref-for-propdef-subtree-visibility⑤">5. Similarity to visibility</a> <a href="#ref-for-propdef-subtree-visibility⑥">(2)</a> <a href="#ref-for-propdef-subtree-visibility⑦">(3)</a> <a href="#ref-for-propdef-subtree-visibility⑧">(4)</a> <a href="#ref-for-propdef-subtree-visibility⑨">(5)</a> <a href="#ref-for-propdef-subtree-visibility①⓪">(6)</a> <a href="#ref-for-propdef-subtree-visibility①①">(7)</a> <a href="#ref-for-propdef-subtree-visibility①②">(8)</a>
+    <li><a href="#ref-for-propdef-subtree-visibility①③">6. Alternatives Considered</a> <a href="#ref-for-propdef-subtree-visibility①④">(2)</a> <a href="#ref-for-propdef-subtree-visibility①⑤">(3)</a> <a href="#ref-for-propdef-subtree-visibility①⑥">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="subtree-visibility-visible">
    <b><a href="#subtree-visibility-visible">#subtree-visibility-visible</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-subtree-visibility-visible">4. Similarity to visibility</a>
+    <li><a href="#ref-for-subtree-visibility-visible">5. Similarity to visibility</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="subtree-visibility-auto">
    <b><a href="#subtree-visibility-auto">#subtree-visibility-auto</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-subtree-visibility-auto">3. Examples</a>
-    <li><a href="#ref-for-subtree-visibility-auto①">4. Similarity to visibility</a>
+    <li><a href="#ref-for-subtree-visibility-auto">3. The subtree-visibility property</a>
+    <li><a href="#ref-for-subtree-visibility-auto①">4. Examples</a>
+    <li><a href="#ref-for-subtree-visibility-auto②">5. Similarity to visibility</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="subtree-visibility-hidden">
    <b><a href="#subtree-visibility-hidden">#subtree-visibility-hidden</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-subtree-visibility-hidden">4. Similarity to visibility</a>
+    <li><a href="#ref-for-subtree-visibility-hidden">3. The subtree-visibility property</a>
+    <li><a href="#ref-for-subtree-visibility-hidden①">5. Similarity to visibility</a>
    </ul>
   </aside>
 <script>/* script-dfn-panel */
