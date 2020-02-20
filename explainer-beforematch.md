@@ -140,7 +140,7 @@ element is the target element of the `beforematch` event, but we can also modify
 any related style or DOM based on the target's location.
 
 The effect of this example is that the section is briefly highlighted in
-cornsilk on an active find-in-page match. This effect happens in addition to the
+cornsilk on an active find-in-page match. Any effect added by the developer happens in addition to the
 user-agent highlight the found match.
 
 ### Privacy Concerns
