@@ -21,7 +21,7 @@ Note that the 'matched element' in this document refer to one of the following:
 
 The use case for this event is to allow developers to help users find hidden
 content on the page. Hidden content includes collapsed sections via clipping,
-`visibility: hidden` subtree, and [`subtree-visibility:
+`visibility: hidden` subtrees, and [`subtree-visibility:
 hidden-matchable`](https://github.com/WICG/display-locking) subtrees.
 
 ### Motivation
