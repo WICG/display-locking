@@ -2,7 +2,7 @@
 
 ### Summary (TL;DR)
 
-The `beforematch` event is fired at render timing in the following situations:
+The `beforematch` event allows developers to display content to the user in response to to find-in-page or fragment navigation actions. It is fired just before these actions, and at render timing. The applicable actions are:
 
 * There is a new find-in-page active match, in which case the event is fired
   with the matched element as the target.
