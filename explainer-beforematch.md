@@ -95,7 +95,7 @@ relevant sections. For instance, navigating to
 observing the `beforematch` event for that section as a result of the
 scroll-to-text fragment navigation match.
 
-Also note that the adoption of the `beforematch` in these use-cases should be
+Also note that the adoption of the `beforematch` event in these use-cases should be
 straight-forward, since the typical page that provides content in collapsed
 sections already has an event handler to expand and show the section. With the
 `beforematch` event, we can reuse the same handler to expand the section.
