@@ -98,7 +98,7 @@ Definitions {#definitions}
       when computing whether the element is off-screen. The margin is meant to
       allow the user-agent to start preparing the element ahead of time, before
       it enters the viewport. A 50% viewport margin is a reasonable
-      implementation default
+      implementation default.
     </div>
 * <dfn export>on-screen</dfn>: an element is considered to be on-screen if it
     is not [=off-screen=]
