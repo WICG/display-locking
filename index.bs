@@ -1,5 +1,5 @@
 <pre class='metadata'>
-Title: CSS Render Subtree
+Title: CSS Subtree Visibility
 Shortname: css-subtree-visibility
 Level: 1
 Status: UD
