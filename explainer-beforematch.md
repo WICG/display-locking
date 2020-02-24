@@ -183,13 +183,13 @@ caused the `beforematch` event to be fired:
    the page using the `beforematch` event, and is not observable by any third
    parties.
 
-Note that the `beforematch` event does not cross a frame boundary, so if the
-matched information is found within an iframe, the signal does not propagate to
-the embedding page.
+Some consideration needs to be given to the `beforematch` event when it comes to
+cross frame interactions. Specifically, if the matched information is found within
+a frame, should the signal propagate to the embedding page?
 
-With the above reasoning, we believe that the `beforematch` event does not pose
-a privacy problem. However, the privacy aspect of the event should be discussed
-in more detail via formal security reviews.
+In general, we believe that the `beforematch` event does not pose a privacy problem.
+However, the privacy aspect of the event should be discussed in more detail via
+formal security reviews.
 
 ### Footnotes
 
