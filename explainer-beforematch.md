@@ -158,8 +158,38 @@ We believe that the benefit of providing this information to the site outweighs
 the potential risks. Moreover, the lower granularity information can already be
 approximated from scroll position and intersection observerations on the page.
 
-The privacy aspect of the event should be discussed in more detail via formal
-security reviews.
+There are three cases to consider, each of which correspond to an action that
+caused the `beforematch` event to be fired:
+1. Find-in-page. The data typed into the search dialog for find-in-page is not
+   directly observable by the page. However, based on `beforematch` event, the page
+   can infer that the searched text is within a particular element that received
+   the event. We believe that the risk of exposing this information to the page
+   is low:
+     * The granularity of information provided is low, since the event is
+       received by the containing element, and does not reveal the actual text
+       searched.
+     * Find-in-page shortcuts (such as CTRL-F) can already be intercepted by the
+       page, giving it opportunity to intercept user-typed "find-in-page"
+       requests and provide custom behavior.
+     * The position of the searched text can already be deduced by the page
+       based on scroll offsets and intersection observations.
+2. Anchor or fragment link navigation. This information is already available to
+   the page via parsing of the URL string, so no new information is provided by
+   the `beforematch` event.
+3. Scroll to text navigation. Depending on the implementation of scroll-to-text,
+   from the page's perspective the behavior is indistinguishable from
+   find-in-page behavior. This means that it reveals where the searched text is
+   located but not what it is. Furthemore, this information is only available to
+   the page using `beforematch` event, and is not observable by any third
+   parties.
+
+Note that the `beforematch` event does not propagate a frame boundary, so if the
+matched information is found within an iframe, the signal does not propagate to
+the embedding page.
+
+With the above reasoning, we believe that the `beforematch` event does not pose
+a privacy problem. However, the privacy aspect of the event should be discussed
+in more detail via formal security reviews.
 
 ### Footnotes
 
