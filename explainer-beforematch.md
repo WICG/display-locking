@@ -183,7 +183,7 @@ caused the `beforematch` event to be fired:
    the page using the `beforematch` event, and is not observable by any third
    parties.
 
-Note that the `beforematch` event does not propagate a frame boundary, so if the
+Note that the `beforematch` event does not cross a frame boundary, so if the
 matched information is found within an iframe, the signal does not propagate to
 the embedding page.
 
