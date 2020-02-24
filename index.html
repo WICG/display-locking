@@ -1,7 +1,7 @@
 <!doctype html><html lang="en">
  <head>
   <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-  <title>CSS Render Subtree</title>
+  <title>CSS Subtree Visibility</title>
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
   <meta content="exploring" name="csswg-work-status">
   <meta content="UD" name="w3c-status">
@@ -11,7 +11,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-UD" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version b43aa594f5014ff14748da1aace9afaa73d2b3e6" name="generator">
   <link href="https://wicg.github.io/display-locking" rel="canonical">
-  <meta content="c966dbf66742eddff39f72d30997555a84ad23c3" name="document-revision">
+  <meta content="35f0ad41b89a07483022f6fa3310272245783bef" name="document-revision">
 <style>/* style-md-lists */
 
 /* This is a weird hack for me not yet following the commonmark spec
@@ -257,8 +257,8 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
  <body class="h-entry">
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
-   <h1 class="p-name no-ref" id="title">CSS Render Subtree</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Unofficial Proposal Draft, <time class="dt-updated" datetime="2020-02-20">20 February 2020</time></span></h2>
+   <h1 class="p-name no-ref" id="title">CSS Subtree Visibility</h1>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Unofficial Proposal Draft, <time class="dt-updated" datetime="2020-02-24">24 February 2020</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -413,7 +413,7 @@ specified, margin.</p>
   when computing whether the element is off-screen. The margin is meant to
   allow the user-agent to start preparing the element ahead of time, before
   it enters the viewport. A 50% viewport margin is a reasonable
-  implementation default </div>
+  implementation default. </div>
     <li data-md>
      <p><dfn data-dfn-type="dfn" data-export id="on-screen">on-screen<a class="self-link" href="#on-screen"></a></dfn>: an element is considered to be on-screen if it
 is not <a data-link-type="dfn" href="#off-screen" id="ref-for-off-screen">off-screen</a></p>
