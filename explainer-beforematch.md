@@ -180,7 +180,7 @@ caused the `beforematch` event to be fired:
    from the page's perspective the behavior is indistinguishable from
    find-in-page behavior. This means that it reveals where the searched text is
    located but not what it is. Furthemore, this information is only available to
-   the page using `beforematch` event, and is not observable by any third
+   the page using the `beforematch` event, and is not observable by any third
    parties.
 
 Note that the `beforematch` event does not propagate a frame boundary, so if the
