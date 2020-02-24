@@ -161,7 +161,7 @@ approximated from scroll position and intersection observerations on the page.
 There are three cases to consider, each of which correspond to an action that
 caused the `beforematch` event to be fired:
 1. Find-in-page. The data typed into the search dialog for find-in-page is not
-   directly observable by the page. However, based on `beforematch` event, the page
+   directly observable by the page. However, based on the `beforematch` event, the page
    can infer that the searched text is within a particular element that received
    the event. We believe that the risk of exposing this information to the page
    is low:
