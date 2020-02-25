@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Render Subtree (a.k.a. Display Locking) is a CSS property designed to allow
+Subtree Visibility (a.k.a. Display Locking) is a CSS property designed to allow
 developers and browsers to easily scale to large amount of content and control
 when rendering [\[1\]](#foot-notes) work happens. More concretely, the goals
 are:
@@ -24,25 +24,37 @@ The following use-cases motivate this work:
 4. Measuring layout for content not visible on screen
 5. Optimizing single-page-app transition performance
 
+## Quick links
+
+* [`subtree-visibility` spec draft](https://wicg.github.io/display-locking/index.html)
+* [`contain-intrinsic-size` explainer](https://github.com/WICG/display-locking/blob/master/explainer-contain-intrinsic-size.md)
+* [`beforematch` explainer](https://github.com/WICG/display-locking/blob/master/explainer-beforematch.md)
+
 ## Quick summary
 
-In the below, "invisible to rendering/hit testing" means not drawn or returned from any hit-testing algorithms. "not drawn" is in the same sense as `visibility: hidden`, where the content still conceptually has layout sizes, but is invisible to the user.
+In the below, "invisible to rendering/hit testing" means not drawn or returned
+from any hit-testing algorithms in the same sense as `visibility: hidden`, where
+the content still conceptually has layout sizes, but the user cannot see or
+interact with it.
 
-Also, "visible to UA algorithms" means that find-in-page, link navigation, etc can find the element.
+Also, "visible to UA algorithms" means that find-in-page, link navigation, etc
+can find the element.
 
-`render-subtree: invisible` - avoid rendering cost when offscreen
+`subtree-visibility: visible` - default state, subtree is rendered.
+
+`subtree-visibility: auto` - avoid rendering cost when offscreen
 * Use cases: (1), (3), (5)
 * Applies `contain: style layout`, plus `contain: size` when invisible
 * Invisible to rendering/hit testing, except when subtree intersects viewport
 * Visible to UA algorithms
 
-`render-subtree: skip-viewport-activation` -allow developer to control toggles between invisible/not-invisible states
+`subtree-visilibity: hidden-matchable` - allow developer to control toggles between invisible/not-invisible states
 * Use cases: (2), (3), (5)
 * Applies `contain: style layout size`
 * Invisible to rendering/hit testing
 * Visible to UA algorithms. UA fires event when matched, but not automatically displayed
 
-`render-subtree: skip-activation` - hide content, but preserve cached state and still support style/layout measurement APIs
+`subtree-visilibity: hidden` - hide content, but preserve cached state and still support style/layout measurement APIs
 * Use cases: (4), (5)
 * Applies `contain: style layout size`
 * Invisible to rendering/hit testing
@@ -118,21 +130,21 @@ Whether or not this is the final proposed set of features is yet undecided.
 
 Three new features are proposed:
 
-1. A new `render-subtree` CSS property (spec draft to be added soon).
-  This property controls whether DOM subtrees affected by the property are are are
-  not "invisible to rendering/hit testing" (in the same sense as `visibility: hidden`,
-  and is the mechanism by which rendering
-  work can be avoided. Some values of `render-subtree` allow the user-agent to
-  automatically manage whether subtrees affected are rendered or not. Other values
-  give the developer complete control of subtree rendering. Note that the names of the
-  tokens are being [discussed](https://github.com/WICG/display-locking/issues/110).
+1. A new `subtree-visibility` CSS property.
+  This property controls whether DOM subtrees affected by the property are
+  invisible to painting/hit testing. This is the mechanism by which rendering
+  work can be avoided. Some values of `subtree-visibility` allow the user-agent
+  to automatically manage whether subtrees affected are rendered or not. Other
+  values give the developer complete control of subtree rendering. Note that the
+  names of the tokens are being
+  [discussed](https://github.com/WICG/display-locking/issues/110).
   However, the brief description of the tokens is below:
-    * `render-subtree: invisible`: this configuration allows the user-agent to
+    * `subtree-visibility: auto`: this configuration allows the user-agent to
       automatically manage whether content is invisible to rendering/hit testing or not.
-    * `render-subtree: invisible skip-activation`: this configuration gives the
+    * `subtree-visilibity: hidden`: this configuration gives the
       developer complete control of when the subtree is rendered. Neither the
       user-agent nor its features should need to process or render the subtree.
-    * `render-subtree: invisible skip-viewport-activation`: this configuration
+    * `subtree-visilibity: hidden-matchable`: this configuration
       allows the developer to control rendering, but it allows user-agent
       features such as find-in-page to process the subtrees and fire the
       activation event (described below).
@@ -140,7 +152,7 @@ Three new features are proposed:
   It is also worth noting that when the element is not rendered, then
   `contain: layout style size;` is added to its style to ensure that the
   subtree content does not affect elements outside of the subtree.
-  Furthermore, when the element is rendered in the `render-subtree: invisible`
+  Furthermore, when the element is rendered in the `subtree-visilibity: auto`
   configuration (i.e. the user-agent decides to render the element), then
   `contain: layout style;` applies to the element.
 
@@ -151,16 +163,17 @@ Three new features are proposed:
   refer to [this
   explainer](https://github.com/WICG/display-locking/blob/master/explainer-contain-intrinsic-size.md).
 
-3. A new event, tentatively named activation event, which is fired when
-  find-in-page locates text that becomes the active, or currently selected,
-  match.
+3. A new [`beforematch` event](https://github.com/WICG/display-locking/blob/master/explainer-beforematch.md)
+  which is fired when one of the specified UA algorithms targets an element. For
+  example, it would fire if find-in-page locates text that becomes the active,
+  or currently selected, match. 
 
 ## Example usage
 
 ```html
 <style>
 .locked {
-  render-subtree: invisible;
+  subtree-visilibity: auto;
   contain-intrinsic-size: 100px 200px;
 }
 </style>
@@ -170,7 +183,7 @@ Three new features are proposed:
 </div>
 ```
 
-The `.locked` element's `render-subtree` configuration lets the user-agent
+The `.locked` element's `subtree-visibility` configuration lets the user-agent
 manage rendering the subtree of the element. Specifically when this element is
 near the viewport, the user-agent will begin rendering the element. When the
 element moves away from the viewport, it will stop being rendered.
@@ -193,7 +206,7 @@ A second use-case is to support simple scroll virtualization.
 ```html
 <style>
 .locked {
-  render-subtree: invisible skip-activation;
+  subtree-visibility: hidden;
   contain-intrinsic-size: 100px 200px;
 }
 </style>
@@ -211,12 +224,14 @@ as `getBoundingClientRect()` to query and measure layout for the invisible conte
 
 One intended use-case for this mode are measuring layout geomery for content not displayed.
 
-A second use-case is preserving rendering state for [single-page app](https://en.wikipedia.org/wiki/Single-page_application) content that is not currently visible to the user, but may be displayed again soon via user interaction.
+A second use-case is preserving rendering state for [single-page app](https://en.wikipedia.org/wiki/Single-page_application)
+content that is not currently visible to the user, but may be displayed again
+soon via user interaction.
 
 ```html
 <style>
 .locked {
-  render-subtree: invisible skip-viewport-activation;
+  subtree-visibility: hidden-matchable;
 }
 </style>
 
@@ -233,8 +248,8 @@ One intended use-case for this configuration is that the subtree is hidden and
 "collapsed" (note the absense of `contain-intrinsic-size` which makes size
 containment use empty size for intrinsic sizing). This is common when content is
 paginated and the developer allows the user to expand certain sections with
-button clicks. In the `render-subtree` case the developer may also listen to the
-activation event and start rendering the subtree when the event targets the
+button clicks. In the `subtree-visibility` case the developer may also listen to
+the activation event and start rendering the subtree when the event targets the
 element in the subtree. This means that find-in-page is able to expand an
 otherwise collapsed section when it finds a match.
 
@@ -252,10 +267,10 @@ layout, as the subtree takes up layout space and descendants may be `visibility:
 visible`. (It's also possible for descendants to override visibility, creating
 another complication.) Second, there is no mechanism for user-agent features to cause
 subtrees to render. Note that with sufficient containment and intersection
-observer, the functionality provided by `render-subtree` may be mimicked with
+observer, the functionality provided by `subtree-visibility` may be mimicked with
 some exceptions: find-in-page functionality does not work in unrendered content;
 this relies on more browser heuristics to ensure contained invisible content is
-cheap -- `render-subtree` is a stronger signal to the user-agent that work
+cheap -- `subtree-visibility` is a stronger signal to the user-agent that work
 should be skipped.
 
 Similar to `visibility: hidden`, `contain: strict` allows the browser to
@@ -263,7 +278,7 @@ automatically detect subtrees that are definitely offscreen, and therefore that
 don't need to be rendered. However, `contain: strict` is not flexible enough to
 allow for responsive design layouts that grow elements to fit their content. To
 work around this, content could be marked as `contain: strict` when offscreen
-and then some other value when on-screen (this is similar to `render-subtree`).
+and then some other value when on-screen (this is similar to `subtree-visibility`).
 Second, `contain: strict` may or may not result in rendering work, depending on
 whether the browser detects the content is actually offscreen. Third, it does
 not support user-agent features in cases when it is not actually rendered to the

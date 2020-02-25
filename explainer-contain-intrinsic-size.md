@@ -47,7 +47,7 @@ situations such as:
 * The subtree is not yet fully loaded from the network, or rendered into DOM
 * a custom element, framework or the User Agent has temporarily skipped rendering
   for the subtree as an optimization
-* render-subtree property enforces size containment while not rendering the
+* subtree-visibility property enforces size containment while not rendering the
   subtree.
 
 Note that these three cases can be seen as the same use case, if the concept of
