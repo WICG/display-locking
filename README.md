@@ -33,9 +33,9 @@ The following use-cases motivate this work:
 ## Quick summary
 
 In the below, "invisible to rendering/hit testing" means not drawn or returned
-from any hit-testing algorithms. "not drawn" is in the same sense as
-`visibility: hidden`, where the content still conceptually has layout sizes, but
-is invisible to the user.
+from any hit-testing algorithms in the same sense as `visibility: hidden`, where
+the content still conceptually has layout sizes, but the user cannot see or
+interact with it.
 
 Also, "visible to UA algorithms" means that find-in-page, link navigation, etc
 can find the element.
@@ -131,13 +131,13 @@ Whether or not this is the final proposed set of features is yet undecided.
 Three new features are proposed:
 
 1. A new `subtree-visibility` CSS property.
-  This property controls whether DOM subtrees affected by the property are are are
-  not "invisible to painting/hit testing" (in the same sense as `visibility:
-  hidden`, and is the mechanism by which rendering work can be avoided. Some
-  values of `subtree-visibility` allow the user-agent to automatically manage
-  whether subtrees affected are rendered or not. Other values give the developer
-  complete control of subtree rendering. Note that the names of the
-  tokens are being [discussed](https://github.com/WICG/display-locking/issues/110).
+  This property controls whether DOM subtrees affected by the property are
+  invisible to painting/hit testing. This is the mechanism by which rendering
+  work can be avoided. Some values of `subtree-visibility` allow the user-agent
+  to automatically manage whether subtrees affected are rendered or not. Other
+  values give the developer complete control of subtree rendering. Note that the
+  names of the tokens are being
+  [discussed](https://github.com/WICG/display-locking/issues/110).
   However, the brief description of the tokens is below:
     * `subtree-visibility: auto`: this configuration allows the user-agent to
       automatically manage whether content is invisible to rendering/hit testing or not.
