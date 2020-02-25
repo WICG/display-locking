@@ -130,7 +130,7 @@ Whether or not this is the final proposed set of features is yet undecided.
 
 Three new features are proposed:
 
-1. A new `subtree-visibility` CSS property (spec draft to be added soon).
+1. A new `subtree-visibility` CSS property.
   This property controls whether DOM subtrees affected by the property are are are
   not "invisible to painting/hit testing" (in the same sense as `visibility:
   hidden`, and is the mechanism by which rendering work can be avoided. Some
