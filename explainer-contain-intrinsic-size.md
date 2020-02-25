@@ -1,4 +1,4 @@
-# The `contain-contain-intrinsic-size` CSS property
+# The `contain-intrinsic-size` CSS property
 
 `contain-intrinsic-size` represents the intrinsic layout sizing of a DOM
 subtree, which is applied when `contain: size` is present. This feature extends
