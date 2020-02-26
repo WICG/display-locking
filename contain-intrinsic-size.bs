@@ -31,9 +31,8 @@ specify a size that replaces the intrinsic size when [=size containment=] is
 specified. This means that [=size containment=] can be toggled on and off, with
 the element either considering the specified value or its children for
 intrinsic sizing. This is particularly helpful for features such as <a
-href="https://wicg.github.io/display-locking/#subtree-visibility-auto">
-'subtree-visibility: auto'</a>, which applies [=size containment=]
-automatically based on element's distance to the visual viewport.
+href="https://wicg.github.io/display-locking/">''subtree-visibility''</a>, which
+can apply [=size containment=] automatically.
 
 The 'contain-intrinsic-size' property {#contain-intrinsic-size}
 =====================================
@@ -91,29 +90,36 @@ Examples {#examples}
       width: 27px;
       height: 42px;
     }
+    .child {
+      width: 123px;
+      height: 321px;
+    }
     </style>
 
-    <div id=one></div>
-    <div id=two></div>
-    <div id=three></div>
-    <div id=four></div>
+    <div id=one><div class=child></div></div>
+    <div id=two><div class=child></div></div>
+    <div id=three><div class=child></div></div>
+    <div id=four><div class=child></div></div>
   </xmp>
 
   * Element #one has [=size containment=], so it uses the specified
-      'contain-intrinsic-size' for its intrinsic size. Since divs by default take
-      up the [=available space=] in the inline direction, the element is sized to
-      available width and 20px height.
+      'contain-intrinsic-size' for its intrinsic size. Since divs by default
+      take up the [=available space=] in the inline direction, the element is
+      sized to available width and 20px height. Note that the child's size is
+      ignored due to the element's [=size containment=].
   * Element #two does not have [=size containment=], so the specified
-      'contain-intrinsic-size' has no effect. The element is sized to available
-      width and 0 height.
+      'contain-intrinsic-size' has no effect. The element considers its child's
+      size for the intrinsic sizing information. The element is sized to
+      available width and 321px height.
   * Element #three has [=size containment=], so it uses the specified
       'contain-intrinsic-size' for its intrinsic size. Furthmore, it has
       specified 'width: [=max-content=]'. Thus the final box is sized to 50px
-      width and 50px height.
+      width and 50px height. The child's size is ignored.
   * Element #four has [=size containment=], so it uses the specified
       'contain-intrinsic-size' for its intrinsic size. However, both width and
-      height are also specified, so the intrinsic size does not contribute to the
-      element's final size. The element is sized to 27px width and 42px height.
+      height are also specified, so the intrinsic size does not contribute to
+      the element's final size. The element is sized to 27px width and 42px
+      height. The child's size is ignored.
 
 </div>
 

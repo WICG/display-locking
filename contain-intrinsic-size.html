@@ -11,7 +11,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-UD" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version b43aa594f5014ff14748da1aace9afaa73d2b3e6" name="generator">
   <link href="https://wicg.github.io/display-locking/contain-intrinsic-size.html" rel="canonical">
-  <meta content="045c8f619dece9fda792fa26eef84c389921a061" name="document-revision">
+  <meta content="efb62c85becb3dfa43ad7159b9525eae9deea835" name="document-revision">
 <style>/* style-md-lists */
 
 /* This is a weird hack for me not yet following the commonmark spec
@@ -330,7 +330,7 @@ on screen, on paper, etc.
    <h2 class="heading settled" data-level="1" id="intro"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href="#intro"></a></h2>
    <p>When <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment②">size containment</a> is specified, the element does not consider its
 children when determining its intrinsic size, which in turn can affect the
-element’s <a data-link-type="dfn" href="https://drafts.csswg.org/css-display-3/#principal-box" id="ref-for-principal-box">principal box</a> size. This is benefitial for performance, as it can
+element’s <a data-link-type="dfn" href="https://drafts.csswg.org/css-display-3/#principal-box" id="ref-for-principal-box">principal box</a> size. This is beneficial for performance, as it can
 allow the user-agent to skip processing layout of elements in the size
 contained subtrees. However, it also makes it difficult to create responsive
 design content, since the element needs to be sized for it to take up layout
@@ -339,7 +339,8 @@ space.</p>
 specify a size that replaces the intrinsic size when <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment③">size containment</a> is
 specified. This means that <span id="ref-for-size-containment④">size containment</span> can be toggled on and off, with
 the element either considering the specified value or its children for
-intrinsic sizing. This is particularly helpful for features such as <a href="https://wicg.github.io/display-locking/#subtree-visibility-auto"> 'subtree-visibility: auto'</a>, which applies <span id="ref-for-size-containment⑤">size containment</span> automatically based on element’s distance to the visual viewport.</p>
+intrinsic sizing. This is particularly helpful for features such as <a href="https://wicg.github.io/display-locking/"><span class="css">subtree-visibility</span></a>, which
+can apply <span id="ref-for-size-containment⑤">size containment</span> automatically.</p>
    <h2 class="heading settled" data-level="2" id="contain-intrinsic-size"><span class="secno">2. </span><span class="content">The <a class="property" data-link-type="propdesc" href="#propdef-contain-intrinsic-size" id="ref-for-propdef-contain-intrinsic-size①">contain-intrinsic-size</a> property</span><a class="self-link" href="#contain-intrinsic-size"></a></h2>
    <table class="def propdef" data-link-for-hint="contain-intrinsic-size">
     <tbody>
@@ -393,8 +394,8 @@ intrinsic sizing. This is particularly helpful for features such as <a href="htt
  value as the first one.</p>
    </dl>
    <h2 class="heading settled" data-level="3" id="examples"><span class="secno">3. </span><span class="content">Examples</span><a class="self-link" href="#examples"></a></h2>
-   <div class="example" id="example-351fa9ee">
-    <a class="self-link" href="#example-351fa9ee"></a> 
+   <div class="example" id="example-c12b2cfa">
+    <a class="self-link" href="#example-c12b2cfa"></a> 
 <pre class="highlight"><c- p>&lt;</c-><c- f>style</c-><c- p>></c->
 <c- p>#</c-><c- nn>one</c-> <c- p>{</c->
   <c- n>contain-intrinsic-size</c-><c- p>:</c-> <c- mi>10</c-><c- b>px</c-> <c- mi>20</c-><c- b>px</c-><c- p>;</c->
@@ -414,29 +415,36 @@ intrinsic sizing. This is particularly helpful for features such as <a href="htt
   <c- k>width</c-><c- p>:</c-> <c- mi>27</c-><c- b>px</c-><c- p>;</c->
   <c- k>height</c-><c- p>:</c-> <c- mi>42</c-><c- b>px</c-><c- p>;</c->
 <c- p>}</c->
+<c- p>.</c-><c- nc>child</c-> <c- p>{</c->
+  <c- k>width</c-><c- p>:</c-> <c- mi>123</c-><c- b>px</c-><c- p>;</c->
+  <c- k>height</c-><c- p>:</c-> <c- mi>321</c-><c- b>px</c-><c- p>;</c->
+<c- p>}</c->
 <c- p>&lt;/</c-><c- f>style</c-><c- p>></c->
 
-<c- p>&lt;</c-><c- f>div</c-> <c- e>id</c-><c- o>=</c-><c- s>one</c-><c- p>>&lt;/</c-><c- f>div</c-><c- p>></c->
-<c- p>&lt;</c-><c- f>div</c-> <c- e>id</c-><c- o>=</c-><c- s>two</c-><c- p>>&lt;/</c-><c- f>div</c-><c- p>></c->
-<c- p>&lt;</c-><c- f>div</c-> <c- e>id</c-><c- o>=</c-><c- s>three</c-><c- p>>&lt;/</c-><c- f>div</c-><c- p>></c->
-<c- p>&lt;</c-><c- f>div</c-> <c- e>id</c-><c- o>=</c-><c- s>four</c-><c- p>>&lt;/</c-><c- f>div</c-><c- p>></c->
+<c- p>&lt;</c-><c- f>div</c-> <c- e>id</c-><c- o>=</c-><c- s>one</c-><c- p>>&lt;</c-><c- f>div</c-> <c- e>class</c-><c- o>=</c-><c- s>child</c-><c- p>>&lt;/</c-><c- f>div</c-><c- p>>&lt;/</c-><c- f>div</c-><c- p>></c->
+<c- p>&lt;</c-><c- f>div</c-> <c- e>id</c-><c- o>=</c-><c- s>two</c-><c- p>>&lt;</c-><c- f>div</c-> <c- e>class</c-><c- o>=</c-><c- s>child</c-><c- p>>&lt;/</c-><c- f>div</c-><c- p>>&lt;/</c-><c- f>div</c-><c- p>></c->
+<c- p>&lt;</c-><c- f>div</c-> <c- e>id</c-><c- o>=</c-><c- s>three</c-><c- p>>&lt;</c-><c- f>div</c-> <c- e>class</c-><c- o>=</c-><c- s>child</c-><c- p>>&lt;/</c-><c- f>div</c-><c- p>>&lt;/</c-><c- f>div</c-><c- p>></c->
+<c- p>&lt;</c-><c- f>div</c-> <c- e>id</c-><c- o>=</c-><c- s>four</c-><c- p>>&lt;</c-><c- f>div</c-> <c- e>class</c-><c- o>=</c-><c- s>child</c-><c- p>>&lt;/</c-><c- f>div</c-><c- p>>&lt;/</c-><c- f>div</c-><c- p>></c->
 </pre>
     <ul>
      <li data-md>
-      <p>Element #one has <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment⑧">size containment</a>, so it uses the specified <a class="property" data-link-type="propdesc" href="#propdef-contain-intrinsic-size" id="ref-for-propdef-contain-intrinsic-size②">contain-intrinsic-size</a> for its intrinsic size. Since divs by default take
-  up the <a data-link-type="dfn" href="https://drafts.csswg.org/css-sizing-3/#available" id="ref-for-available">available space</a> in the inline direction, the element is sized to
-  available width and 20px height.</p>
+      <p>Element #one has <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment⑧">size containment</a>, so it uses the specified <a class="property" data-link-type="propdesc" href="#propdef-contain-intrinsic-size" id="ref-for-propdef-contain-intrinsic-size②">contain-intrinsic-size</a> for its intrinsic size. Since divs by default
+  take up the <a data-link-type="dfn" href="https://drafts.csswg.org/css-sizing-3/#available" id="ref-for-available">available space</a> in the inline direction, the element is
+  sized to available width and 20px height. Note that the child’s size is
+  ignored due to the element’s <span id="ref-for-size-containment⑨">size containment</span>.</p>
      <li data-md>
-      <p>Element #two does not have <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment⑨">size containment</a>, so the specified <a class="property" data-link-type="propdesc" href="#propdef-contain-intrinsic-size" id="ref-for-propdef-contain-intrinsic-size③">contain-intrinsic-size</a> has no effect. The element is sized to available
-  width and 0 height.</p>
+      <p>Element #two does not have <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment①⓪">size containment</a>, so the specified <a class="property" data-link-type="propdesc" href="#propdef-contain-intrinsic-size" id="ref-for-propdef-contain-intrinsic-size③">contain-intrinsic-size</a> has no effect. The element considers its child’s
+  size for the intrinsic sizing information. The element is sized to
+  available width and 321px height.</p>
      <li data-md>
-      <p>Element #three has <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment①⓪">size containment</a>, so it uses the specified <a class="property" data-link-type="propdesc" href="#propdef-contain-intrinsic-size" id="ref-for-propdef-contain-intrinsic-size④">contain-intrinsic-size</a> for its intrinsic size. Furthmore, it has
+      <p>Element #three has <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment①①">size containment</a>, so it uses the specified <a class="property" data-link-type="propdesc" href="#propdef-contain-intrinsic-size" id="ref-for-propdef-contain-intrinsic-size④">contain-intrinsic-size</a> for its intrinsic size. Furthmore, it has
   specified 'width: <a data-link-type="dfn" href="https://drafts.csswg.org/css-sizing-3/#max-content" id="ref-for-max-content②">max-content</a>'. Thus the final box is sized to 50px
-  width and 50px height.</p>
+  width and 50px height. The child’s size is ignored.</p>
      <li data-md>
-      <p>Element #four has <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment①①">size containment</a>, so it uses the specified <a class="property" data-link-type="propdesc" href="#propdef-contain-intrinsic-size" id="ref-for-propdef-contain-intrinsic-size⑤">contain-intrinsic-size</a> for its intrinsic size. However, both width and
-  height are also specified, so the intrinsic size does not contribute to the
-  element’s final size. The element is sized to 27px width and 42px height.</p>
+      <p>Element #four has <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#size-containment" id="ref-for-size-containment①②">size containment</a>, so it uses the specified <a class="property" data-link-type="propdesc" href="#propdef-contain-intrinsic-size" id="ref-for-propdef-contain-intrinsic-size⑤">contain-intrinsic-size</a> for its intrinsic size. However, both width and
+  height are also specified, so the intrinsic size does not contribute to
+  the element’s final size. The element is sized to 27px width and 42px
+  height. The child’s size is ignored.</p>
     </ul>
    </div>
    <h2 class="heading settled" data-level="4" id="priv-sec"><span class="secno">4. </span><span class="content">Privacy &amp; Security Considerations</span><a class="self-link" href="#priv-sec"></a></h2>
@@ -542,7 +550,7 @@ intrinsic sizing. This is particularly helpful for features such as <a href="htt
    <ul>
     <li><a href="#ref-for-size-containment②">1. Introduction</a> <a href="#ref-for-size-containment③">(2)</a> <a href="#ref-for-size-containment④">(3)</a> <a href="#ref-for-size-containment⑤">(4)</a>
     <li><a href="#ref-for-size-containment⑥">2. The contain-intrinsic-size property</a> <a href="#ref-for-size-containment⑦">(2)</a>
-    <li><a href="#ref-for-size-containment⑧">3. Examples</a> <a href="#ref-for-size-containment⑨">(2)</a> <a href="#ref-for-size-containment①⓪">(3)</a> <a href="#ref-for-size-containment①①">(4)</a>
+    <li><a href="#ref-for-size-containment⑧">3. Examples</a> <a href="#ref-for-size-containment⑨">(2)</a> <a href="#ref-for-size-containment①⓪">(3)</a> <a href="#ref-for-size-containment①①">(4)</a> <a href="#ref-for-size-containment①②">(5)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-principal-box">
