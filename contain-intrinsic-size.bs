@@ -20,7 +20,7 @@ Introduction {#intro}
 
 When [=size containment=] is specified, the element does not consider its
 children when determining its intrinsic size, which in turn can affect the
-element's [=principal box=] size. This is benefitial for performance, as it can
+element's [=principal box=] size. This is beneficial for performance, as it can
 allow the user-agent to skip processing layout of elements in the size
 contained subtrees. However, it also makes it difficult to create responsive
 design content, since the element needs to be sized for it to take up layout
