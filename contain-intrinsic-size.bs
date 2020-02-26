@@ -10,7 +10,7 @@ Editor: Tab Atkins-Bittner, Google
 Editor: Vladimir Levin, Google
 Abstract: This spec introduces a contain-intrinsic-size property, which allows
           authors to specify an element's intrinsic size when [=size containment=]
-          applies.  In effect, this feature extends [=size containment=] by 
+          is present.  In effect, this feature extends [=size containment=] by 
           letting the developer specify the placeholder size to apply when the
           element's children are not considered.
 </pre>
