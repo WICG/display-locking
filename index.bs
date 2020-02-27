@@ -16,7 +16,7 @@ Abstract: This spec introduces a subtree-visibility CSS property, allowing autho
 </pre>
 
 Introduction {#intro}
-=====================
+============
 
 Subtree Visibility (a.k.a. Display Locking) is a CSS property designed to allow
 developers and browsers to easily scale to large amount of content and provide
@@ -172,6 +172,42 @@ the user-agent should retain the previously computed layout state if possible.
   containment=] on the element. Additionally, if the element is [=skipped=],
   then the user-agent also enforces [=size containment=]. These containment
   values are added on top of any existing containment values.
+</div>
+
+Accessibility {#accessibility}
+=============
+
+Similar to the way 'subtree-visibility' affects painted output of the element's
+subtree, it also affects information exposed to the
+<a href="https://w3c.github.io/css-aam/#dfn-accessibility-tree">accessibility
+tree</a> and <a href="https://w3c.github.io/css-aam/#dfn-assistive-technology">
+assistive technologies</a>:
+* The structure of the page should be exposed to assistive technologies.
+* When [=skipped=], the element's subtree should be exposed as
+    <a href="https://w3c.github.io/css-aam/#dfn-hidden">hidden</a>.
+
+<div class=note>
+  The general idea for exposing elements as hidden is the following: if content
+  is not observable in the painted output of the page, then it should not be
+  observable by assistive technologies user. Similarly, if the content is
+  painted then it should be available to the assistive technologies user.
+</div>
+
+* The rendering performance of subtrees affected by 'subtree-visibility' and
+    exposed to assistive technologies must reasonably match the rendering
+    performance of the same subtrees exposed to painted output.
+
+<div class=note>
+  The requirement of rendering performance equivalency stems from privacy
+  considerations. It is imperative that the user-agent ensures that a page
+  using 'subtree-visibility' cannot use timing information to deduce whether
+  the user is using assistive technologies. For this reason, the rendering
+  performance of information exposed to assistive technologies must be the same
+  as the rendering performance of information exposed to painted output.
+
+  In other words, if the user-agent omits rendering work when producing painted
+  output, then it must also omit the same rendering work when providing
+  information for assistive technologies.
 </div>
 
 Examples {#examples}
