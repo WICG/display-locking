@@ -215,7 +215,7 @@ assistive technologies</a>:
 
   In other words, if the user-agent omits rendering work when producing painted
   output, then it must also omit the same rendering work when providing
-  information for assistive technologies.
+  information for assistive technologies, and vice-versa.
 </div>
 
 <div class=note>
