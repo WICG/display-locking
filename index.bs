@@ -184,7 +184,7 @@ tree</a> and <a href="https://w3c.github.io/css-aam/#dfn-assistive-technology">
 assistive technologies</a>:
 * Subtrees affected by ''subtree-visibility: visible'' or ''subtree-visibility: auto''
     that are not [=skipped=] should be included in the accessibility tree as usual.
-* Subtrees of [=skipped=] elements not be included in the accessbility tree,
+* Subtrees of [=skipped=] elements should not be included in the accessibility tree,
     with the following exception:
     * Subtrees which are affected by ''subtree-visibility: auto'' and are
         [=skipped=] should be also be included in the accessibility tree
