@@ -11,7 +11,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-UD" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version b43aa594f5014ff14748da1aace9afaa73d2b3e6" name="generator">
   <link href="https://wicg.github.io/display-locking" rel="canonical">
-  <meta content="97f23230328192f0dd0ce1d86bfe97d1f71c6611" name="document-revision">
+  <meta content="bdfffbec9d8149b63b0e8c20f64a575278b772b2" name="document-revision">
 <style>/* style-md-lists */
 
 /* This is a weird hack for me not yet following the commonmark spec
@@ -504,9 +504,9 @@ subtree, it also affects information exposed to the <a href="https://w3c.github.
 tree</a> and <a href="https://w3c.github.io/css-aam/#dfn-assistive-technology"> assistive technologies</a>:</p>
    <ul>
     <li data-md>
-     <p>Subtrees affected by <a class="css" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility⑤">subtree-visibility: visible</a> or <span class="css" id="ref-for-propdef-subtree-visibility⑥">subtree-visibility: auto</span> and they are not <a data-link-type="dfn" href="#skipped" id="ref-for-skipped⑥">skipped</a> should be included in the accessibility tree as usual.</p>
+     <p>Subtrees affected by <a class="css" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility⑤">subtree-visibility: visible</a> or <span class="css" id="ref-for-propdef-subtree-visibility⑥">subtree-visibility: auto</span> that are not <a data-link-type="dfn" href="#skipped" id="ref-for-skipped⑥">skipped</a> should be included in the accessibility tree as usual.</p>
     <li data-md>
-     <p>Subtrees of <a data-link-type="dfn" href="#skipped" id="ref-for-skipped⑦">skipped</a> elements not be included in the accessbility tree,
+     <p>Subtrees of <a data-link-type="dfn" href="#skipped" id="ref-for-skipped⑦">skipped</a> elements should not be included in the accessibility tree,
 with the following exception:</p>
      <ul>
       <li data-md>
@@ -538,7 +538,7 @@ performance of the same subtrees exposed to painted output.</p>
   as the rendering performance of information exposed to painted output. 
     <p>In other words, if the user-agent omits rendering work when producing painted
   output, then it must also omit the same rendering work when providing
-  information for assistive technologies.</p>
+  information for assistive technologies, and vice-versa.</p>
    </div>
    <div class="note" role="note">
      If the user-agent omits rendering work, then it should still make the effort
