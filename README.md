@@ -48,13 +48,13 @@ can find the element.
 * Invisible to rendering/hit testing, except when subtree intersects viewport
 * Visible to UA algorithms
 
-`subtree-visilibity: hidden-matchable` - allow developer to control toggles between invisible/not-invisible states
+`subtree-visibility: hidden-matchable` - allow developer to control toggles between invisible/not-invisible states
 * Use cases: (2), (3), (5)
 * Applies `contain: style layout size`
 * Invisible to rendering/hit testing
 * Visible to UA algorithms. UA fires event when matched, but not automatically displayed
 
-`subtree-visilibity: hidden` - hide content, but preserve cached state and still support style/layout measurement APIs
+`subtree-visibility: hidden` - hide content, but preserve cached state and still support style/layout measurement APIs
 * Use cases: (4), (5)
 * Applies `contain: style layout size`
 * Invisible to rendering/hit testing
@@ -141,10 +141,10 @@ Three new features are proposed:
   However, the brief description of the tokens is below:
     * `subtree-visibility: auto`: this configuration allows the user-agent to
       automatically manage whether content is invisible to rendering/hit testing or not.
-    * `subtree-visilibity: hidden`: this configuration gives the
+    * `subtree-visibility: hidden`: this configuration gives the
       developer complete control of when the subtree is rendered. Neither the
       user-agent nor its features should need to process or render the subtree.
-    * `subtree-visilibity: hidden-matchable`: this configuration
+    * `subtree-visibility: hidden-matchable`: this configuration
       allows the developer to control rendering, but it allows user-agent
       features such as find-in-page to process the subtrees and fire the
       activation event (described below).
@@ -152,7 +152,7 @@ Three new features are proposed:
   It is also worth noting that when the element is not rendered, then
   `contain: layout style size;` is added to its style to ensure that the
   subtree content does not affect elements outside of the subtree.
-  Furthermore, when the element is rendered in the `subtree-visilibity: auto`
+  Furthermore, when the element is rendered in the `subtree-visibility: auto`
   configuration (i.e. the user-agent decides to render the element), then
   `contain: layout style;` applies to the element.
 
@@ -173,7 +173,7 @@ Three new features are proposed:
 ```html
 <style>
 .locked {
-  subtree-visilibity: auto;
+  subtree-visibility: auto;
   contain-intrinsic-size: 100px 200px;
 }
 </style>
