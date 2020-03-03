@@ -104,7 +104,7 @@ Definitions {#definitions}
     is not [=off-screen=]
 * <dfn export>skipped</dfn>: an element is considered skipped if its subtree is
     not painted or hit-tested. A skipped element has [=layout containment=],
-    [=paint containment=], and [=size containment=] applied to it in addition to
+    [=style containment=], and [=size containment=] applied to it in addition to
     other containment values. The user-agent should avoid as much rendering work
     in the skipped element's subtree as possible.
     <div class=note>
@@ -114,9 +114,9 @@ Definitions {#definitions}
       computing styles, or determining layout box sizes and positions, unless
       explicitly requested by script.
     </div>
-* <dfn export>has containment</dfn>: an element has containment if it has
-    [=layout containment=] and [=style containment=] applied in addition to any
-    other containment properties.
+* <dfn export>gains containment</dfn>: for an an element to gain containment,
+    the user-agent must apply [=layout containment=] and [=style containment=]
+    to it in addition to any other containment properties.
 
 The 'subtree-visibility' property {#subtree-visibility}
 =================================
@@ -133,7 +133,7 @@ Inherited: no
     :: No effect. This provides no extra information or hints to the user-agent.
 
     : <dfn export>auto</dfn>
-    :: The element [=has containment=]. If the element is [=off-screen=], it is [=skipped=].
+    :: The element [=gains containment=]. If the element is [=off-screen=], it is [=skipped=].
 
          It is important to note that the contents of the subtree must be
          accessible to user-agent features such as find-in-page, tab order
@@ -163,6 +163,15 @@ the user-agent should retain the previously computed layout state if possible.
   order navigation will visit the subtree, find-in-page will find matches, etc.
   The fact that [=off-screen=] elements with ''subtree-visibility: auto'' are
   [=skipped=] is a rendering performance optimization.
+</div>
+
+<div class=note>
+  It is worthwhile to note the interaction between 'subtree-visibility' and
+  containment: If the element has a 'subtree-visibility' value other than
+  [=visible=], the user-agent enforces [=style containment=] and [=layout
+  containment=] on the element. Additionally, if the element is [=skipped=],
+  then the user-agent also enforces [=size containment=]. These containment
+  values are added on top of any existing containment values.
 </div>
 
 Examples {#examples}
