@@ -1,0 +1,290 @@
+<!doctype HTML>
+
+<style>
+@supports (contain-intrinsic-size: 1px 2px) {
+  .warning {
+    display: none;
+  }
+}
+@supports not (contain-intrinsic-size: 1px 2px) {
+  .warning {
+    background: lightsalmon;
+    border: 2px solid red;
+    width: 800px;
+  }
+}
+
+.example {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-template-rows: auto 20px 1fr 20px;
+  grid-column-gap: 2px;
+  width: 800px;
+  margin-bottom: 20px;
+}
+.intrinsicsize {
+  contain-intrinsic-size: 100px 75px;
+}
+.contained .box {
+  contain: size;
+}
+.title {
+  align-self: center;
+  justify-self: center;
+  font-weight: bold;
+}
+.area {
+  background: lightgrey;
+  width: 98%;
+  height: 200px;
+  align-self: center;
+  justify-self: center;
+}
+
+.box {
+  align-self: center;
+  justify-self: center;
+  border: 1px solid black;
+  background: lightblue;
+}
+.toggle {
+  grid-row: 4;
+  grid-column: 1 / 3;
+  width: max-content;
+  justify-self: center;
+}
+.description {
+  margin-left: 10px;
+  margin-right: 10px;
+  grid-row: 1;
+  grid-column: 1 / 3;
+}
+</style>
+
+<div class=warning>
+  Note that the browser you are using does not support contain-intrinsic-size. The examples below will not demonstrate the intended effect. In order to see the difference in layouts, please enable contain-intrinsic-size support. On Chrome Canaray this can be done with --enable-blink-features=CSSIntrinsicSize command line flag.
+</div>
+<div id=example1 class=example>
+  <div class=description><strong>Example 1</strong>:
+    <p>In this example, the divs are not sized by anything so they naturally
+    occupy all available width, and enough width to fit their content.
+    <p>When 'contain: size' is added, the left-hand-side div does not consider its
+    children for sizing. This means it still takes up all available width, but
+    0 height. The right-hand-side element, however, starts using
+    contain-intrinsic-size as its intrinsic size, so it still takes up all of
+    the width but sizes the height to its contain-intrinsic-size height.
+  </div>
+  <div class=title>without contain-intrinsic-size</div>
+  <div class=title>with contain-intrinsic-size: 100px 75px</div>
+  <div class=area>
+    <div class=box>This is sample content</div>
+  </div>
+  <div class=area>
+    <div class="box intrinsicsize">This is sample content</div>
+  </div>
+  <input ison="no" type=button class=toggle value="add 'contain: size'"></input>
+</div>
+
+<style>
+#example2 .box {
+  width: max-content;
+}
+</style>
+<div id=example2 class=example>
+  <div class=description><strong>Example 2</strong>:
+  <p>In this example, the elements's width is sized to max-content. This means
+  that it will use the intrinsic size information when determining the size.
+  However, when size containment is applied, the child information cannot be
+  used.
+  <p>With size containment, the left hand size element becomes 0 width and 0
+  height (and its content is laid out with overflow). The right hand side
+  element uses the contain-intrinsic-size and sizes both the width and the
+  height to the specified size.
+  </div>
+  <div class=title>without contain-intrinsic-size</div>
+  <div class=title>with contain-intrinsic-size: 100px 75px</div>
+  <div class=area>
+    <div class=box>This is sample content</div>
+  </div>
+  <div class=area>
+    <div class="box intrinsicsize">This is sample content</div>
+  </div>
+  <input ison="no" type=button class=toggle value="add 'contain: size'"></input>
+</div>
+
+<style>
+#example3 .box {
+  width: 250px;
+  height: 150px;
+}
+</style>
+<div id=example3 class=example>
+  <div class=description><strong>Example 3</strong>:
+  <p>In this example, the elements are explicitly sized. They have 250px width
+  and 150px height. Size containment has no effect, since the specified size takes
+  priority.
+  </div>
+  <div class=title>without contain-intrinsic-size</div>
+  <div class=title>with contain-intrinsic-size: 100px 75px</div>
+  <div class=area>
+    <div class=box>This is sample content</div>
+  </div>
+  <div class=area>
+    <div class="box intrinsicsize">This is sample content</div>
+  </div>
+  <input ison="no" type=button class=toggle value="add 'contain: size'"></input>
+</div>
+
+<style>
+#example4 .area {
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+#example4 .box {
+  overflow: hidden;
+}
+#example4 .intrinsicsize {
+  contain-intrinsic-size: 100px 30px;
+}
+#example4.contained .box {
+  contain: none;
+}
+#example4.contained .box.offscreen {
+  contain: size;
+}
+</style>
+<div id=example4 class=example>
+  <div class=description><strong>Example 4</strong>:
+  <p>This example demonstrates why this feature is useful. Note that there are
+  enough elements to be scrollable here. <strong>It is important to
+  note</strong> that in this example, when we add size containment we only do
+  it for off-screen elements (as determined by an intersection observer). To
+  put it differently, when "add 'contain: size'" is pressed, the size containment
+  will start being added and removed automatically based on screen visibility.
+  
+  <p>Note that on the left hand size, the experience of scrolling is not great,
+  because offscreen elements are 0 sized (with border). However, although the
+  height for contain-intrinsic-size is a rough estimate, the scrolling
+  experience is much better.
+
+  <p>Here, the effect is achieved by intersection observer. However, it can
+  also be achieved automatically by simply specifying subtree-visiblity: auto.
+  This example demonstrates how important contain-intrinsic-size is when used
+  with subtree-visibility: auto.
+
+  <p>Note that the experience can be made better with improved estimates of the
+  sizes <em>without the worry</em> of specifying a value that is too large. A
+  large value with height or min-height would have noticeable (and visibly broken to the user) consequences on
+  visible content (assuming the property is added unconditionally). The
+  contain-intrinsic-size property, however, is ignored when size containment is
+  not present.
+  </div>
+  <div class=title>without contain-intrinsic-size</div>
+  <div class=title>with contain-intrinsic-size: 100px 30px</div>
+  <div class=area>
+    <div class=box>0. This is sample content</div>
+    <div class=box>1. This is sample content</div>
+    <div class=box>2. This is sample content</div>
+    <div class=box>3. This is sample content</div>
+    <div class=box>4. This is sample content</div>
+    <div class=box>5. This is sample content</div>
+    <div class=box>6. This is sample content</div>
+    <div class=box>7. This is sample content</div>
+    <div class=box>8. This is sample content</div>
+    <div class=box>9. This is sample content</div>
+    <div class=box>10. This is sample content</div>
+    <div class=box>11. This is sample content</div>
+    <div class=box>12. This is sample content</div>
+    <div class=box>13. This is sample content</div>
+    <div class=box>14. This is sample content</div>
+    <div class=box>15. This is sample content</div>
+    <div class=box>16. This is sample content</div>
+    <div class=box>17. This is sample content</div>
+    <div class=box>18. This is sample content</div>
+    <div class=box>19. This is sample content</div>
+    <div class=box>20. This is sample content</div>
+    <div class=box>21. This is sample content</div>
+    <div class=box>22. This is sample content</div>
+    <div class=box>23. This is sample content</div>
+    <div class=box>24. This is sample content</div>
+    <div class=box>25. This is sample content</div>
+    <div class=box>26. This is sample content</div>
+    <div class=box>27. This is sample content</div>
+    <div class=box>28. This is sample content</div>
+    <div class=box>29. This is sample content</div>
+  </div>
+  <div class=area>
+    <div class="box intrinsicsize">0. This is sample content</div>
+    <div class="box intrinsicsize">1. This is sample content</div>
+    <div class="box intrinsicsize">2. This is sample content</div>
+    <div class="box intrinsicsize">3. This is sample content</div>
+    <div class="box intrinsicsize">4. This is sample content</div>
+    <div class="box intrinsicsize">5. This is sample content</div>
+    <div class="box intrinsicsize">6. This is sample content</div>
+    <div class="box intrinsicsize">7. This is sample content</div>
+    <div class="box intrinsicsize">8. This is sample content</div>
+    <div class="box intrinsicsize">9. This is sample content</div>
+    <div class="box intrinsicsize">10. This is sample content</div>
+    <div class="box intrinsicsize">11. This is sample content</div>
+    <div class="box intrinsicsize">12. This is sample content</div>
+    <div class="box intrinsicsize">13. This is sample content</div>
+    <div class="box intrinsicsize">14. This is sample content</div>
+    <div class="box intrinsicsize">15. This is sample content</div>
+    <div class="box intrinsicsize">16. This is sample content</div>
+    <div class="box intrinsicsize">17. This is sample content</div>
+    <div class="box intrinsicsize">18. This is sample content</div>
+    <div class="box intrinsicsize">19. This is sample content</div>
+    <div class="box intrinsicsize">20. This is sample content</div>
+    <div class="box intrinsicsize">21. This is sample content</div>
+    <div class="box intrinsicsize">22. This is sample content</div>
+    <div class="box intrinsicsize">23. This is sample content</div>
+    <div class="box intrinsicsize">24. This is sample content</div>
+    <div class="box intrinsicsize">25. This is sample content</div>
+    <div class="box intrinsicsize">26. This is sample content</div>
+    <div class="box intrinsicsize">27. This is sample content</div>
+    <div class="box intrinsicsize">28. This is sample content</div>
+    <div class="box intrinsicsize">29. This is sample content</div>
+  </div>
+  <input ison="no" type=button class=toggle value="add 'contain: size'"></input>
+</div>
+
+<script>
+function toggleContainment(button, example) {
+  if (button.getAttribute("ison") == "yes") {
+    button.setAttribute("ison", "no");
+    example.classList.remove("contained");
+    button.value = "add 'contain: size'";
+  } else {
+    button.setAttribute("ison", "yes");
+    example.classList.add("contained");
+    button.value = "remove 'contain: size'";
+  }
+}
+
+function observed(entries) {
+  entries.forEach(entry => {
+    if (entry.isIntersecting)
+      entry.target.classList.remove("offscreen");
+    else
+      entry.target.classList.add("offscreen");
+  });
+}
+
+let observer;
+function observeBoxes(example) {
+  observer = new IntersectionObserver(observed, { threshold: 0 });
+  const boxes = example.querySelectorAll(".box");
+  for (let i = 0; i < boxes.length; ++i)
+    observer.observe(boxes[i]);
+}
+function initialize() {
+  const buttons = document.getElementsByTagName("input");
+  for (let i = 0; i < buttons.length; ++i) {
+    buttons[i].addEventListener("click",
+      () => { toggleContainment(buttons[i], buttons[i].parentElement) });
+  }
+
+  observeBoxes(example4);
+}
+onload = initialize;  
+</script>

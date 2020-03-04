@@ -64,3 +64,9 @@ the intrinsic sizing aspects of layout, by providing placeholder sizing, because
 otherwise there may be an undesirable, jarring [shift of the
 layout](https://web.dev/layout-instability-api) of the page as the content
 renders.
+
+### Examples
+
+Please take a look at the following
+[examples](https://wicg.github.io/display-locking/sample-code/contain-intrinsic-size-examples.html)
+with explanations.
