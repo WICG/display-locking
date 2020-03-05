@@ -16,7 +16,7 @@ Abstract: This spec introduces a subtree-visibility CSS property, allowing autho
 </pre>
 
 Introduction {#intro}
-=====================
+============
 
 Subtree Visibility (a.k.a. Display Locking) is a CSS property designed to allow
 developers and browsers to easily scale to large amount of content and provide
@@ -172,6 +172,60 @@ the user-agent should retain the previously computed layout state if possible.
   containment=] on the element. Additionally, if the element is [=skipped=],
   then the user-agent also enforces [=size containment=]. These containment
   values are added on top of any existing containment values.
+</div>
+
+Accessibility {#accessibility}
+=============
+
+Similar to the way 'subtree-visibility' affects painted output of the element's
+subtree, it also affects information exposed to the
+<a href="https://w3c.github.io/css-aam/#dfn-accessibility-tree">accessibility
+tree</a> and <a href="https://w3c.github.io/css-aam/#dfn-assistive-technology">
+assistive technologies</a>:
+* Subtrees affected by ''subtree-visibility: visible'' or ''subtree-visibility: auto''
+    that are not [=skipped=] should be included in the accessibility tree as usual.
+* Subtrees of [=skipped=] elements should not be included in the accessibility tree,
+    with the following exception:
+    * Subtrees which are affected by ''subtree-visibility: auto'' and are
+        [=skipped=] should be also be included in the accessibility tree
+        subject to the rendering constraints below.
+
+<div class=note>
+  Since assistive technologies may provide quick access to offscreen elements,
+  it is desirable that elements in ''subtree-visibility: auto'' subtrees be made
+  available to assistive technologies to provide this functionality, since they
+  are intended to be observable to users.
+
+  Conversely, since elements in ''subtree-visibility: hidden'' subtrees are not
+  intended to be observable by users, they should not be exposed to assistive
+  technology.
+</div>
+
+* The rendering performance of subtrees affected by 'subtree-visibility' and
+    exposed to assistive technologies must reasonably match the rendering
+    performance of the same subtrees exposed to painted output.
+
+<div class=note>
+  The requirement of rendering performance equivalency stems from privacy
+  considerations. It is imperative that the user-agent ensures that a page
+  using 'subtree-visibility' cannot use timing information to deduce whether
+  the user is using assistive technologies. For this reason, the rendering
+  performance of information exposed to assistive technologies must be the same
+  as the rendering performance of information exposed to painted output.
+
+  In other words, if the user-agent omits rendering work when producing painted
+  output, then it must also omit the same rendering work when providing
+  information for assistive technologies, and vice-versa.
+</div>
+
+<div class=note>
+  If the user-agent omits rendering work, then it should still make the effort
+  to expose ''subtree-visibility: auto'' [=skipped=] elements and their
+  subtrees to assistive technology without exposing any of the layout state,
+  since it is not available due to omitted work.
+
+  If such action is not possible, then the user-agent may omit these subtrees
+  from the accessibility tree.
 </div>
 
 Examples {#examples}
