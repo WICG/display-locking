@@ -46,12 +46,12 @@ DOM. Since the DOM presently renders atomically, it inherently takes more and
 more time to render on the same machine.
 
 Web developers are in a good position to know whether rendering a particular
-subtree that is off-screen is needed for the visual representation of their
-page. Specifically, if the layout of an off-screen box and its subtree has a
+[=subtree=] that is off-screen is needed for the visual representation of their
+page. Specifically, if the layout of an off-screen box and its [=subtree=] has a
 visible and necessary effect on screen then such rendering is required.
 Otherwise, it is not. Since web developers are in a good position to have this
 information, they can provide the user-agent strong hints indicating that
-rendering for a given subtree is not required in certain cases.
+rendering for a given [=subtree=] is not required in certain cases.
 
 Traditionally, two techniques of providing this information to the user-agent
 are to mark non-visible DOM as "invisible" <a href=#f2>[2]</a>, or to use
@@ -90,6 +90,11 @@ the document.
 Definitions {#definitions}
 ===========
 
+* <dfn export>subtree</dfn>: an element's subtree are all nodes that comprise
+    the [=flattened element tree=] rooted at the given element, with the exception
+    of the element itself. In other words, this refers to the [=flat tree=]
+    descendants of the element. Note that the term <em>subtree</em> in the
+    property name 'subtree-visibility' refers to the same descendants.
 * <dfn export>off-screen</dfn>: an element is considered to be off-screen if
     its border box does not intersect the visual viewport plus a user-agent
     specified, margin. 
@@ -102,14 +107,14 @@ Definitions {#definitions}
     </div>
 * <dfn export>on-screen</dfn>: an element is considered to be on-screen if it
     is not [=off-screen=]
-* <dfn export>skipped</dfn>: an element is considered skipped if its subtree is
+* <dfn export>skipped</dfn>: an element is considered skipped if its [=subtree=] is
     not painted or hit-tested. A skipped element has [=layout containment=],
     [=style containment=], and [=size containment=] applied to it in addition to
     other containment values. The user-agent should avoid as much rendering work
-    in the skipped element's subtree as possible.
+    in the skipped element's [=subtree=] as possible.
     <div class=note>
       Rendering work can be avoided due to the combination of
-      containment and the fact that the subtree is not painted.  As an example,
+      containment and the fact that the [=subtree=] is not painted.  As an example,
       because of the containment applied, in most cases it should be possible to skip
       computing styles, or determining layout box sizes and positions, unless
       explicitly requested by script.
@@ -135,7 +140,7 @@ Inherited: no
     : <dfn export>auto</dfn>
     :: The element [=gains containment=]. If the element is [=off-screen=], it is [=skipped=].
 
-         It is important to note that the contents of the subtree must be
+         It is important to note that the contents of the [=subtree=] must be
          accessible to user-agent features such as find-in-page, tab order
          navigation, etc. This is true regardless of whether the element is
          [=skipped=] or not.
@@ -143,7 +148,7 @@ Inherited: no
     : <dfn export>hidden</dfn>
     :: The element is [=skipped=].
 
-         Note that in this case, the contents of the subtree are not accessible
+         Note that in this case, the contents of the [=subtree=] are not accessible
          to user-agent features, such as find-in-page, tab order navigation,
          etc.
 </dl>
@@ -153,14 +158,14 @@ the user-agent should retain the previously computed layout state if possible.
 
 <div class=note>
   Intuitively, a [=hidden=] value means that the element behaves in a way that
-  does not expose the contents of its subtree to the user (but still has an
+  does not expose the contents of its [=subtree=] to the user (but still has an
   effect on layout, especially in conjunction with `contain-intrinsic-size`).
   Script interactions are required for the content to appear to the user.
 
   In contrast, a value of [=auto=] means that the element behaves as if the
-  contents of the subtree are accessible to the user. The content can be
+  contents of the [=subtree=] are accessible to the user. The content can be
   interacted with in the usual ways: scrolling will reveal the content, tab
-  order navigation will visit the subtree, find-in-page will find matches, etc.
+  order navigation will visit the [=subtree=], find-in-page will find matches, etc.
   The fact that [=off-screen=] elements with ''subtree-visibility: auto'' are
   [=skipped=] is a rendering performance optimization.
 </div>
@@ -178,7 +183,7 @@ Accessibility {#accessibility}
 =============
 
 Similar to the way 'subtree-visibility' affects painted output of the element's
-subtree, it also affects information exposed to the
+[=subtree=], it also affects information exposed to the
 <a href="https://w3c.github.io/css-aam/#dfn-accessibility-tree">accessibility
 tree</a> and <a href="https://w3c.github.io/css-aam/#dfn-assistive-technology">
 assistive technologies</a>:
@@ -267,14 +272,14 @@ Examples {#examples}
 	</xmp>
 
   In this case, the element is [=skipped=] regardless of viewport intersection.
-  This means that the only way to have this subtree painted is via script
+  This means that the only way to have this [=subtree=] painted is via script
   updating the value to remove 'subtree-visibility' or change its value. As
-  before, the user-agent should skip as much of the rendering in the subtree as
+  before, the user-agent should skip as much of the rendering in the [=subtree=] as
   possible.
 
   An additional effect of skipping rendering is that the layout state of the
-  subtree can be preserved by the user-agent, so that removing the
-  'subtree-visibility' property in the future will cause the subtree to be
+  [=subtree=] can be preserved by the user-agent, so that removing the
+  'subtree-visibility' property in the future will cause the [=subtree=] to be
   rendered quicker than otherwise possible.
 </div>
 
@@ -316,7 +321,7 @@ Examples {#examples}
 
   Similarly to the last example, the element is [=skipped=]. The user-agent
   should avoid as much rendering work as possible.  However, in this example,
-  at some point script accesses a layout value in the element's subtree. In
+  at some point script accesses a layout value in the element's [=subtree=]. In
   this situation, the user-agent cannot avoid rendering work and has to process
   any previously skipped rendering work in order to return a correct value to
   the caller. In this example, the result of getBoundingClientRect is a rect
@@ -336,25 +341,25 @@ Similarity to visibility {#similarity}
 
 Note that 'subtree-visibility' bears some similarity in naming to 'visibility'
 which is important to address. Like 'visibility', 'subtree-visibility' controls
-whether the element, or its subtree, are painted and hit-tested. However, it
+whether the element, or its [=subtree=], are painted and hit-tested. However, it
 has important distinctions that allow both adoption in a wider set of use-cases
 and ability for user-agents to optimize rendering performance:
 
 * 'subtree-visibility' values cannot be reverted by descendant style. As an
     example, when processing an element that has 'subtree-visibility' value
     [=hidden=], the user-agent will not paint any of its subtree, even if one of
-    the elements in the subtree has 'subtree-visibility' value [=visible=]. This
+    the elements in the [=subtree=] has 'subtree-visibility' value [=visible=]. This
     is important as it makes it possible to skip style part of rendering in
-    these subtree, since no descendant value can override 'subtree-visibility'.
+    these [=subtree=], since no descendant value can override 'subtree-visibility'.
 * 'subtree-visibility' has an [=auto=] value, which allows the user-agent to
-    paint the element's subtree when it approaches the viewport. This allows easy
+    paint the element's [=subtree=] when it approaches the viewport. This allows easy
     adoption of the feature. In contrast, if 'visibility' or ''display: none'' are
     used instead, then it is up to the developer to toggle the values when they
     approach the viewport.
 * 'subtree-visibility' adds in containment. This is an important part of the
-    property, which allows the user-agent to skip rendering work in the subtree,
-    since it can reason that when the element's subtree is not painted, then the
-    style and layout effects of the subtree will not affect any visible content.
+    property, which allows the user-agent to skip rendering work in the [=subtree=],
+    since it can reason that when the element's [=subtree=] is not painted, then the
+    style and layout effects of the [=subtree=] will not affect any visible content.
 
 Alternatives Considered {#alternatives}
 =======================
@@ -363,14 +368,14 @@ The ''display: none'' CSS property causes content subtrees not to render.
 However, there is no mechanism for user-agent features to cause these subtrees
 to render. Additionally, the cost of hiding and showing content cannot be
 eliminated since ''display: none'' does not preserve the layout state of the
-subtree.
+[=subtree=].
 
 ''visibility: hidden'' causes subtrees to not paint, but they still need style
-and layout, as the subtree takes up layout space and descendants may be
+and layout, as the [=subtree=] takes up layout space and descendants may be
 ''visibility: visible''. Note that with sufficient containment and intersection
 observer, the functionality provided by 'subtree-visibility' may be mimicked.
 However, ''subtree-visibility: auto'' also permits user-agent algorithms such
-as find-in-page and fragment navigation to access the element's subtree, which
+as find-in-page and fragment navigation to access the element's [=subtree=], which
 cannot be mimicked by ''visibility''. Overall, 'subtree-visibility' property is
 a stronger signal allowing the user-agent to optimize rendering.
 
