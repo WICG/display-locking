@@ -179,8 +179,8 @@ the user-agent should retain the previously computed layout state if possible.
   The fact that [=off-screen=] elements with ''subtree-visibility: auto'' are
   [=skipped=] is a rendering performance optimization.
 
-  Note that selected and focused elements affected by ''subtree-visibility:
-  auto'' are treated as if they are painted, since users can interact with this
+  Note that selected and focused elements affected by ''subtree-visibility: auto''
+  are treated as if they are painted, since users can interact with this
   content when it is off-screen. For example, a user can copy (via a shortcut)
   text that was selected and scrolled off-screen. For this reason, elements and
   subtrees with focus or selection remain painted.
