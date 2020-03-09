@@ -154,8 +154,6 @@ Inherited: no
          navigation, etc. This is true regardless of whether the element is
          [=skipped=] or not.
 
-         Furthermore, elements with '':focus'' pseudo-class as well as elements 
-
     : <dfn export>hidden</dfn>
     :: The element is [=skipped=].
 
