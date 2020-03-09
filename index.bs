@@ -138,12 +138,23 @@ Inherited: no
     :: No effect. This provides no extra information or hints to the user-agent.
 
     : <dfn export>auto</dfn>
-    :: The element [=gains containment=]. If the element is [=off-screen=], it is [=skipped=].
+    :: The element [=gains containment=]. 
+         If the following conditions hold then the element is also [=skipped=]:
+           * The element is [=off-screen=].
+           * Neither the element nor any of its [=subtree=] elements are
+               focused. That is, the elements in question do not have the
+               '':focus'' pseudo-class.
+           * Neither the element nor any of its [=subtree=] elements are
+               selected as described in the <a
+               href="https://drafts.csswg.org/css-pseudo-4/#highlight-pseudos">highlight
+               pseudo-elements</a> section.
 
          It is important to note that the contents of the [=subtree=] must be
          accessible to user-agent features such as find-in-page, tab order
          navigation, etc. This is true regardless of whether the element is
          [=skipped=] or not.
+
+         Furthermore, elements with '':focus'' pseudo-class as well as elements 
 
     : <dfn export>hidden</dfn>
     :: The element is [=skipped=].
@@ -168,6 +179,12 @@ the user-agent should retain the previously computed layout state if possible.
   order navigation will visit the [=subtree=], find-in-page will find matches, etc.
   The fact that [=off-screen=] elements with ''subtree-visibility: auto'' are
   [=skipped=] is a rendering performance optimization.
+
+  Note that selected and focused elements affected by ''subtree-visibility:
+  auto'' are treated as if they are painted, since users can interact with this
+  content when it is off-screen. For example, a user can copy (via a shortcut)
+  text that was selected and scrolled off-screen. For this reason, elements and
+  subtrees with focus or selection remain painted.
 </div>
 
 <div class=note>
