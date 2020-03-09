@@ -11,7 +11,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-UD" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version b43aa594f5014ff14748da1aace9afaa73d2b3e6" name="generator">
   <link href="https://wicg.github.io/display-locking" rel="canonical">
-  <meta content="ee0a5ac83d0d6d130a2c7cef8a8d838e116b80d4" name="document-revision">
+  <meta content="eed3826bb40abfbe0def778126d4e3ee2bd1e6dc" name="document-revision">
 <style>/* style-md-lists */
 
 /* This is a weird hack for me not yet following the commonmark spec
@@ -474,13 +474,13 @@ the user-agent must apply <a data-link-type="dfn" href="https://drafts.csswg.org
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="subtree-visibility" data-dfn-type="dfn" data-export id="subtree-visibility-auto">auto</dfn>
     <dd data-md>
      <p>The element <a data-link-type="dfn" href="#gains-containment" id="ref-for-gains-containment">gains containment</a>.
- If the following conditions hold then the element is also <a data-link-type="dfn" href="#skipped" id="ref-for-skipped">skipped</a>:</p>
+ If *all of* the following conditions hold then the element is also <a data-link-type="dfn" href="#skipped" id="ref-for-skipped">skipped</a>:</p>
      <ul>
       <li data-md>
        <p>The element is <a data-link-type="dfn" href="#off-screen" id="ref-for-off-screen①">off-screen</a>.</p>
       <li data-md>
        <p>Neither the element nor any of its <a data-link-type="dfn" href="#subtree" id="ref-for-subtree⑥">subtree</a> elements are
-   focused. That is, the elements in question do not have the <a class="css" data-link-type="maybe" href="https://drafts.csswg.org/selectors-4/#focus-pseudo" id="ref-for-focus-pseudo">:focus</a> pseudo-class.</p>
+   focused as described in the <a href="https://html.spec.whatwg.org/multipage/interaction.html#focus">focus</a> section of the HTML spec.</p>
       <li data-md>
        <p>Neither the element nor any of its <a data-link-type="dfn" href="#subtree" id="ref-for-subtree⑦">subtree</a> elements are
    selected as described in the <a href="https://drafts.csswg.org/css-pseudo-4/#highlight-pseudos">highlight
@@ -899,12 +899,6 @@ and avoiding some or most rendering lifecycle phases for such content. </p>
     <li><a href="#ref-for-propdef-visibility③">7. Alternatives Considered</a> <a href="#ref-for-propdef-visibility④">(2)</a> <a href="#ref-for-propdef-visibility⑤">(3)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-focus-pseudo">
-   <a href="https://drafts.csswg.org/selectors-4/#focus-pseudo">https://drafts.csswg.org/selectors-4/#focus-pseudo</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-focus-pseudo">3. The subtree-visibility property</a>
-   </ul>
-  </aside>
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
    <li>
@@ -946,11 +940,6 @@ and avoiding some or most rendering lifecycle phases for such content. </p>
     <ul>
      <li><span class="dfn-paneled" id="term-for-propdef-visibility" style="color:initial">visibility</span>
     </ul>
-   <li>
-    <a data-link-type="biblio">[selectors-4]</a> defines the following terms:
-    <ul>
-     <li><span class="dfn-paneled" id="term-for-focus-pseudo" style="color:initial">:focus</span>
-    </ul>
   </ul>
   <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
   <h3 class="no-num no-ref heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
@@ -971,8 +960,6 @@ and avoiding some or most rendering lifecycle phases for such content. </p>
    <dd>Bert Bos; et al. <a href="https://www.w3.org/TR/CSS2/">Cascading Style Sheets Level 2 Revision 1 (CSS 2.1) Specification</a>. 7 June 2011. REC. URL: <a href="https://www.w3.org/TR/CSS2/">https://www.w3.org/TR/CSS2/</a>
    <dt id="biblio-rfc2119">[RFC2119]
    <dd>S. Bradner. <a href="https://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>. March 1997. Best Current Practice. URL: <a href="https://tools.ietf.org/html/rfc2119">https://tools.ietf.org/html/rfc2119</a>
-   <dt id="biblio-selectors-4">[SELECTORS-4]
-   <dd>Elika Etemad; Tab Atkins Jr.. <a href="https://www.w3.org/TR/selectors-4/">Selectors Level 4</a>. 21 November 2018. WD. URL: <a href="https://www.w3.org/TR/selectors-4/">https://www.w3.org/TR/selectors-4/</a>
   </dl>
   <h2 class="no-num no-ref heading settled" id="property-index"><span class="content">Property Index</span><a class="self-link" href="#property-index"></a></h2>
   <div class="big-element-wrapper">

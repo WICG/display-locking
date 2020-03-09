@@ -139,11 +139,12 @@ Inherited: no
 
     : <dfn export>auto</dfn>
     :: The element [=gains containment=]. 
-         If the following conditions hold then the element is also [=skipped=]:
+         If *all of* the following conditions hold then the element is also [=skipped=]:
            * The element is [=off-screen=].
            * Neither the element nor any of its [=subtree=] elements are
-               focused. That is, the elements in question do not have the
-               '':focus'' pseudo-class.
+               focused as described in the <a
+               href="https://html.spec.whatwg.org/multipage/interaction.html#focus">focus</a>
+               section of the HTML spec.
            * Neither the element nor any of its [=subtree=] elements are
                selected as described in the <a
                href="https://drafts.csswg.org/css-pseudo-4/#highlight-pseudos">highlight
