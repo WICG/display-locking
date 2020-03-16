@@ -195,6 +195,21 @@ the user-agent should retain the previously computed layout state if possible.
   values are added on top of any existing containment values.
 </div>
 
+Restrictions and Clarifications {#restrictions}
+===============================
+
+* In situations where [=layout containment=] has no effect (e.g. the
+    element does not generate a principal box), 'subtree-visibility' values also
+    have no effect.
+
+* <a href="https://html.spec.whatwg.org/multipage/rendering.html#replaced-elements">
+    Replaced elements</a> do not paint their contents if they
+    are [=skipped=] due to 'subtree-visibility'. That is, the element's border
+    and background are painted, but the replaced content -- as described in
+    steps 7.1 and 7.2.4 of <a
+    href="https://www.w3.org/TR/CSS21/zindex.html#painting-order">the painting
+    order</a> steps -- is not.
+
 Accessibility {#accessibility}
 =============
 
