@@ -203,7 +203,7 @@ Restrictions and Clarifications {#restrictions}
     have no effect.
 
 * <a href="https://html.spec.whatwg.org/multipage/rendering.html#replaced-elements">
-    Replaced elements</a>, such as images, do not paint their contents if they
+    Replaced elements</a> do not paint their contents if they
     are [=skipped=] due to 'subtree-visibility'. That is, the element's border
     and background are painted, but the replaced content -- as described in
     steps 7.1 and 7.2.4 of <a
