@@ -11,7 +11,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-UD" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version b43aa594f5014ff14748da1aace9afaa73d2b3e6" name="generator">
   <link href="https://wicg.github.io/display-locking" rel="canonical">
-  <meta content="d1315a5ebfb54a45d1c0cd623c8637f049860a61" name="document-revision">
+  <meta content="cfdbdce37aa409ab4f866d980ee864fcbcf2e5a5" name="document-revision">
 <style>/* style-md-lists */
 
 /* This is a weird hack for me not yet following the commonmark spec
@@ -524,46 +524,46 @@ the user-agent should retain the previously computed layout state if possible.</
     <li data-md>
      <p>In situations where <a data-link-type="dfn" href="https://drafts.csswg.org/css-contain-2/#layout-containment" id="ref-for-layout-containment③">layout containment</a> has no effect (e.g. the
 element does not generate a principal box), <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility⑥">subtree-visibility</a> values also
-have no effect. In other words, if <span id="ref-for-layout-containment④">layout containment</span> has no effect, the <span class="property" id="ref-for-propdef-subtree-visibility⑦">subtree-visibility</span> value is effectively <a data-link-type="dfn" href="#subtree-visibility-visible" id="ref-for-subtree-visibility-visible①">visible</a>.</p>
+have no effect.</p>
     <li data-md>
      <p><a href="https://html.spec.whatwg.org/multipage/rendering.html#replaced-elements"> Replaced elements</a>, such as images, do not paint their contents if they
-are <a data-link-type="dfn" href="#skipped" id="ref-for-skipped⑥">skipped</a> due to <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility⑧">subtree-visibility</a>. That is, the element’s border
+are <a data-link-type="dfn" href="#skipped" id="ref-for-skipped⑥">skipped</a> due to <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility⑦">subtree-visibility</a>. That is, the element’s border
 and background are painted, but the replaced content is not.</p>
    </ul>
    <h2 class="heading settled" data-level="5" id="accessibility"><span class="secno">5. </span><span class="content">Accessibility</span><a class="self-link" href="#accessibility"></a></h2>
-   <p>Similar to the way <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility⑨">subtree-visibility</a> affects painted output of the element’s <a data-link-type="dfn" href="#subtree" id="ref-for-subtree①③">subtree</a>, it also affects information exposed to the <a href="https://w3c.github.io/css-aam/#dfn-accessibility-tree">accessibility
+   <p>Similar to the way <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility⑧">subtree-visibility</a> affects painted output of the element’s <a data-link-type="dfn" href="#subtree" id="ref-for-subtree①③">subtree</a>, it also affects information exposed to the <a href="https://w3c.github.io/css-aam/#dfn-accessibility-tree">accessibility
 tree</a> and <a href="https://w3c.github.io/css-aam/#dfn-assistive-technology"> assistive technologies</a>:</p>
    <ul>
     <li data-md>
-     <p>Subtrees affected by <a class="css" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①⓪">subtree-visibility: visible</a> or <span class="css" id="ref-for-propdef-subtree-visibility①①">subtree-visibility: auto</span> that are not <a data-link-type="dfn" href="#skipped" id="ref-for-skipped⑦">skipped</a> should be included in the accessibility tree as usual.</p>
+     <p>Subtrees affected by <a class="css" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility⑨">subtree-visibility: visible</a> or <span class="css" id="ref-for-propdef-subtree-visibility①⓪">subtree-visibility: auto</span> that are not <a data-link-type="dfn" href="#skipped" id="ref-for-skipped⑦">skipped</a> should be included in the accessibility tree as usual.</p>
     <li data-md>
      <p>Subtrees of <a data-link-type="dfn" href="#skipped" id="ref-for-skipped⑧">skipped</a> elements should not be included in the accessibility tree,
 with the following exception:</p>
      <ul>
       <li data-md>
-       <p>Subtrees which are affected by <a class="css" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①②">subtree-visibility: auto</a> and are <a data-link-type="dfn" href="#skipped" id="ref-for-skipped⑨">skipped</a> should be also be included in the accessibility tree
+       <p>Subtrees which are affected by <a class="css" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①①">subtree-visibility: auto</a> and are <a data-link-type="dfn" href="#skipped" id="ref-for-skipped⑨">skipped</a> should be also be included in the accessibility tree
 subject to the rendering constraints below.</p>
      </ul>
    </ul>
    <div class="note" role="note">
      Since assistive technologies may provide quick access to offscreen elements,
-  it is desirable that elements in <a class="css" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①③">subtree-visibility: auto</a> subtrees be made
+  it is desirable that elements in <a class="css" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①②">subtree-visibility: auto</a> subtrees be made
   available to assistive technologies to provide this functionality, since they
   are intended to be observable to users. 
-    <p>Conversely, since elements in <a class="css" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①④">subtree-visibility: hidden</a> subtrees are not
+    <p>Conversely, since elements in <a class="css" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①③">subtree-visibility: hidden</a> subtrees are not
   intended to be observable by users, they should not be exposed to assistive
   technology.</p>
    </div>
    <ul>
     <li data-md>
-     <p>The rendering performance of subtrees affected by <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①⑤">subtree-visibility</a> and
+     <p>The rendering performance of subtrees affected by <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①④">subtree-visibility</a> and
 exposed to assistive technologies must reasonably match the rendering
 performance of the same subtrees exposed to painted output.</p>
    </ul>
    <div class="note" role="note">
      The requirement of rendering performance equivalency stems from privacy
   considerations. It is imperative that the user-agent ensures that a page
-  using <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①⑥">subtree-visibility</a> cannot use timing information to deduce whether
+  using <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①⑤">subtree-visibility</a> cannot use timing information to deduce whether
   the user is using assistive technologies. For this reason, the rendering
   performance of information exposed to assistive technologies must be the same
   as the rendering performance of information exposed to painted output. 
@@ -573,7 +573,7 @@ performance of the same subtrees exposed to painted output.</p>
    </div>
    <div class="note" role="note">
      If the user-agent omits rendering work, then it should still make the effort
-  to expose <a class="css" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①⑦">subtree-visibility: auto</a> <a data-link-type="dfn" href="#skipped" id="ref-for-skipped①⓪">skipped</a> elements and their
+  to expose <a class="css" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①⑥">subtree-visibility: auto</a> <a data-link-type="dfn" href="#skipped" id="ref-for-skipped①⓪">skipped</a> elements and their
   subtrees to assistive technology without exposing any of the layout state,
   since it is not available due to omitted work. 
     <p>If such action is not possible, then the user-agent may omit these subtrees
@@ -593,7 +593,7 @@ performance of the same subtrees exposed to painted output.</p>
   ... some content goes here ...
 <c- p>&lt;/</c-><c- f>div</c-><c- p>></c->
 </pre>
-    <p>The .sv element’s <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①⑧">subtree-visibility</a> value <a data-link-type="dfn" href="#subtree-visibility-auto" id="ref-for-subtree-visibility-auto①">auto</a> lets the user-agent
+    <p>The .sv element’s <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①⑦">subtree-visibility</a> value <a data-link-type="dfn" href="#subtree-visibility-auto" id="ref-for-subtree-visibility-auto①">auto</a> lets the user-agent
   manage whether the element is <a data-link-type="dfn" href="#skipped" id="ref-for-skipped①①">skipped</a>.  Specifically when this element is
   near the viewport, the user-agent will begin painting the element.  When the
   element moves away from the viewport, it will stop being painted. In
@@ -614,10 +614,10 @@ performance of the same subtrees exposed to painted output.</p>
 </pre>
     <p>In this case, the element is <a data-link-type="dfn" href="#skipped" id="ref-for-skipped①③">skipped</a> regardless of viewport intersection.
   This means that the only way to have this <a data-link-type="dfn" href="#subtree" id="ref-for-subtree①④">subtree</a> painted is via script
-  updating the value to remove <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①⑨">subtree-visibility</a> or change its value. As
+  updating the value to remove <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①⑧">subtree-visibility</a> or change its value. As
   before, the user-agent should skip as much of the rendering in the <span id="ref-for-subtree①⑤">subtree</span> as
   possible.</p>
-    <p>An additional effect of skipping rendering is that the layout state of the <a data-link-type="dfn" href="#subtree" id="ref-for-subtree①⑥">subtree</a> can be preserved by the user-agent, so that removing the <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility②⓪">subtree-visibility</a> property in the future will cause the <span id="ref-for-subtree①⑦">subtree</span> to be
+    <p>An additional effect of skipping rendering is that the layout state of the <a data-link-type="dfn" href="#subtree" id="ref-for-subtree①⑥">subtree</a> can be preserved by the user-agent, so that removing the <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①⑨">subtree-visibility</a> property in the future will cause the <span id="ref-for-subtree①⑦">subtree</span> to be
   rendered quicker than otherwise possible.</p>
    </div>
    <div class="example" id="example-536d29cb">
@@ -670,25 +670,25 @@ performance of the same subtrees exposed to painted output.</p>
   rendering work.</p>
    </div>
    <h2 class="heading settled" data-level="7" id="similarity"><span class="secno">7. </span><span class="content">Similarity to visibility</span><a class="self-link" href="#similarity"></a></h2>
-   <p>Note that <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility②①">subtree-visibility</a> bears some similarity in naming to <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css2/visufx.html#propdef-visibility" id="ref-for-propdef-visibility">visibility</a> which is important to address. Like <span class="property" id="ref-for-propdef-visibility①">visibility</span>, <span class="property" id="ref-for-propdef-subtree-visibility②②">subtree-visibility</span> controls
+   <p>Note that <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility②⓪">subtree-visibility</a> bears some similarity in naming to <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css2/visufx.html#propdef-visibility" id="ref-for-propdef-visibility">visibility</a> which is important to address. Like <span class="property" id="ref-for-propdef-visibility①">visibility</span>, <span class="property" id="ref-for-propdef-subtree-visibility②①">subtree-visibility</span> controls
 whether the element, or its <a data-link-type="dfn" href="#subtree" id="ref-for-subtree①⑨">subtree</a>, are painted and hit-tested. However, it
 has important distinctions that allow both adoption in a wider set of use-cases
 and ability for user-agents to optimize rendering performance:</p>
    <ul>
     <li data-md>
-     <p><a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility②③">subtree-visibility</a> values cannot be reverted by descendant style. As an
-example, when processing an element that has <span class="property" id="ref-for-propdef-subtree-visibility②④">subtree-visibility</span> value <a data-link-type="dfn" href="#subtree-visibility-hidden" id="ref-for-subtree-visibility-hidden①">hidden</a>, the user-agent will not paint any of its subtree, even if one of
-the elements in the <a data-link-type="dfn" href="#subtree" id="ref-for-subtree②⓪">subtree</a> has <span class="property" id="ref-for-propdef-subtree-visibility②⑤">subtree-visibility</span> value <a data-link-type="dfn" href="#subtree-visibility-visible" id="ref-for-subtree-visibility-visible②">visible</a>. This
+     <p><a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility②②">subtree-visibility</a> values cannot be reverted by descendant style. As an
+example, when processing an element that has <span class="property" id="ref-for-propdef-subtree-visibility②③">subtree-visibility</span> value <a data-link-type="dfn" href="#subtree-visibility-hidden" id="ref-for-subtree-visibility-hidden①">hidden</a>, the user-agent will not paint any of its subtree, even if one of
+the elements in the <a data-link-type="dfn" href="#subtree" id="ref-for-subtree②⓪">subtree</a> has <span class="property" id="ref-for-propdef-subtree-visibility②④">subtree-visibility</span> value <a data-link-type="dfn" href="#subtree-visibility-visible" id="ref-for-subtree-visibility-visible①">visible</a>. This
 is important as it makes it possible to skip style part of rendering in
-these <span id="ref-for-subtree②①">subtree</span>, since no descendant value can override <span class="property" id="ref-for-propdef-subtree-visibility②⑥">subtree-visibility</span>.</p>
+these <span id="ref-for-subtree②①">subtree</span>, since no descendant value can override <span class="property" id="ref-for-propdef-subtree-visibility②⑤">subtree-visibility</span>.</p>
     <li data-md>
-     <p><a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility②⑦">subtree-visibility</a> has an <a data-link-type="dfn" href="#subtree-visibility-auto" id="ref-for-subtree-visibility-auto②">auto</a> value, which allows the user-agent to
+     <p><a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility②⑥">subtree-visibility</a> has an <a data-link-type="dfn" href="#subtree-visibility-auto" id="ref-for-subtree-visibility-auto②">auto</a> value, which allows the user-agent to
 paint the element’s <a data-link-type="dfn" href="#subtree" id="ref-for-subtree②②">subtree</a> when it approaches the viewport. This allows easy
 adoption of the feature. In contrast, if <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css2/visufx.html#propdef-visibility" id="ref-for-propdef-visibility②">visibility</a> or <a class="css" data-link-type="propdesc" href="https://drafts.csswg.org/css-display-3/#propdef-display" id="ref-for-propdef-display">display: none</a> are
 used instead, then it is up to the developer to toggle the values when they
 approach the viewport.</p>
     <li data-md>
-     <p><a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility②⑧">subtree-visibility</a> adds in containment. This is an important part of the
+     <p><a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility②⑦">subtree-visibility</a> adds in containment. This is an important part of the
 property, which allows the user-agent to skip rendering work in the <a data-link-type="dfn" href="#subtree" id="ref-for-subtree②③">subtree</a>,
 since it can reason that when the element’s <span id="ref-for-subtree②④">subtree</span> is not painted, then the
 style and layout effects of the <span id="ref-for-subtree②⑤">subtree</span> will not affect any visible content.</p>
@@ -700,10 +700,10 @@ to render. Additionally, the cost of hiding and showing content cannot be
 eliminated since <span class="css" id="ref-for-propdef-display②">display: none</span> does not preserve the layout state of the <a data-link-type="dfn" href="#subtree" id="ref-for-subtree②⑥">subtree</a>.</p>
    <p><a class="css" data-link-type="propdesc" href="https://drafts.csswg.org/css2/visufx.html#propdef-visibility" id="ref-for-propdef-visibility③">visibility: hidden</a> causes subtrees to not paint, but they still need style
 and layout, as the <a data-link-type="dfn" href="#subtree" id="ref-for-subtree②⑦">subtree</a> takes up layout space and descendants may be <span class="css" id="ref-for-propdef-visibility④">visibility: visible</span>. Note that with sufficient containment and intersection
-observer, the functionality provided by <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility②⑨">subtree-visibility</a> may be mimicked.
-However, <span class="css" id="ref-for-propdef-subtree-visibility③⓪">subtree-visibility: auto</span> also permits user-agent algorithms such
+observer, the functionality provided by <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility②⑧">subtree-visibility</a> may be mimicked.
+However, <span class="css" id="ref-for-propdef-subtree-visibility②⑨">subtree-visibility: auto</span> also permits user-agent algorithms such
 as find-in-page and fragment navigation to access the element’s <span id="ref-for-subtree②⑧">subtree</span>, which
-cannot be mimicked by <span class="css">visibility</span>. Overall, <span class="property" id="ref-for-propdef-subtree-visibility③①">subtree-visibility</span> property is
+cannot be mimicked by <span class="css">visibility</span>. Overall, <span class="property" id="ref-for-propdef-subtree-visibility③⓪">subtree-visibility</span> property is
 a stronger signal allowing the user-agent to optimize rendering.</p>
    <p>Similar to <a class="css" data-link-type="propdesc" href="https://drafts.csswg.org/css2/visufx.html#propdef-visibility" id="ref-for-propdef-visibility⑤">visibility: hidden</a>, <a class="css" data-link-type="propdesc" href="https://drafts.csswg.org/css-contain-2/#propdef-contain" id="ref-for-propdef-contain①">contain: strict</a> allows the browser to
 automatically detect subtrees that are definitely off-screen, and therefore
@@ -711,7 +711,7 @@ that don’t need to be rendered. However, <span class="css" id="ref-for-propdef
 flexible enough to allow for responsive design layouts that grow elements to
 fit their content. To work around this, content could be marked as ''contain:
 strict'' when off-screen and then some other value when on-screen (this is
-similar to <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility③②">subtree-visibility</a>). Second, <span class="css" id="ref-for-propdef-contain③">contain: strict</span> may or may not
+similar to <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility③①">subtree-visibility</a>). Second, <span class="css" id="ref-for-propdef-contain③">contain: strict</span> may or may not
 result in rendering work, depending on whether the browser detects the content
 is actually off-screen. Third, it does not support user-agent features in
 cases when it is not actually rendered to the user in the current application
@@ -856,7 +856,7 @@ and avoiding some or most rendering lifecycle phases for such content. </p>
    <ul>
     <li><a href="#ref-for-layout-containment">2. Definitions</a> <a href="#ref-for-layout-containment①">(2)</a>
     <li><a href="#ref-for-layout-containment②">3. The subtree-visibility property</a>
-    <li><a href="#ref-for-layout-containment③">4. Restrictions and Clarifications</a> <a href="#ref-for-layout-containment④">(2)</a>
+    <li><a href="#ref-for-layout-containment③">4. Restrictions and Clarifications</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-size-containment">
@@ -989,7 +989,7 @@ and avoiding some or most rendering lifecycle phases for such content. </p>
       <th scope="col">Com­puted value
     <tbody>
      <tr>
-      <th scope="row"><a class="css" data-link-type="property" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility③③">subtree-visibility</a>
+      <th scope="row"><a class="css" data-link-type="property" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility③②">subtree-visibility</a>
       <td>visible | auto | hidden
       <td>visible
       <td>all elements
@@ -1039,19 +1039,18 @@ and avoiding some or most rendering lifecycle phases for such content. </p>
    <ul>
     <li><a href="#ref-for-propdef-subtree-visibility">2. Definitions</a>
     <li><a href="#ref-for-propdef-subtree-visibility①">3. The subtree-visibility property</a> <a href="#ref-for-propdef-subtree-visibility②">(2)</a> <a href="#ref-for-propdef-subtree-visibility③">(3)</a> <a href="#ref-for-propdef-subtree-visibility④">(4)</a> <a href="#ref-for-propdef-subtree-visibility⑤">(5)</a>
-    <li><a href="#ref-for-propdef-subtree-visibility⑥">4. Restrictions and Clarifications</a> <a href="#ref-for-propdef-subtree-visibility⑦">(2)</a> <a href="#ref-for-propdef-subtree-visibility⑧">(3)</a>
-    <li><a href="#ref-for-propdef-subtree-visibility⑨">5. Accessibility</a> <a href="#ref-for-propdef-subtree-visibility①⓪">(2)</a> <a href="#ref-for-propdef-subtree-visibility①①">(3)</a> <a href="#ref-for-propdef-subtree-visibility①②">(4)</a> <a href="#ref-for-propdef-subtree-visibility①③">(5)</a> <a href="#ref-for-propdef-subtree-visibility①④">(6)</a> <a href="#ref-for-propdef-subtree-visibility①⑤">(7)</a> <a href="#ref-for-propdef-subtree-visibility①⑥">(8)</a> <a href="#ref-for-propdef-subtree-visibility①⑦">(9)</a>
-    <li><a href="#ref-for-propdef-subtree-visibility①⑧">6. Examples</a> <a href="#ref-for-propdef-subtree-visibility①⑨">(2)</a> <a href="#ref-for-propdef-subtree-visibility②⓪">(3)</a>
-    <li><a href="#ref-for-propdef-subtree-visibility②①">7. Similarity to visibility</a> <a href="#ref-for-propdef-subtree-visibility②②">(2)</a> <a href="#ref-for-propdef-subtree-visibility②③">(3)</a> <a href="#ref-for-propdef-subtree-visibility②④">(4)</a> <a href="#ref-for-propdef-subtree-visibility②⑤">(5)</a> <a href="#ref-for-propdef-subtree-visibility②⑥">(6)</a> <a href="#ref-for-propdef-subtree-visibility②⑦">(7)</a> <a href="#ref-for-propdef-subtree-visibility②⑧">(8)</a>
-    <li><a href="#ref-for-propdef-subtree-visibility②⑨">8. Alternatives Considered</a> <a href="#ref-for-propdef-subtree-visibility③⓪">(2)</a> <a href="#ref-for-propdef-subtree-visibility③①">(3)</a> <a href="#ref-for-propdef-subtree-visibility③②">(4)</a>
+    <li><a href="#ref-for-propdef-subtree-visibility⑥">4. Restrictions and Clarifications</a> <a href="#ref-for-propdef-subtree-visibility⑦">(2)</a>
+    <li><a href="#ref-for-propdef-subtree-visibility⑧">5. Accessibility</a> <a href="#ref-for-propdef-subtree-visibility⑨">(2)</a> <a href="#ref-for-propdef-subtree-visibility①⓪">(3)</a> <a href="#ref-for-propdef-subtree-visibility①①">(4)</a> <a href="#ref-for-propdef-subtree-visibility①②">(5)</a> <a href="#ref-for-propdef-subtree-visibility①③">(6)</a> <a href="#ref-for-propdef-subtree-visibility①④">(7)</a> <a href="#ref-for-propdef-subtree-visibility①⑤">(8)</a> <a href="#ref-for-propdef-subtree-visibility①⑥">(9)</a>
+    <li><a href="#ref-for-propdef-subtree-visibility①⑦">6. Examples</a> <a href="#ref-for-propdef-subtree-visibility①⑧">(2)</a> <a href="#ref-for-propdef-subtree-visibility①⑨">(3)</a>
+    <li><a href="#ref-for-propdef-subtree-visibility②⓪">7. Similarity to visibility</a> <a href="#ref-for-propdef-subtree-visibility②①">(2)</a> <a href="#ref-for-propdef-subtree-visibility②②">(3)</a> <a href="#ref-for-propdef-subtree-visibility②③">(4)</a> <a href="#ref-for-propdef-subtree-visibility②④">(5)</a> <a href="#ref-for-propdef-subtree-visibility②⑤">(6)</a> <a href="#ref-for-propdef-subtree-visibility②⑥">(7)</a> <a href="#ref-for-propdef-subtree-visibility②⑦">(8)</a>
+    <li><a href="#ref-for-propdef-subtree-visibility②⑧">8. Alternatives Considered</a> <a href="#ref-for-propdef-subtree-visibility②⑨">(2)</a> <a href="#ref-for-propdef-subtree-visibility③⓪">(3)</a> <a href="#ref-for-propdef-subtree-visibility③①">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="subtree-visibility-visible">
    <b><a href="#subtree-visibility-visible">#subtree-visibility-visible</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-subtree-visibility-visible">3. The subtree-visibility property</a>
-    <li><a href="#ref-for-subtree-visibility-visible①">4. Restrictions and Clarifications</a>
-    <li><a href="#ref-for-subtree-visibility-visible②">7. Similarity to visibility</a>
+    <li><a href="#ref-for-subtree-visibility-visible①">7. Similarity to visibility</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="subtree-visibility-auto">

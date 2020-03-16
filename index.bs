@@ -200,8 +200,7 @@ Restrictions and Clarifications {#restrictions}
 
 * In situations where [=layout containment=] has no effect (e.g. the
     element does not generate a principal box), 'subtree-visibility' values also
-    have no effect. In other words, if [=layout containment=] has no effect, the
-    'subtree-visibility' value is effectively [=visible=].
+    have no effect.
 
 * <a href="https://html.spec.whatwg.org/multipage/rendering.html#replaced-elements">
     Replaced elements</a>, such as images, do not paint their contents if they
