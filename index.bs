@@ -221,7 +221,7 @@ Restrictions and Clarifications {#restrictions}
     href="https://drafts.csswg.org/resize-observer/#resize-observer-interface">resize
     observer</a>, elements in the subtree of a [=skipped=] element do not
     change their size. If these elements become painted again, the resize
-    observation will be delivered if the new painted size differs frrom the
+    observation will be delivered if the new painted size differs from the
     last size used to notify the resize observer.
 
 Accessibility {#accessibility}
