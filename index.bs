@@ -210,6 +210,20 @@ Restrictions and Clarifications {#restrictions}
     href="https://www.w3.org/TR/CSS21/zindex.html#painting-order">the painting
     order</a> steps -- is not.
 
+* From the perspective of an <a
+    href="https://w3c.github.io/IntersectionObserver/">intersection observer</a>,
+    elements in the subtree of a [=skipped=] element are not intersecting the <a
+    href="https://w3c.github.io/IntersectionObserver/#dom-intersectionobserver-root">root</a>.
+    This is true even if both the root and the target elements are in the subtree
+    of a [=skipped=] element.
+
+* From the perpsective of a <a
+    href="https://drafts.csswg.org/resize-observer/#resize-observer-interface">resize
+    observer</a>, elements in the subtree of a [=skipped=] element do not
+    change their size. If these elements become painted again, the resize
+    observation will be delivered if the new painted size differs frrom the
+    last size used to notify the resize observer.
+
 Accessibility {#accessibility}
 =============
 
