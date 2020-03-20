@@ -139,7 +139,7 @@ Inherited: no
 
     : <dfn export>auto</dfn>
     :: The element [=gains containment=]. 
-         If *all of* the following conditions hold then the element is also [=skipped=]:
+         If <strong>all of</strong> the following conditions hold then the element is also [=skipped=]:
            * The element is [=off-screen=].
            * Neither the element nor any of its [=subtree=] elements are
                focused as described in the <a
@@ -153,14 +153,18 @@ Inherited: no
          It is important to note that the contents of the [=subtree=] must be
          accessible to user-agent features such as find-in-page, tab order
          navigation, etc. This is true regardless of whether the element is
-         [=skipped=] or not.
+         [=skipped=] or not. In particular, this means that elements in the
+         [=subtree=] of a [=skipped=] ''subtree-visibility: auto'' element are
+         able to be focused and selected.
 
     : <dfn export>hidden</dfn>
     :: The element is [=skipped=].
 
          Note that in this case, the contents of the [=subtree=] are not accessible
          to user-agent features, such as find-in-page, tab order navigation,
-         etc.
+         etc. This means that elements in the [=subtree=] of a [=skipped=]
+         ''subtree-visibility: hidden'' element can neither be selected nor
+         focused.
 </dl>
 
 Note that when the element is [=skipped=] and the rendering work is avoided,
