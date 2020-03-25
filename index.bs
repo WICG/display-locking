@@ -249,7 +249,7 @@ Restrictions and Clarifications {#restrictions}
       adjustments, is deferred to that frame as well. This ensures that script
       accessing, for example, the containment value of the element between
       these two events (internal intersection observation and [=skipped=] state
-      update) will retrieve values consistent with current painted state.
+      update) will retrieve values consistent with current painted state and not cause any forced layouts.
     </div>
 
 Accessibility {#accessibility}
