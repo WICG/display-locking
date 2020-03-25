@@ -242,7 +242,7 @@ Restrictions and Clarifications {#restrictions}
     <div class=note>
       Determining the viewport intersection of the element can be done with an
       internal version of an IntersectionObserver. However, since the
-      observations from this are dispatched at step 12 of the Update the
+      observations from this are dispatched at step 12 of Update the
       Rendering, any changes to the [=skipped=] (and thus painted) state will
       not be visible to the user until the next frame's processing. For this
       reason, updating the [=skipped=] state, including containment
