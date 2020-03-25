@@ -11,7 +11,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-UD" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version b43aa594f5014ff14748da1aace9afaa73d2b3e6" name="generator">
   <link href="https://wicg.github.io/display-locking" rel="canonical">
-  <meta content="44649ef3853e1e116ba633a1fd6512e033b677d3" name="document-revision">
+  <meta content="d780282e9f3b2351abb34ab23c6f6e19d93f575f" name="document-revision">
 <style>/* style-md-lists */
 
 /* This is a weird hack for me not yet following the commonmark spec
@@ -258,7 +258,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">CSS Subtree Visibility</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Unofficial Proposal Draft, <time class="dt-updated" datetime="2020-03-24">24 March 2020</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Unofficial Proposal Draft, <time class="dt-updated" datetime="2020-03-25">25 March 2020</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -554,14 +554,14 @@ effect right after step 11 of <a href="https://html.spec.whatwg.org/multipage/we
 the Rendering</a> step of the Processing Model.</p>
      <div class="note" role="note"> Determining the viewport intersection of the element can be done with an
   internal version of an IntersectionObserver. However, since the
-  observations from this are dispatched at step 12 of the Update the
+  observations from this are dispatched at step 12 of Update the
   Rendering, any changes to the <a data-link-type="dfn" href="#skipped" id="ref-for-skipped①③">skipped</a> (and thus painted) state will
   not be visible to the user until the next frame’s processing. For this
   reason, updating the <span id="ref-for-skipped①④">skipped</span> state, including containment
   adjustments, is deferred to that frame as well. This ensures that script
   accessing, for example, the containment value of the element between
   these two events (internal intersection observation and <span id="ref-for-skipped①⑤">skipped</span> state
-  update) will retrieve values consistent with current painted state. </div>
+  update) will retrieve values consistent with current painted state and not cause any forced layouts. </div>
    </ul>
    <h2 class="heading settled" data-level="5" id="accessibility"><span class="secno">5. </span><span class="content">Accessibility</span><a class="self-link" href="#accessibility"></a></h2>
    <p>Similar to the way <a class="property" data-link-type="propdesc" href="#propdef-subtree-visibility" id="ref-for-propdef-subtree-visibility①⓪">subtree-visibility</a> affects painted output of the element’s <a data-link-type="dfn" href="#subtree" id="ref-for-subtree①⑧">subtree</a>, it also affects information exposed to the <a href="https://w3c.github.io/css-aam/#dfn-accessibility-tree">accessibility
