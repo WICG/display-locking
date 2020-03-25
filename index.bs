@@ -206,11 +206,11 @@ the user-agent should retain the previously computed layout state if possible.
 Restrictions and Clarifications {#restrictions}
 ===============================
 
-* In situations where [=layout containment=] has no effect (e.g. the
+1. In situations where [=layout containment=] has no effect (e.g. the
     element does not generate a principal box), 'subtree-visibility' values also
     have no effect.
 
-* <a href="https://html.spec.whatwg.org/multipage/rendering.html#replaced-elements">
+2. <a href="https://html.spec.whatwg.org/multipage/rendering.html#replaced-elements">
     Replaced elements</a> do not paint their contents if they
     are [=skipped=] due to 'subtree-visibility'. That is, the element's border
     and background are painted, but the replaced content -- as described in
@@ -218,21 +218,21 @@ Restrictions and Clarifications {#restrictions}
     href="https://www.w3.org/TR/CSS21/zindex.html#painting-order">the painting
     order</a> steps -- is not.
 
-* From the perspective of an <a
+3. From the perspective of an <a
     href="https://w3c.github.io/IntersectionObserver/">intersection observer</a>,
     elements in the [=subtree=] of a [=skipped=] element are not intersecting the <a
     href="https://w3c.github.io/IntersectionObserver/#dom-intersectionobserver-root">root</a>.
     This is true even if both the root and the target elements are in the [=subtree=]
     of a [=skipped=] element.
 
-* From the perpsective of a <a
+4. From the perpsective of a <a
     href="https://drafts.csswg.org/resize-observer/#resize-observer-interface">resize
     observer</a>, elements in the [=subtree=] of a [=skipped=] element do not
     change their size. If these elements become non-skipped again, the resize
     observation will be delivered if the new size differs from the last size
     used to notify the resize observer.
 
-* When the [=off-screen=] state of an element changes, and if that change
+5. When the [=off-screen=] state of an element changes, and if that change
     affects the [=skipped=] state of the element, then this change will take
     effect after the requestAnimationFrame callbacks of the frame that renders
     the effects of the change have run. Specifically, such changes will take
@@ -251,6 +251,38 @@ Restrictions and Clarifications {#restrictions}
       these two events (internal intersection observation and [=skipped=] state
       update) will retrieve values consistent with current painted state and not cause any forced layouts.
     </div>
+
+6. For an [=off-screen=] element with ''subtree-visibility: auto'' and for
+    elements in its subtree, <a
+    href="https://drafts.csswg.org/cssom-view/#dom-element-scrollintoview"><code>scrollIntoView()</code></a>
+    computes the element's bounds considering [=size containment=] that is applied
+    on the ''subtree-visibility: auto'' element.
+    <div class=note>
+      <code>scrollIntoView()</code> brings the targetted element into the
+      viewport. This means that elements with ''subtree-visibility: auto'' will
+      not be [=skipped=] and thus will not have [=size containment=]
+      automatically applied to them. However, since
+      <code>scrollIntoView()</code> first computes the bounds, and
+      <em>then</em> brings the element into the viewport, [=size containment=]
+      has to be respected when computing the needed scroll position. Note that
+      this only makes a difference when [=size containment=] changes the
+      element's size from what it would have been without it.
+    </div>
+
+7. When an [=off-screen=] element with ''subtree-visibility: auto'' or any
+    element in its subtree is focused, the focus state applies
+    before the scroll position is determined.
+    <div class=note>
+      Since <code>focus()</code> can bring an element into the viewport, the
+      user-agent needs to compute the elements bounds. However, unlike
+      <code>scrollIntoView()</code>, the focus property applies first, meaning
+      that the element becomes non-[=skipped=] and no longer has [=size
+      containment=] applied at the time the bounds computation is made. Note
+      that this is consistent with the order of <a
+      href="https://html.spec.whatwg.org/multipage/interaction.html#dom-focus"><code>focus()</code></a>
+      specification, and applies for both focus gained via <code>focus()</code>
+      function and user gestures.
+    </note>
 
 Accessibility {#accessibility}
 =============
