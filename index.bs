@@ -255,7 +255,7 @@ Restrictions and Clarifications {#restrictions}
 6. For an [=off-screen=] element with ''subtree-visibility: auto'' and for
     elements in its subtree, <a
     href="https://drafts.csswg.org/cssom-view/#dom-element-scrollintoview"><code>scrollIntoView()</code></a>
-    computes the element's bounds considering [=size containment=] that is applied
+    computes the element's bounds with its existing [=size containment=] applied
     on the ''subtree-visibility: auto'' element.
     <div class=note>
       <code>scrollIntoView()</code> brings the targeted element into the
