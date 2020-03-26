@@ -258,7 +258,7 @@ Restrictions and Clarifications {#restrictions}
     computes the element's bounds considering [=size containment=] that is applied
     on the ''subtree-visibility: auto'' element.
     <div class=note>
-      <code>scrollIntoView()</code> brings the targetted element into the
+      <code>scrollIntoView()</code> brings the targeted element into the
       viewport. This means that elements with ''subtree-visibility: auto'' will
       not be [=skipped=] and thus will not have [=size containment=]
       automatically applied to them. However, since
