@@ -261,7 +261,7 @@ Restrictions and Clarifications {#restrictions}
       <code>scrollIntoView()</code> brings the targeted element into the
       viewport. This means that elements with ''subtree-visibility: auto'' will
       not be [=skipped=] and thus will not have [=size containment=]
-      automatically applied to them. However, since
+      automatically applied to them after scroll is applied. However, since
       <code>scrollIntoView()</code> first computes the bounds, and
       <em>then</em> brings the element into the viewport, [=size containment=]
       has to be respected when computing the needed scroll position. Note that
