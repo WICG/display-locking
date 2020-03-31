@@ -11,7 +11,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-UD" rel="stylesheet" type="text/css">
   <meta content="Bikeshed version b43aa594f5014ff14748da1aace9afaa73d2b3e6" name="generator">
   <link href="https://wicg.github.io/display-locking" rel="canonical">
-  <meta content="6a5dedf9cc7ca41103db43fc309cf4b68c8f9a4c" name="document-revision">
+  <meta content="0cc84a664dd22403ff78a58caf3b850ba0391620" name="document-revision">
 <style>/* style-md-lists */
 
 /* This is a weird hack for me not yet following the commonmark spec
@@ -581,12 +581,13 @@ before the scroll position is determined.</p>
   containment</a> applied at the time the bounds computation is made. Note
   that this is consistent with the order of <a href="https://html.spec.whatwg.org/multipage/interaction.html#dom-focus"><code>focus()</code></a> specification, and applies for both focus gained via <code>focus()</code> function and user gestures. </div>
     <li data-md>
-     <p>If an <a href="https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element">iframe</a> element is <a data-link-type="dfn" href="#skipped" id="ref-for-skipped①⑧">skipped</a>, then the content of the frame does not paint or
-participate in hit testing. The user-agent should skip <a href="https://html.spec.whatwg.org/multipage/webappapis.html#update-the-rendering">Update
-the Rendering</a> step of the Processing Model in the frame, if possible.</p>
+     <p>If an <a href="https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element">iframe</a> element is <a data-link-type="dfn" href="#skipped" id="ref-for-skipped①⑧">skipped</a>, then the content of the document inside the iframe
+does not paint or participate in hit testing. The user-agent should skip <a href="https://html.spec.whatwg.org/multipage/webappapis.html#update-the-rendering">Update
+the Rendering</a> step of the Processing Model in the frame’s event loop,
+if possible (see note below).</p>
      <div class="note" role="note"> As is the case with other elements, contents of an iframe are not
   painted. With iframes there is an opportunity to skip all of the steps of
-  the Update the Rendering step. The user-agent should skip this work if
+  the Update the Rendering steps. The user-agent should skip this work if
   possible. There are situations, where skipping the step may not be
   possible. For instance, if an iframe becomes <a data-link-type="dfn" href="#skipped" id="ref-for-skipped①⑨">skipped</a> at some point,
   then the painted output needs to be removed. Thus, Update the Rendering
