@@ -289,7 +289,7 @@ Restrictions and Clarifications {#restrictions}
     element is [=skipped=], then the content of the document inside the iframe does not paint or
     participate in hit testing. The user-agent should skip <a
     href="https://html.spec.whatwg.org/multipage/webappapis.html#update-the-rendering">Update
-    the Rendering</a> step of the Processing Model in the frame, if possible.
+    the Rendering</a> step of the Processing Model in the frame.
     <div class=note>
       As is the case with other elements, contents of an iframe are not
       painted. With iframes there is an opportunity to skip all of the steps of
