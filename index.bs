@@ -293,7 +293,7 @@ Restrictions and Clarifications {#restrictions}
     <div class=note>
       As is the case with other elements, contents of an iframe are not
       painted. With iframes there is an opportunity to skip all of the steps of
-      the Update the Rendering step. The user-agent should skip this work if
+      the Update the Rendering steps. The user-agent should skip this work if
       possible. There are situations, where skipping the step may not be
       possible. For instance, if an iframe becomes [=skipped=] at some point,
       then the painted output needs to be removed. Thus, Update the Rendering
