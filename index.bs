@@ -301,7 +301,7 @@ Restrictions and Clarifications {#restrictions}
       step has to run at least once.
     </div>
 
-9. Neither the [=skipped=] element nor any of its subtree elements contribute
+9. The subtree of a [=skipped=] element does not contribute
     to the result of <a
     href="https://html.spec.whatwg.org/multipage/dom.html#the-innertext-idl-attribute">innerText</a>.
 
