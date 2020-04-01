@@ -156,7 +156,7 @@ For the ScrollToTextFragment case, you can already figure out what block-level e
 
 No privacy mitigations have been implemented.
 
-For the find-in-page privacy flaw, I could imagine a mitigation where we would choose not to fire beforematch repeatedly in this case. In the example page above, the scroll offset would not be change in between firings of the event, which we could use as a heuristic to combat this case. However, I'm not sure that it couldn't be circumvented or if it would cause issues when trying to use the feature legitimately.
+For the find-in-page privacy case, I could imagine a mitigation where we would choose not to fire beforematch repeatedly in this case. In the example page above, the scroll offset would not be change in between firings of the event, which we could use as a heuristic to combat this case. However, I'm not sure that it couldn't be circumvented or if it would cause issues when trying to use the feature legitimately.
 
 ### 4. What privacy mitigations have considered and not implemented (and why)?
 
