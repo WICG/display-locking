@@ -113,9 +113,10 @@ Definitions {#definitions}
     is not [=off-screen=]
 * <dfn export>skipped</dfn>: an element is considered skipped if its [=subtree=] is
     not painted or hit-tested. A skipped element has [=layout containment=],
-    [=style containment=], and [=size containment=] applied to it in addition to
-    other containment values. The user-agent should avoid as much rendering work
-    in the skipped element's [=subtree=] as possible.
+    [=style containment=], [=paint containment=], and [=size containment=]
+    applied to it in addition to other containment values. The user-agent
+    should avoid as much rendering work in the skipped element's [=subtree=] as
+    possible.
     <div class=note>
       Rendering work can be avoided due to the combination of
       containment and the fact that the [=subtree=] is not painted.  As an example,
@@ -124,8 +125,8 @@ Definitions {#definitions}
       explicitly requested by script.
     </div>
 * <dfn export>gains containment</dfn>: for an an element to gain containment,
-    the user-agent must apply [=layout containment=] and [=style containment=]
-    to it in addition to any other containment properties.
+    the user-agent must apply [=layout containment=], [=style containment=],
+    and [=paint containment=] to it in addition to any other containment properties.
 
 The 'subtree-visibility' property {#subtree-visibility}
 =================================
@@ -197,10 +198,34 @@ the user-agent should retain the previously computed layout state if possible.
 <div class=note>
   It is worthwhile to note the interaction between 'subtree-visibility' and
   containment: If the element has a 'subtree-visibility' value other than
-  [=visible=], the user-agent enforces [=style containment=] and [=layout
-  containment=] on the element. Additionally, if the element is [=skipped=],
-  then the user-agent also enforces [=size containment=]. These containment
-  values are added on top of any existing containment values.
+  [=visible=], the user-agent enforces [=style containment=], [=layout
+  containment=], and [=paint containment=] on the element. Additionally, if the
+  element is [=skipped=], then the user-agent also enforces [=size
+  containment=]. These containment values are added on top of any existing
+  containment values.
+
+  If a container element is an element which has a 'subtree-visibility' value
+  that adds containment, then the following properties hold:
+
+  * [=layout containment=] ensures that the user-agent is able to omit layout
+      work in [=skipped=] subtrees, since the results of such layouts will not
+      affect elements outside of the container element.
+  * [=style containment=] ensures that counters do not have to be processed in
+      [=skipped=] subtrees, since they do not affect counters outside of the
+      container element.
+  * [=size containment=] ensures that the user-agent is able to omit layout in
+      [=skipped=] subtrees, since the results of such layouts will not affect the
+      container element's size.
+  * [=paint containment=] ensures that [=ink overflow=] of painted contents is
+      clipped; this, in turn, means that user-agent can reliably determine when
+      the visible portion of the element approaches the viewport and start
+      painting it (in the ''subtree-visibility: auto'' case).
+
+  Note that in the ''subtree-visibility: auto'' case, [=layout containment=],
+  [=style containment=], and [=paint containment=] persist even if the element
+  is not [=skipped=]. This is done to prevent layout changes that would be
+  incurred by containment changes as a result element entering and exiting the
+  [=skipped=] state.
 </div>
 
 Restrictions and Clarifications {#restrictions}
