@@ -97,7 +97,7 @@ Definitions {#definitions}
     property name 'subtree-visibility' refers to the same descendants.
 * <dfn export>off-screen</dfn>: an element is considered to be off-screen if
     its border box does not intersect the visual viewport plus a user-agent
-    specified, margin. 
+    specified, margin.
     <div class=note>
       The the user-agent is free to consider any margin around the viewport
       when computing whether the element is off-screen. The margin is meant to
@@ -111,12 +111,12 @@ Definitions {#definitions}
     </div>
 * <dfn export>on-screen</dfn>: an element is considered to be on-screen if it
     is not [=off-screen=]
-* <dfn export>skipped</dfn>: an element is considered skipped if its [=subtree=] is
-    not painted or hit-tested. A skipped element has [=layout containment=],
-    [=style containment=], [=paint containment=], and [=size containment=]
-    applied to it in addition to other containment values. The user-agent
-    should avoid as much rendering work in the skipped element's [=subtree=] as
-    possible.
+* <dfn export>skipped</dfn>: when an element is skipped, its [=subtree=] must
+    not painted or hit-tested. Furthermore, a skipped element must have
+    [=layout containment=], [=style containment=], [=paint containment=], and
+    [=size containment=] applied to it in addition to other containment values.
+    The user-agent should avoid as much rendering work in the skipped element's
+    [=subtree=] as possible.
     <div class=note>
       Rendering work can be avoided due to the combination of
       containment and the fact that the [=subtree=] is not painted.  As an example,
@@ -143,7 +143,7 @@ Inherited: no
     :: No effect. This provides no extra information or hints to the user-agent.
 
     : <dfn export>auto</dfn>
-    :: The element [=gains containment=]. 
+    :: The element [=gains containment=].
          If <strong>all of</strong> the following conditions hold then the element is also [=skipped=]:
            * The element is [=off-screen=].
            * Neither the element nor any of its [=subtree=] elements are
@@ -185,14 +185,14 @@ the user-agent should retain the previously computed layout state if possible.
   contents of the [=subtree=] are accessible to the user. The content can be
   interacted with in the usual ways: scrolling will reveal the content, tab
   order navigation will visit the [=subtree=], find-in-page will find matches, etc.
-  The fact that [=off-screen=] elements with ''subtree-visibility: auto'' are
+  The fact that some [=off-screen=] elements with ''subtree-visibility: auto'' are
   [=skipped=] is a rendering performance optimization.
 
-  Note that selected and focused elements affected by ''subtree-visibility: auto''
-  are treated as if they are painted, since users can interact with this
-  content when it is off-screen. For example, a user can copy (via a shortcut)
-  text that was selected and scrolled off-screen. For this reason, elements and
-  subtrees with focus or selection remain painted.
+  Note that selected and focused elements affected by ''subtree-visibility:
+  auto'' are not [=skipped=], since users can interact with this content when
+  it is off-screen. For example, a user can copy (via a shortcut) text that was
+  selected and scrolled off-screen. For this reason, elements and subtrees with
+  focus or selection remain not [=skipped=].
 </div>
 
 <div class=note>
@@ -274,7 +274,8 @@ Restrictions and Clarifications {#restrictions}
       adjustments, is deferred to that frame as well. This ensures that script
       accessing, for example, the containment value of the element between
       these two events (internal intersection observation and [=skipped=] state
-      update) will retrieve values consistent with current painted state and not cause any forced layouts.
+      update) will retrieve values consistent with current painted state and
+      not cause any forced layouts.
     </div>
 
 6. For an [=off-screen=] element with ''subtree-visibility: auto'' and for
@@ -317,13 +318,13 @@ Restrictions and Clarifications {#restrictions}
     the Rendering</a> step of the Processing Model in the frame's event loop,
     if possible (see note below).
     <div class=note>
-      As is the case with other elements, contents of an iframe are not
-      painted. With iframes there is an opportunity to skip all of the steps of
-      the Update the Rendering steps. The user-agent should skip this work if
-      possible. There are situations, where skipping the step may not be
-      possible. For instance, if an iframe becomes [=skipped=] at some point,
-      then the painted output needs to be removed. Thus, Update the Rendering
-      step has to run at least once.
+      As is the case with other elements, when [=skipped=], contents of an
+      iframe are not painted. With iframes there is an opportunity to skip all
+      of the steps of the Update the Rendering steps. The user-agent should
+      skip this work if possible. There are situations, where skipping the step
+      may not be possible. For instance, if an iframe becomes [=skipped=] at
+      some point, then the painted output needs to be removed. Thus, Update the
+      Rendering step has to run at least once.
     </div>
 
 9. The subtree of a [=skipped=] element does not contribute
@@ -484,7 +485,7 @@ Examples {#examples}
 
   Also note that this situation in which rendering work is required is not
   unique. There may be other situations in which the user-agent cannot avoid
-  rendering work. 
+  rendering work.
 </div>
 
 Similarity to visibility {#similarity}
