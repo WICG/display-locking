@@ -401,10 +401,16 @@ Other than the use case for detecting accessibility, this feature does not deal
 with any personally identifiable or sensitive information. Hence, the risk to
 the user is low.
 
-When it comes to dealing with cross-origin frames, the usage of this feature
-does not enable any new detections. Frames are isolated in terms of
-performance, so user-agents are capable of optimizing the frame performance
-without this feature, in the same ways that this feature recommends.
+It may seem that a cross-origin iframe can learn that it is offscreen, and
+under a subtree-visibility hidden or auto ancestor, by noticing that
+requestAnimationFrame callbacks are not run. However, since user-agents are
+already <a
+href="https://html.spec.whatwg.org/multipage/webappapis.html#rendering-opportunity">allowed
+to throttle</a> or stop generating frames for off-screen cross-origin iframes
+and since [=skipped=] element's descendants are not intersecting the viewport
+from an IntersectionObserver perspective, the fact that
+requestionAnimationFrame callbacks are not run is insufficient information to
+detect 'subtree-visibility' ancestors.
 
 Examples {#examples}
 ========
