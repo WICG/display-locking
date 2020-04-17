@@ -385,6 +385,33 @@ assistive technologies</a>:
   from the accessibility tree.
 </div>
 
+Privacy & Security Considerations {#priv-sec}
+=================================
+
+As discussed in the <a href="#accessibility">Accessibility Section</a>, if the
+performance of using this feature differs greatly between accessibility and
+non-accessibility paths, then the origin can use timing attacks to determine
+whether the user is using assistive technologies. There may already be other
+ways of determining whether assistive technologies are being utilized. However,
+the requirement to reasonably match the performance characteristics of
+accessibility and non-accessibility paths for this feature minimizes the risk
+of using this particular feature for accessibility detection.
+
+Other than the use case for detecting accessibility, this feature does not deal
+with any personally identifiable or sensitive information. Hence, the risk to
+the user is low.
+
+It may seem that a cross-origin iframe can learn that it is offscreen, and
+under a subtree-visibility hidden or auto ancestor, by noticing that
+requestAnimationFrame callbacks are not run. However, since user-agents are
+already <a
+href="https://html.spec.whatwg.org/multipage/webappapis.html#rendering-opportunity">allowed
+to throttle</a> or stop generating frames for off-screen cross-origin iframes
+and since [=skipped=] element's descendants are not intersecting the viewport
+from an IntersectionObserver perspective, the fact that
+requestionAnimationFrame callbacks are not run is insufficient information to
+detect 'subtree-visibility' ancestors.
+
 Examples {#examples}
 ========
 
@@ -542,12 +569,6 @@ result in rendering work, depending on whether the browser detects the content
 is actually off-screen. Third, it does not support user-agent features in
 cases when it is not actually rendered to the user in the current application
 view.
-
-
-Privacy & Security Considerations {#priv-sec}
-=================================
-
-tbd
 
 
 Footnotes {#footnotes}
