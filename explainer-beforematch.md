@@ -191,6 +191,91 @@ In general, we believe that the `beforematch` event does not pose a privacy prob
 However, the privacy aspect of the event should be discussed in more detail via
 formal security reviews.
 
+### Responses to DOM and style changes in the `beforematch` event handler
+
+The scrolling behavior exhibited by find-in-page, ScrollToTextFragment, and
+ElementFragment after style and DOM changes are made by `beforematch` event
+handlers is not well specified yet and is being discussed here: 
+https://github.com/WICG/display-locking/issues/150
+
+Here is a list of `beforematch` handler use cases that could affect scrolling:
+1. **Removed from DOM**: The `beforematch` event handler removes the
+target element from the DOM.
+2. **Reparented in DOM**: The `beforematch` event handler removes the target
+element from the DOM, and re-adds it further down the tree such that the
+location to scroll to is different.
+3. **display: none**: The `beforematch` event handler adds the style
+`display: none` to the target element.
+4. **visibility: hidden**: The `beforematch` event handler adds the style
+`visibility: hidden` to the target element.
+5. **subtree-visibility: hidden-matchable -> visible**: The target element has
+the style `subtree-visibility: hidden-matchable` before the `beforematch` event
+is fired on the target element, and the `beforematch` event handler changes the
+style value from `hidden-matchable` to `visible`.
+
+
+Here is the current scrolling behavior in Chromium for each of those cases in
+ScrollToTextFragment, and ElementFragment, and find-in-page. As mentioned
+before, this is still being discussed
+[here](https://github.com/WICG/display-locking/issues/150) and is subject to
+change.
+
+#### ScrollToTextFragment
+1. **Removed from DOM**: ScrollToTextFragment will not scroll to the removed
+element. If there is a second match which is still in the DOM after
+beforematch, it will be scrolled to but a second beforematch event will not be
+fired.
+2. **Reparented in DOM**: ScrollToTextFragment will scroll to the new
+location of the target. If there is a second match which was not reparented,
+ScrollToTextFragment will scroll to whichever comes first from the top of the
+page after the beforematch event is fired.
+3. **display: none**: ScrollToTextFragment will not scroll to the target
+element. If there is a second match which was not modified, ScrollToTextFragment
+will scroll to it.
+4. **visibility: hidden**: ScrollToTextFragment will not scroll to the target
+element. If there is a second match which was not modified, ScrollToTextFragment
+will scroll to it.
+5. **subtree-visibility: hidden-matchable -> visible**: ScrollToTextFragment
+will scroll to the unlocked text.
+
+#### ElementFragment
+This is the behavior both when navigating to a page with an element fragment in
+the url and when assigning to `window.location.hash`.
+1. **Removed from DOM**: The page will not scroll.
+2. **Reparented in DOM**: The page will scroll to the target element's new
+location.
+3. **display: none**: The page will not scroll.
+4. **visibility: hidden**: The page will scroll to the target element. This
+behavior makes sense because it matches the behavior when targeting a
+`visibility: hidden` element with a fragment regardless of beforematch.
+5. **subtree-visibility: hidden-matchable -> visible**: The page will scroll
+to the newly painted element.
+
+#### find-in-page
+The find-in-page behavior has some issues in these cases. These will likely
+be fixed after adding an async step to pick up layout changes made by the
+beforematch event listener. Here is a bug to track this work:
+https://bugs.chromium.org/p/chromium/issues/detail?id=1074121
+1. **Removed from DOM**: find-in-page does not scroll to the target element. If
+there is a second match in the DOM, find-in-page will find it and scroll to it
+without needing additional user input.
+2. **Reparented in DOM**: If the only match in the document is reparented to the
+end of the document, find-in-page becomes stuck at "0/x" matches and can't
+scroll to the new location, even if you keep typing more of the match out or
+close and reopen find-in-page. This behavior is obviously not good, and
+hopefully will be fixed by adding an async step to get updated layout
+information. If there is a second match in the DOM which is not reparented,
+the page will scroll but find-in-page will still get stuck.
+3. **display: none**: find-in-page will scroll to the spot the element used to
+take up. This should probably not scroll at all instead, and will hopefully
+happen after adding an async step to get updated layout information. If there
+is a second match, the page will scroll to the second match.
+4. **visibility: hidden**: find-in-page will scroll to the spot the element used
+to take up. This should probably not scroll at all instead, and hopefully won't
+scroll after adding an async step.
+5. **subtree-visibility: hidden-matchable -> visible**: find-in-page scrolls to
+to the revealed text.
+
 ### Footnotes
 
 **Hidden but matchable** content refers to an idea that although some content
