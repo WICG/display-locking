@@ -21,7 +21,7 @@ Note that the 'matched element' in this document refers to one of the following:
 
 The use case for this event is to allow developers to help users find hidden
 content on the page. Hidden content includes collapsed sections via clipping,
-`visibility: hidden` subtrees, and [`subtree-visibility:
+`visibility: hidden` subtrees, and [`content-visibility:
 hidden-matchable`](https://github.com/WICG/display-locking) subtrees.
 
 ### Motivation
@@ -58,7 +58,7 @@ observations.
 ```html
 <style>
 .collapsed {
-  subtree-visibility: hidden-matchable;
+  content-visibility: hidden-matchable;
 }
 </style>
 
@@ -79,7 +79,7 @@ document.querySelectorAll(".collapsed").forEach(item => {
 ```
 
 In this example, most of the content of the page is hidden in collapsed sections.
-It uses the upcoming `subtree-visibility` CSS property to hide the
+It uses the upcoming `content-visibility` CSS property to hide the
 content while letting it be searchable by find-in-page. When a match is found,
 and `beforematch` event is fired, we expand the section by removing the
 collapsed class.
@@ -208,8 +208,8 @@ location to scroll to is different.
 `display: none` to the target element.
 4. **visibility: hidden**: The `beforematch` event handler adds the style
 `visibility: hidden` to the target element.
-5. **subtree-visibility: hidden-matchable -> visible**: The target element has
-the style `subtree-visibility: hidden-matchable` before the `beforematch` event
+5. **content-visibility: hidden-matchable -> visible**: The target element has
+the style `content-visibility: hidden-matchable` before the `beforematch` event
 is fired on the target element, and the `beforematch` event handler changes the
 style value from `hidden-matchable` to `visible`.
 
@@ -235,7 +235,7 @@ will scroll to it.
 4. **visibility: hidden**: ScrollToTextFragment will not scroll to the target
 element. If there is a second match which was not modified, ScrollToTextFragment
 will scroll to it.
-5. **subtree-visibility: hidden-matchable -> visible**: ScrollToTextFragment
+5. **content-visibility: hidden-matchable -> visible**: ScrollToTextFragment
 will scroll to the unlocked text.
 
 #### ElementFragment
@@ -248,7 +248,7 @@ location.
 4. **visibility: hidden**: The page will scroll to the target element. This
 behavior makes sense because it matches the behavior when targeting a
 `visibility: hidden` element with a fragment regardless of beforematch.
-5. **subtree-visibility: hidden-matchable -> visible**: The page will scroll
+5. **content-visibility: hidden-matchable -> visible**: The page will scroll
 to the newly painted element.
 
 #### find-in-page
@@ -273,13 +273,13 @@ is a second match, the page will scroll to the second match.
 4. **visibility: hidden**: find-in-page will scroll to the spot the element used
 to take up. This should probably not scroll at all instead, and hopefully won't
 scroll after adding an async step.
-5. **subtree-visibility: hidden-matchable -> visible**: find-in-page scrolls to
+5. **content-visibility: hidden-matchable -> visible**: find-in-page scrolls to
 to the revealed text.
 
 ### Footnotes
 
 **Hidden but matchable** content refers to an idea that although some content
 may be hidden from the user, it may still be useful to have that content be
-searchable.  One such approach is [`subtree-visibility:
+searchable.  One such approach is [`content-visibility:
 hidden-matchable`](https://github.com/WICG/display-locking), but there are
 other ways to achieve hiding, for example via `overflow: hidden` plus `height: 0px`.
