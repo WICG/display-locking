@@ -13,22 +13,22 @@ with possibly out-of-date explainers.
   element can be "locked from being displayed".
 * **Locked element**: the element's subtree is invisible and is not hit-tested.
 * **Unlocked element**: the element's subtree is visible and hit-tested.
-  Note that this state is independent of whether subtree-visibility: invisible
+  Note that this state is independent of whether content-visibility: invisible
   property applies to the element. See below for more information.
-* **subtree-visibility**: this is an alternative feature name. It refers to the CSS
-  property `subtree-visibility` which can take several values in order to lock an
+* **content-visibility**: this is an alternative feature name. It refers to the CSS
+  property `content-visibility` which can take several values in order to lock an
   element.
-  * `subtree-visibility: auto`: this refers to the fact that this
+  * `content-visibility: auto`: this refers to the fact that this
     element's locked state is being managed by the user-agent.  Specifically,
     the user-agent will unlock elements as they approach the viewport and lock
     them as they move away from the viewport. Locked content is discoverable by
     user-agent algorithms which may bring the element into view, causing it to
     be unlocked. This configuration is in the initial proposal.
-  * `subtree-visibility: hidden`: this refers to the
+  * `content-visibility: hidden`: this refers to the
     fact that the subtree is locked and the user-agent will not manage the
     state. The content is not discoverable by any user-agent algorithms.
     This configuration is in the initial proposal.
-  * `subtree-visibility: hidden-matchable`: this refers to the
+  * `content-visibility: hidden-matchable`: this refers to the
     fact that the subtree is locked and the user-agent will not manage the
     state. The content is, however, discoverable by user-agent algorithms, which
     may fire events with targets in the locked subtree.
@@ -48,10 +48,10 @@ with possibly out-of-date explainers.
 This is a list of algorithms that can bring an element into view or otherwise
 cause the user-agent to unlock the elements. Note that unless explicitly stated
 otherwise, the language below uses 'unlock' as the action since that is the
-action is performed on a `subtree-visibility: auto` element. However, it should
-be understood that for `subtree-visibility: hidden-matchable` the action is
+action is performed on a `content-visibility: auto` element. However, it should
+be understood that for `content-visibility: hidden-matchable` the action is
 instead to fire an event while keeping the element locked. Similarly, for
-`subtree-visibility: hidden`, the action is similar to that of a `display: none`
+`content-visibility: hidden`, the action is similar to that of a `display: none`
 subtree (although the subtree in this case has layout boxes which can be queried
 by script).
 
@@ -62,19 +62,19 @@ by script).
 ### Selection
 * When content (text, image, etc) in a locked subtree gets selected, all of the
   content's locked ancestors will be unlocked. Note that this only applies to
-  `subtree-visibility: auto` configuration; other configurations pay no special
+  `content-visibility: auto` configuration; other configurations pay no special
   attention to selection.
 
 ### Sequential/tab-order focus navigation
 * When an element is focused by sequential focus navigation (forward or backward),
   the locked ancestors of the focused element will be unlocked. Note that this
-  only applies to `subtree-visibility: auto` configuration. other configurations
+  only applies to `content-visibility: auto` configuration. other configurations
   pay no special attention to sequential focus navigation.
 
 ### Find-in-page
 * Find-in-page will find text even in locked subtrees if the configuration
   allows for it. The active or main match will cause all of its locked ancestors
-  to be unlocked. Tentative design decision: for `subtree-visibility:
+  to be unlocked. Tentative design decision: for `content-visibility:
   hidden-matchable` cases, the find-in-page algorithm, upon finding an
   active match in a locked subtree, will issue a signal and
   yield until script had a chance to react to the signal. At this time, the
@@ -83,7 +83,7 @@ by script).
   matches outside of the current locked root.
 
 ### Accessibility
-* Subtrees in the `subtree-visibility: auto` configuration are included in the
+* Subtrees in the `content-visibility: auto` configuration are included in the
   accessibility tree. Subtrees in other configurations are omitted. Note that
   there may be other ways of bringing the content into view from accessibility
   technology.  These algorithms should, for the most part, behave consistently
@@ -108,12 +108,8 @@ by script).
 
 ## Current status (Chromium)
 
-* Currently implemented with the previous name, `render-subtree` available
-  behind the CSSRenderSubtree flag.
+* Currently implemented in Chromium behind a CSSSubtreeVisibility flag, using
+  the previous name `subtree-visibility` which will be updated shortly.
 
-  * Note that the sample code in this repo still uses `render-subtree`. It will
-    be updated ASAP.
-
-* contain-intrinsic-size is implemented; enabled by CSSIntrinsicSize runtime
-  flag.
+* contain-intrinsic-size is implemented and shipped.
 
