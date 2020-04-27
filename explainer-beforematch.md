@@ -3,7 +3,7 @@
 ### Summary (TL;DR)
 
 The `beforematch` event allows developers to display content to the user in
-response to to find-in-page or fragment navigation actions. It is fired just
+response to find-in-page or fragment navigation actions. It is fired just
 before these actions, and at render timing. The applicable actions are the
 following:
 
