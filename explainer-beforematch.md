@@ -95,6 +95,11 @@ relevant sections. For instance, navigating to
 observing the `beforematch` event for that section as a result of the
 scroll-to-text fragment navigation match.
 
+One possible real-world application of this is the collapsed sections on mobile
+wikipedia pages. find-in-page and scroll-to-text currently can't find text inside
+of the collapsed sections, but with beforematch and content-visibility they
+could be searchable and automatically expanded.
+
 Also note that developer adoption of the `beforematch` event in these use-cases should be
 straight-forward, since the typical page that provides content in collapsed
 sections already has an event handler to expand and show the section. With the
