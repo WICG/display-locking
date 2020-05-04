@@ -149,7 +149,7 @@ addition to the user-agent highlighting the found match.
 
 ### Privacy Concerns
 
-Note that this event exposes more information to the page that would otherwise
+Note that this event exposes more information to the page than would otherwise
 be available. In particular, the page can know which section of text was found
 using find-in-page, fragment navigation, and scroll-to-text navigation.
 
