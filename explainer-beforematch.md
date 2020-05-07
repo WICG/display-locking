@@ -3,21 +3,28 @@
 ### Summary (TL;DR)
 
 The `beforematch` event allows developers to display content to the user in
-response to find-in-page or fragment navigation actions. It is fired just
-before these actions, and at render timing. The applicable actions are the
-following:
+response to actions which scroll the page to a target element. It is fired
+at render timing just before these actions scroll the page. The applicable
+actions are the following:
 
-* There is a new find-in-page active match, in which case the event is fired
-  with the matched element as the target.
-* There is a fragment-link navigation, in which case the event is fired with
-  the matched fragment as the target.
-* There is a scroll-to-text navigation, in which case the event is fired with
+* There is a new find-in-page (ctrl+f) active match, in which case the event
+  is fired with the matched element as the target.
+* There is an element fragment navigation (`example.com/#foo`) or the fragment
+  is changed by script (`window.location.hash = ...`), in which case the event
+  is fired with the matched element as the target.
+* There is a [scroll-to-text](https://github.com/WICG/ScrollToTextFragment)
+  navigation (`example.com/#:~:text=foo`), in which case the event is fired with
   the matched element as the target.
 
 Note that the 'matched element' in this document refers to one of the following:
-* the element that contains the text which was matched by find-in-page or
-  scroll-to-text navigation.
-* the element which was selected for the fragment link navigation.
+* In the find-in-page and scroll-to-text cases: The closest block-level ancestor
+  element in the flat tree containing the matching text.
+  If the match spans multiple block-level elements, then the first block-level
+  element is used.
+  Since the flat tree is used to determine the element to fire the event on,
+  shadow boundaries have no impact.
+* In the element fragment case: The element which was selected by id from the
+  fragment.
 
 The use case for this event is to allow developers to help users find hidden
 content on the page. Hidden content includes collapsed sections via clipping,
