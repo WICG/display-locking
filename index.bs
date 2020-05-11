@@ -15,6 +15,10 @@ Abstract: This spec introduces a content-visibility CSS property, allowing autho
           content perform well.
 </pre>
 
+ISSUE: Note that we're in the process of migrating this spec draft to CSSWG
+        Drafts: <a href="https://drafts.csswg.org/css-contain-2/#content-visibility">https://drafts.csswg.org/css-contain-2/#content-visibility</a>.
+        Any issues should be filed against the csswg-drafts spec.
+
 Introduction {#intro}
 ============
 

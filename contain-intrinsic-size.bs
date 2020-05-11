@@ -31,7 +31,7 @@ specify a size that replaces the intrinsic size when [=size containment=] is
 specified. This means that [=size containment=] can be toggled on and off, with
 the element either considering the specified value or its children for
 intrinsic sizing. This is particularly helpful for features such as <a
-href="https://wicg.github.io/display-locking/">''subtree-visibility''</a>, which
+href="https://drafts.csswg.org/css-contain-2/#content-visibility">''content-visibility''</a>, which
 can apply [=size containment=] automatically.
 
 The 'contain-intrinsic-size' property {#contain-intrinsic-size}

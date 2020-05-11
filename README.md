@@ -26,7 +26,7 @@ The following use-cases motivate this work:
 
 ## Quick links
 
-* [`content-visibility` spec draft](https://wicg.github.io/display-locking/index.html)
+* [`content-visibility` spec draft](https://drafts.csswg.org/css-contain-2/#content-visibility)
 * [`contain-intrinsic-size` explainer](https://github.com/WICG/display-locking/blob/master/explainer-contain-intrinsic-size.md)
 * [`beforematch` explainer](https://github.com/WICG/display-locking/blob/master/explainer-beforematch.md)
 
