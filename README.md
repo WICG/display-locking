@@ -1,7 +1,7 @@
 # Display locking
 
 <div style="background: #ffffcc; border: 1px solid #ccc; padding: 20px;">
-Note that this feature should not be confused with <a href="https://github.com/w3c/screen-wake-lock/">Screen Wake Lock API</a>
+Note that this feature should not be confused with the <a href="https://github.com/w3c/screen-wake-lock/">Screen Wake Lock API</a>
 </div>
 
 ## Introduction
