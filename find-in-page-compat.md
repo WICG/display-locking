@@ -1,10 +1,3 @@
-<style>
-img {
-  box-shadow: 2px 2px 5px 3px grey;
-  width: 400px;
-}
-</style>
-
 # Find-in-page compatibility across browsers
 
 This page documents similarities and differences across browsers when using the browser find-in-page UI in different situations.
@@ -55,21 +48,21 @@ Searching for "onetwo" without quotes.
 
 #### Chrome results
 
-<img src="resources/find-in-page/display_types_chrome.png"></img>
+<img style="box-shadow: 2px 2px 5px 3px grey;width: 400px;" src="resources/find-in-page/display_types_chrome.png"></img>
 
 Chrome finds text in separate inlines, and when the second word is an inline
 sibling of the first. It does not find the text in any other cases.
 
 #### Firefox results
 
-<img src="resources/find-in-page/display_types_firefox.png"></img>
+<img style="box-shadow: 2px 2px 5px 3px grey;width: 400px;" src="resources/find-in-page/display_types_firefox.png"></img>
 
 Firefox finds text in separate inlines, separate inline-blocks, and
 corresponding sibling tests. It does not find text across blocks.
 
 #### Safari results
 
-<img src="resources/find-in-page/display_types_safari.png"></img>
+<img style="box-shadow: 2px 2px 5px 3px grey;width: 400px;" src="resources/find-in-page/display_types_safari.png"></img>
 
 Safari finds text in separate inlines, separate inline-blocks, and
 corresponding sibling tests. It does not find text across blocks. Note that
@@ -120,7 +113,7 @@ Searching for "target" without quotes.
 
 #### Chrome results
 
-<img src="resources/find-in-page/visibility_chrome.png"></img>
+<img style="box-shadow: 2px 2px 5px 3px grey;width: 400px;" src="resources/find-in-page/visibility_chrome.png"></img>
 
 Chrome finds text in opacity: 0 and opacity: 0.01 cases. It does not find
 results in other cases. The matches are scrolled into view, but the highlights
@@ -128,7 +121,7 @@ are not visible.
 
 #### Firefox results
 
-<img src="resources/find-in-page/visibility_firefox.png"></img>
+<img style="box-shadow: 2px 2px 5px 3px grey;width: 400px;" src="resources/find-in-page/visibility_firefox.png"></img>
 
 Firefox finds text in opacity: 0 and opacity: 0.01 cases. It does not find
 results in other cases. The matches are scrolled into view but the highlights
@@ -136,7 +129,7 @@ are not visible.
 
 #### Safari results
 
-<img src="resources/find-in-page/visibility_safari.png"></img>
+<img style="box-shadow: 2px 2px 5px 3px grey;width: 400px;" src="resources/find-in-page/visibility_safari.png"></img>
 
 Safari finds text in opacity: 0 and opacity: 0.01 cases. It does not find
 results in other cases. The matches are scrolled into view and the highlight is
@@ -176,21 +169,21 @@ Searching for "target" without quotes.
 
 #### Chrome results
 
-<img src="resources/find-in-page/overflow_hidden_chrome.png"></img>
+<img style="box-shadow: 2px 2px 5px 3px grey;width: 400px;" src="resources/find-in-page/overflow_hidden_chrome.png"></img>
 
 Chrome finds the match, and scrolls the page to where the match would have been
 if it was visible. Neither the match nor the highlight are visible.
 
 #### Firefox results
 
-<img src="resources/find-in-page/overflow_hidden_firefox.png"></img>
+<img style="box-shadow: 2px 2px 5px 3px grey;width: 400px;" src="resources/find-in-page/overflow_hidden_firefox.png"></img>
 
 Firefox finds the match, and scrolls the page to where the match would have
 been if it was visible. Neither the match nor the highlight are visible.
 
 #### Safari results
 
-<img src="resources/find-in-page/overflow_hidden_safari.png"></img>
+<img style="box-shadow: 2px 2px 5px 3px grey;width: 400px;" src="resources/find-in-page/overflow_hidden_safari.png"></img>
 
 Safari finds the match, it scrolls the overflow: hidden container's contents to
 expose the match, and it scrolls the page to expose the container. Both the
@@ -230,7 +223,7 @@ Searching for "target" without quotes.
 
 #### Chrome results
 
-<img src="resources/find-in-page/overflow_auto_chrome.png"></img>
+<img style="box-shadow: 2px 2px 5px 3px grey;width: 400px;" src="resources/find-in-page/overflow_auto_chrome.png"></img>
 
 Chrome finds the match, it scrolls the overflow: auto container's contents to
 expose the match, and it scrolls the page to expose the container. Both the
@@ -238,7 +231,7 @@ match and the highlight are visible.
 
 #### Firefox results
 
-<img src="resources/find-in-page/overflow_auto_firefox.png"></img>
+<img style="box-shadow: 2px 2px 5px 3px grey;width: 400px;" src="resources/find-in-page/overflow_auto_firefox.png"></img>
 
 Firefox finds the match, it scrolls the overflow: auto container's contents to
 expose the match, and it scrolls the page to expose the container. Both the
@@ -246,7 +239,7 @@ match and the highlight are visible.
 
 #### Safari results
 
-<img src="resources/find-in-page/overflow_auto_safari.png"></img>
+<img style="box-shadow: 2px 2px 5px 3px grey;width: 400px;" src="resources/find-in-page/overflow_auto_safari.png"></img>
 
 Safari finds the match, it scrolls the overflow: auto container's contents to
 expose the match, and it scrolls the page to expose the container. Both the
@@ -299,20 +292,20 @@ Searching for "target" without quotes.
 
 #### Chrome results
 
-<img src="resources/find-in-page/occlusion_chrome.png"></img>
+<img style="box-shadow: 2px 2px 5px 3px grey;width: 400px;" src="resources/find-in-page/occlusion_chrome.png"></img>
 
 Chrome finds occluded matches. Neither the highlight nor the match are visible.
 
 #### Firefox results
 
-<img src="resources/find-in-page/occlusion_firefox.png"></img>
+<img style="box-shadow: 2px 2px 5px 3px grey;width: 400px;" src="resources/find-in-page/occlusion_firefox.png"></img>
 
 Firefox finds occluded matches. Neither the highlight nor the match are
 visible.
 
 #### Safari results
 
-<img src="resources/find-in-page/occlusion_safari.png"></img>
+<img style="box-shadow: 2px 2px 5px 3px grey;width: 400px;" src="resources/find-in-page/occlusion_safari.png"></img>
 
 Safari finds occluded matches. The highlight is always visible. Furthermore,
 when the match is the active match, the matched text is also visible on top of
