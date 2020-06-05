@@ -61,7 +61,7 @@ observations.
 
 ### Use Cases
 
-#### Example 1
+#### Example 1: Expanding `hidden-matchable`
 ```html
 <style>
 .collapsed {
@@ -84,6 +84,10 @@ document.querySelectorAll(".collapsed").forEach(item => {
 });
 </script>
 ```
+
+![example1 1](images/example1-1.png)
+![example1 2](images/example1-2.png)
+![example1 3](images/example1-3.png)
 
 In this example, most of the content of the page is hidden in collapsed sections.
 It uses the upcoming `content-visibility` CSS property to hide the
@@ -112,7 +116,7 @@ straight-forward, since the typical page that provides content in collapsed
 sections already has an event handler to expand and show the section. With the
 `beforematch` event, we can reuse the same handler to expand the section.
 
-#### Example 2
+#### Example 2: Animating matches
 
 ```html
 <style>
@@ -153,6 +157,24 @@ any related style or DOM based on the target's location.
 
 The highlighting, and any other effect added by the developer, happens in
 addition to the user-agent highlighting the found match.
+
+#### Example 3: Expanding `<details>`
+
+```html
+<details id=details>
+  <summary>Click or search to expand</summary>
+  Hidden inner text
+</details>
+
+<script>
+details.addEventListener('beforematch', () => details.open = true);
+</script>
+```
+
+In this example, the beforematch event opens the `<details>` element to reveal
+the text the user was searching for. In the existing behavior without
+beforematch, it isn't possible to search for text inside a closed `<details>`
+element.
 
 ### Privacy Concerns
 
