@@ -67,20 +67,39 @@ observations.
 .collapsed {
   content-visibility: hidden-matchable;
 }
+.title-collapsed::before {
+  content: '➡';
+}
+.title-open::before
+  content: '⬇';
+}
 </style>
 
 Please explore the following sections:
-<h1>Introduction</h1> <div class=collapsed>lorem ipsum ...</div>
-<h1>Thesis</h1>       <div class=collapsed>dolor sit amet ...<div>
-<h1>Conclusion</h1>   <div class=collapsed>consectetur adipiscing ...</div>
+<div class=section>
+  <h1 class="title-collapsed">Introduction</h1>
+  <div class=collapsed>lorem ipsum ...</div>
+</div>
+
+<div class=section>
+  <h1 class="title-collapsed">Thesis</h1>
+  <div class=collapsed>dolor sit amet ...<div>
+</div>
+
+<div class=section>
+  <h1 class="title-collapsed">Conclusion</h1>
+  <div class=collapsed>consectetur adipiscing ...</div>
+</div>
 
 <script>
-function expand(e) {
-  e.target.classList.remove("collapsed");
-}
-
-document.querySelectorAll(".collapsed").forEach(item => {
-  item.addEventListener("beforematch", expand);
+document.querySelectorAll('.section').forEach(section => {
+  const title = section.querySelector('.title-collapsed');
+  const hiddenContent = section.querySelector('.collapsed');
+  section.addEventListener('beforematch', () => {
+    hiddenContent.classList.remove('collapsed');
+    title.classList.remove('title-collapsed');
+    title.classList.add('title-open');
+  });
 });
 </script>
 ```
@@ -309,6 +328,81 @@ to take up. This should probably not scroll at all instead, and hopefully won't
 scroll after adding an async step.
 5. **content-visibility: hidden-matchable -> visible**: find-in-page scrolls to
 to the revealed text.
+
+### Alternatives
+Given the purpose of displaying `content-visibility: hidden-matchable` text
+when it is searched for, there are a number of alternatives we have considered.
+
+#### Automatic Unlocking
+`content-visibility: hidden-matchable` text would automatically become visible
+when searched for by adding an internal flag to the `hidden-matchable` element
+saying that it has been "unlocked."
+##### Pros
+* Provides the desired behavior without the need for the web developer to do
+  anything besides use the `hidden-matchable` value.
+* Since there is no event causing script to run, the interaction and scrolling
+  occurs entirely within the browser, which guarantees that we can scroll to
+  the element without complications.
+##### Cons
+* Doesn't allow the developer to change other properties in conjunction with
+  displaying hidden content. For example, in "Example 1: Expanding
+  `hidden-matchable`," automatic unlocking wouldn't be able to change the
+  style of the `<h1>` title elements.
+* Doesn't allow "unlocked" `hidden-matchable` content to become hidden again,
+  which could get confusing.
+* Automatic unlocking and adding internal hidden state to track unlocked
+  `hidden-matchable` sections gets complicated and confusing in the browser.
+
+#### Automatic Unlocking without internal state
+`content-visibility: hidden-matchable` text would automatically be changed
+to `content-visibility: visible` by modifying `element.style` when text inside
+it has been searched for.
+##### Pros
+* Same pros as "Automatic Unlocking."
+* Don't need to maintain internal state in the browser.
+* If a developer knows how it works, they can change the style back to
+  `content-visibility: hidden-matchable`.
+##### Cons
+* May require modifying `element.style` of multiple elements.
+* If script later modifies `element.style`, then the matching text would become
+  invisible again. In general, having the browser change DOM or style like this
+  isn't a good idea because it would be likely to clash with how the page is
+  maintaining the same state.
+
+#### Automatic Unlocking with activation event
+This is like "Automatic Unlocking," but with an added "activation" event emitted
+when content is displayed to allow developers to change other state and styles
+if needed.
+##### Pros
+* Same pros as "Automatic Unlocking."
+* Allows other script state and styles to be changed when content is displayed.
+##### Cons
+* Doesn't allow "unlocked" `hidden-matchable` content to become hidden again,
+  which could get confusing.
+* Automatic unlocking and adding internal hidden state to track unlocked
+  `hidden-matchable` sections gets complicated and confusing in the browser.
+
+#### CSS Pseudo Selector
+A pseudo selector, such as `:target`, would be applied to the element
+containing the matching text when it is searched for. This pseudo selector
+could be applied to the entire ancestor chain.
+##### Pros
+* Allows content to become visible when searched for with only CSS.
+* Allows other styles to be changed when the content is displayed.
+##### Cons
+* If CSS with a pseudo selector is used to make text visible, then when
+  find-in-page is closed or the search text changes, the pseudo selector would
+  be removed and then any selector which is displaying the text based on that
+  pseudo selector would not apply, causing the expanded section to unexpectedly
+  collapse.
+* There is no way in CSS to say "change my style if a descendant has a pseudo
+  class on it." For this reason, developers would be unable to change styles
+  outside of the particular element that has the matching text, which would
+  make the functionality of "Example 1: Expanding `hidden-matchable`" not
+  possible. Although this could be mitigated for some cases by applying the
+  pseudo selector to the entire ancestor chain, it can be complicated or
+  impossible to provide the right selector which can modify a style on an
+  unrelated element.
 
 ### Footnotes
 
