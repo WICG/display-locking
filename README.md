@@ -1,7 +1,8 @@
 # Display locking
 
 <div style="background: #ffffcc; border: 1px solid #ccc; padding: 20px;">
-Note that this feature should not be confused with the <a href="https://github.com/w3c/screen-wake-lock/">Screen Wake Lock API</a>
+Note that this feature should not be confused with the
+<a href="https://github.com/w3c/screen-wake-lock/">Screen Wake Lock API</a>.
 </div>
 
 ## Introduction
@@ -20,7 +21,7 @@ projects with links that provide additional information.
 
 #### Summary
 
-`content-visibility is a CSS property designed to allow developers and browsers
+`content-visibility` is a CSS property designed to allow developers and browsers
 to easily scale to large amount of content and control when rendering work
 happens.
 
@@ -28,8 +29,8 @@ happens.
 
 The spec draft for the feature is in a mature state.
 
-The feature is currently implemented in Chromium M85 behind a
---enable-blink-features=CSSContentVisibility flag.
+The feature is currently implemented in Chromium M85 behind the
+`--enable-blink-features=CSSContentVisibility` flag.
 
 #### Additional information
 
@@ -54,14 +55,14 @@ feature as well as the `beforematch` event. The explainer outlines the target
 use-cases, but neither the spec draft nor the TAG review are available at this
 time.
 
-This is currently implemented in Chromium M85 behind a
---enable-blink-features=CSSContentVisibilityHiddenMatchable flag.
+This is currently implemented in Chromium M85 behind the
+`--enable-blink-features=CSSContentVisibilityHiddenMatchable` flag.
 
 #### Additional information
 
-* spec draft -- not yet available.
+* spec draft — not yet available.
 * [explainer](https://github.com/WICG/display-locking/blob/master/explainers/content-visibility-hidden-matchable.md)
-* TAG review -- not yet available.
+* TAG review — not yet available.
 
 ### `contain-intrinsic-size`
 
@@ -90,6 +91,7 @@ The feature is currently implemented and shipped in Chromium M83.
 #### Summary
 
 `beforematch` is an event which is fired under one of the following conditions:
+
 * There has been a find-in-page request with the matching text found inside the
     target element.
 * There has been a scroll-to-text navigation with the text being found inside
@@ -106,15 +108,14 @@ as it allows searchability inside otherwise hidden content.
 The exact requirements and the design of this feature is still being discussed.
 
 The feature is under development in Chromium M85 and is available behind the
---enable-blink-features=BeforeMatchEvent flag.
+`--enable-blink-features=BeforeMatchEvent` flag.
 
 #### Additional information
 
-* spec draft -- not yet available
+* spec draft — not yet available
 * [explainer](https://github.com/WICG/display-locking/blob/master/explainers/beforematch.md)
 * [TAG review](https://github.com/w3ctag/design-reviews/issues/511)
 * [privacy assessment](https://github.com/WICG/display-locking/blob/master/privacy-assessments/beforematch.md)
-
 
 ## Disclaimer
 
