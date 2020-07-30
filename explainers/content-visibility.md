@@ -1,6 +1,6 @@
 ## content-visibility
 
-`content-visibility is a CSS property designed to allow developers and browsers
+`content-visibility` is a CSS property designed to allow developers and browsers
 to easily scale to large amount of content and control when rendering
 [\[1\]](#foot-notes) work happens. More concretely, the goals is to avoid
 rendering and layout measurement work for content not visible to the user.
