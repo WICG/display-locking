@@ -404,6 +404,79 @@ could be applied to the entire ancestor chain.
   impossible to provide the right selector which can modify a style on an
   unrelated element.
 
+#### `<details>`/`<summary>` auto-expanding
+Instead of having a generic hidden-matchable property or a specialized
+beforematch event, we could just slightly tweak the `<details>` element to make
+collapsed content searchable. This addresses most of the use cases we have seen
+for the beforematch event, and the details element already has a toggle event
+which would act like the beforematch event. This could be implemented either by
+adding an attribute to the details element saying that the collapsed content
+should be searchable, or just by making it searchable as-is because find-in-page
+is not specced.
+```html
+<details searchable id=mydetails>
+  <summary>Persistent summary content</summary>
+  Hidden searchable details content
+</details>
+<script>
+  mydetails.addEventListener('toggle', () => {
+    // change other state, fancy animation, etc...
+  });
+</script>
+```
+##### Pros
+* Requires less work and less stuff added to the web platform.
+* Exposes less information about find-in-page to the page, which improves
+  privacy.
+* Lets the browser handle updating style and scrolling, so there would be no
+  need to implement async scrolling to work around use cases with scrolling
+  to expanded content.
+##### Cons
+* Doesn't handle every use case. Not every collapsed section of content has an
+  associated persistent summary view, such as hidden parts of virtual scrollers.
+* Rather than making a powerful primitive for the web platform like beforematch,
+  this would provide a narrowly scoped complete feature to the web.
+
+#### Only fire beforematch on a hidden-matchable element attribute
+Instead of having `content-visibility: hidden-matchable` and a separate
+`beforematch` event that fires whenever text is searched for, we could have
+a `hidden-matchable` element attribute which would function like the
+`content-visibility: hidden-matchable` css property. By having an element
+attribute instead of a css property, we could have the browser reveal the
+content and scroll on its own by removing the `hidden-matchable` attribute
+instead of needing to have script to do so. We would also only fire
+`beforematch` on the element with the `hidden-matchable` property as soon as it
+is revealed, rather than firing the event on the nearest block-level element
+every time any text is searched for.
+```html
+<div hidden-matchable id=mydiv>
+  hidden searchable content
+</div>
+<script>
+  mydiv.addEventListener('beforematch', () => {
+    // change other state, fancy animation, etc...
+  });
+</script>
+```
+##### Pros
+* Simple use cases won't require any script to reveal content.
+* Exposes less information about find-in-page to the page, which improves
+  privacy.
+* Lets the browser handle updating style and scrolling, so there would be no
+  need to implement async scrolling to work around use cases with scrolling
+  to expanded content.
+##### Cons
+* Couples the `beforematch` event with `hidden-matchable`. Both of them would
+  need to be shipped together, since `beforematch` would only fire on
+  `hidden-matchable` elements.
+* Doesn't allow for `beforematch` to be used for use cases outside of hidden
+  content, but if it is determined that `beforematch` reveals too much
+  information to the page then this would be necessary.
+  Alternatively, we could still fire `beforematch` on everything we scroll to
+  during find-in-page/ScrollToTextFragment and keep the `hidden-matchable` as
+  an attribute idea which would still keep the Pros of not needing script for
+  a big use case and letting the browser revealing and scrolling.
+
 ### Footnotes
 
 **Hidden but matchable** content refers to an idea that although some content
