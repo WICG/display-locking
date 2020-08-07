@@ -413,6 +413,17 @@ which would act like the beforematch event. This could be implemented either by
 adding an attribute to the details element saying that the collapsed content
 should be searchable, or just by making it searchable as-is because find-in-page
 is not specced.
+```html
+<details searchable id=mydetails>
+  <summary>Persistent summary content</summary>
+  Hidden searchable details content
+</details>
+<script>
+  mydetails.addEventListener('toggle', () => {
+    // change other state, fancy animation, etc...
+  });
+</script>
+```
 ##### Pros
 * Requires less work and less stuff added to the web platform.
 * Exposes less information about find-in-page to the page, which improves
@@ -437,6 +448,16 @@ instead of needing to have script to do so. We would also only fire
 `beforematch` on the element with the `hidden-matchable` property as soon as it
 is revealed, rather than firing the event on the nearest block-level element
 every time any text is searched for.
+```html
+<div hidden-matchable id=mydiv>
+  hidden searchable content
+</div>
+<script>
+  mydiv.addEventListener('beforematch', () => {
+    // change other state, fancy animation, etc...
+  });
+</script>
+```
 ##### Pros
 * Simple use cases won't require any script to reveal content.
 * Exposes less information about find-in-page to the page, which improves
