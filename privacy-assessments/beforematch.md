@@ -150,6 +150,9 @@ No attacks have been deemed out of scope.
 
 However, find-in-page attacks may already be possible due to the fact that pages can already intercept ctrl+f and already have the power to spoof the functionality and appearance of the browser's native find-in-page. In fact, doing this may be even easier and more reliable than using beforematch to extract the user's search text.
 
+Another find-in-page attack which may already be possible is listening to selection events. In Chrome, when the find-in-page dialog is closed, the target text gets selected and fires a selection event. By listening for ctrl+f and then looking at the next selection event, the page could see exactly what the user searched for if there is a match.
+In Firefox, this selection event is fired every time matching text is found, not just when the dialog is closed, allowing the page to see each character that the user is typing if there is a match.
+
 For the ScrollToTextFragment case, you can already figure out what block-level element containing the search result was by looking at the element with the :target pseudo selector.
 
 ### 3. What privacy mitigations have been implemented?
