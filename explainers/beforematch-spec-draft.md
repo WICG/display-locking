@@ -16,11 +16,11 @@ range must not be [collapsed](https://dom.spec.whatwg.org/#range-collapsed).
 2. At the next rendering opportunity, specifically step 12 of [Update the
 rendering](https://html.spec.whatwg.org/#rendering-opportunity) step:
 
-  2.1. If the range that constitutes match _M_ is
-      [collapsed](https://dom.spec.whatwg.org/#range-collapsed), restart the
-      algorithm at Step 1.
+      2.1. If the range that constitutes match _M_ is
+        [collapsed](https://dom.spec.whatwg.org/#range-collapsed), restart the
+        algorithm at Step 1.
 
-  2.2. Fire a `beforematch` event on an element identified by _M_'s range start node.
+      2.2. Fire a `beforematch` event on an element identified by _M_'s range start node.
 
 3. If the event fired in Step 2.2 was handled by any beforematch handler, then
 delay Step 4 until the next rendering opportunity (the next Step 12 of [Update the
