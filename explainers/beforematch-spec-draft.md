@@ -35,7 +35,7 @@ rendering](https://html.spec.whatwg.org/#rendering-opportunity)):
       3.2 Scroll the range start node of match _M_ into view, following the same
       algorithm as if
       [`scrollIntoView()`](https://drafts.csswg.org/cssom-view/#dom-element-scrollintoview)
-      as invoked on that node.
+      was invoked on that node.
 
 # content-visibility: hidden-matchable
 
@@ -44,6 +44,7 @@ _These changes will likely go into the
 module_.
 
 'hidden-matchable': 
+
   This value behaves very similarly to 'hidden'.
   That is, the element [skips its contents](https://www.w3.org/TR/css-contain-2/#skips-its-contents).
 
