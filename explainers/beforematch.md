@@ -289,7 +289,7 @@ will scroll to it.
 element. If there is a second match which was not modified, ScrollToTextFragment
 will scroll to it.
 5. **content-visibility: hidden-matchable -> visible**: ScrollToTextFragment
-will scroll to the unlocked text.
+will scroll to the revealed text.
 
 #### ElementFragment
 This is the behavior both when navigating to a page with an element fragment in
@@ -333,10 +333,11 @@ to the revealed text.
 Given the purpose of displaying `content-visibility: hidden-matchable` text
 when it is searched for, there are a number of alternatives we have considered.
 
-#### Automatic Unlocking
+#### Automatic Revealing
 `content-visibility: hidden-matchable` text would automatically become visible
 when searched for by adding an internal flag to the `hidden-matchable` element
-saying that it has been "unlocked."
+saying that it has been revealed.
+This used to be implemented as a prior iteration of this feature.
 ##### Pros
 * Provides the desired behavior without the need for the web developer to do
   anything besides use the `hidden-matchable` value.
@@ -346,19 +347,23 @@ saying that it has been "unlocked."
 ##### Cons
 * Doesn't allow the developer to change other properties in conjunction with
   displaying hidden content. For example, in "Example 1: Expanding
-  `hidden-matchable`," automatic unlocking wouldn't be able to change the
+  `hidden-matchable`," automatic revealing wouldn't be able to change the
   style of the `<h1>` title elements.
-* Doesn't allow "unlocked" `hidden-matchable` content to become hidden again,
-  which could get confusing.
-* Automatic unlocking and adding internal hidden state to track unlocked
-  `hidden-matchable` sections gets complicated and confusing in the browser.
+* Doesn't allow script to make the `hidden-matchable` content hidden again once
+  it has been revealed since the flag saying that is has been revealed is
+  internal to the browser. This doesn't allow for use cases where the
+  `hidden-matchable` content looks similar to a details element with a button
+  that runs script to reveal and collapse the content.
+* Automatic revealing and adding internal hidden state to track revealed
+  `hidden-matchable` sections gets complicated and confusing in the browser
+  implementation.
 
-#### Automatic Unlocking without internal state
+#### Automatic Revealing without internal state
 `content-visibility: hidden-matchable` text would automatically be changed
 to `content-visibility: visible` by modifying `element.style` when text inside
 it has been searched for.
 ##### Pros
-* Same pros as "Automatic Unlocking."
+* Same pros as "Automatic Revealing."
 * Don't need to maintain internal state in the browser.
 * If a developer knows how it works, they can change the style back to
   `content-visibility: hidden-matchable`.
@@ -369,18 +374,22 @@ it has been searched for.
   isn't a good idea because it would be likely to clash with how the page is
   maintaining the same state.
 
-#### Automatic Unlocking with activation event
-This is like "Automatic Unlocking," but with an added "activation" event emitted
+#### Automatic Revealing with activation event
+This is like "Automatic Revealing," but with an added "activation" event emitted
 when content is displayed to allow developers to change other state and styles
 if needed.
 ##### Pros
-* Same pros as "Automatic Unlocking."
+* Same pros as "Automatic Revealing."
 * Allows other script state and styles to be changed when content is displayed.
 ##### Cons
-* Doesn't allow "unlocked" `hidden-matchable` content to become hidden again,
-  which could get confusing.
-* Automatic unlocking and adding internal hidden state to track unlocked
-  `hidden-matchable` sections gets complicated and confusing in the browser.
+* Doesn't allow script to make the `hidden-matchable` content hidden again once
+  it has been revealed since the flag saying that is has been revealed is
+  internal to the browser. This doesn't allow for use cases where the
+  `hidden-matchable` content looks similar to a details element with a button
+  that runs script to reveal and collapse the content.
+* Automatic revealing and adding internal hidden state to track revealed
+  `hidden-matchable` sections gets complicated and confusing in the browser
+  implementation.
 
 #### CSS Pseudo Selector
 A pseudo selector, such as `:target`, would be applied to the element
