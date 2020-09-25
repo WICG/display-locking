@@ -26,10 +26,9 @@ Note that the 'matched element' in this document refers to one of the following:
 * In the element fragment case: The element which was selected by id from the
   fragment.
 
-The use case for this event is to allow developers to help users find hidden
-content on the page. Hidden content includes collapsed sections via clipping,
-`visibility: hidden` subtrees, and [`content-visibility:
-hidden-matchable`](https://github.com/WICG/display-locking) subtrees.
+The use case for this event is to enable developers to help users find content
+on the page which is hidden with [`content-visibility:
+hidden-matchable`](https://github.com/WICG/display-locking).
 
 ### Motivation
 
