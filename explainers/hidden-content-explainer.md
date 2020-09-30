@@ -12,28 +12,21 @@ This is an explainer for two closely related features:
         hidden from the user (similar to `content-visibility: hidden`), but the
         content remains searchable via user-agent find-in-page algorithms.
 
-2. The `beforematch` event allows developers to display content to the user in
-    response to actions which scroll the page to a target element. It is fired
-    at render timing just before these actions scroll the page. The applicable
-    actions are the following:
+2. The `beforematch` event allows developers to display `hidden-matchable`
+    content to the user in response to searches which scroll the page to a
+    target element. It is fired at render timing before these actions scroll
+    the page. The applicable actions are the following:
     * There is a new find-in-page (ctrl+f) active match, in which case the event
-      is fired with the matched element as the target.
-    * There is an element fragment navigation (`example.com/#foo`) or the fragment
-      is changed by script (`window.location.hash = ...`), in which case the event
       is fired with the matched element as the target.
     * There is a [scroll-to-text](https://github.com/WICG/ScrollToTextFragment)
       navigation (`example.com/#:~:text=foo`), in which case the event is fired with
       the matched element as the target.
 
-Note that the 'matched element' in this document refers to one of the following:
-* In the find-in-page and scroll-to-text cases: The closest block-level ancestor
-  element in the flat tree containing the matching text.
-  If the match spans multiple block-level elements, then the first block-level
-  element is used.
-  Since the flat tree is used to determine the element to fire the event on,
-  shadow boundaries have no impact.
-* In the element fragment case: The element which was selected by id from the
-  fragment.
+Note that the 'matched element' in this document refers to the closest
+block-level ancestor element in the flat tree containing the matching text.
+If the match spans multiple block-level elements, then the first block-level
+element is used. Since the flat tree is used to determine the element to fire
+the event on, shadow boundaries have no impact.
 
 Note that the proposal for beforematch is still in review and is subject to
 change.
@@ -135,56 +128,45 @@ sections already has an event handler to expand and show the section. With the
 
 ### Privacy Concerns
 
-Note that the proposal is subject to change to alleviate some of the privacy
-concerns discussed below.
+The beforematch event could expose more information to the page than is
+currently exposed because it very directly hints to the text the user is
+searching for since it gets fired on the element containing the target text.
 
-Note that this event exposes more information to the page than would otherwise
-be available. In particular, the page can know which section of text was found
-using find-in-page, fragment navigation, and scroll-to-text navigation.
+Note that it is already possible to snoop on find-in-page by creating a very
+small scrollable area containing every next character the user could type into
+find-in-page, listening to scroll events to see which character the user typed
+in, then prepending the new character to all of the next possible search terms.
+This is demonstrated in
+[search-incremental.html](/resources/find-in-page/search-incremental.html).
 
-The developer may also be able to find out some information about what the user
-typed into a find-in-page dialog based on which elements receive an event.
-Likewise, for scroll-to-text navigation, the developer may be able to learn more
-about the content of the fragment search terms based on which section of the
-page receives an event.
+In order to mitigate the additional information that beforematch could expose to
+the page, we have added two constraints to when beforematch can be fired:
 
-We believe that the benefit of providing this information to the site outweighs
-the potential risks. Moreover, the lower granularity information can already be
-approximated from scroll position and intersection observerations on the page.
+1. The beforematch event will only be fired on `content-visibility:
+hidden-matchable` content. This removes the information delta
+of find-in-page on normal pages without hidden find-in-page snooping. Without
+constraint, a page could listen to beforematch events and get some
+idea of what you’re searching for within the text already in the page. Although
+a page could already try to do this by listening to scroll events and guessing
+which element was scrolled to, the beforematch event is a bit of a stronger and
+more accurate signal in this case. By firing beforematch only on
+hidden-matchable content, we eliminate this possibility.
 
-There are three cases to consider, each of which correspond to an action that
-caused the `beforematch` event to be fired:
-1. Find-in-page. The data typed into the search dialog for find-in-page is not
-   directly observable by the page. However, based on the `beforematch` event, the page
-   can infer that the searched text is within a particular element that received
-   the event. We believe that the risk of exposing this information to the page
-   is low:
-     * The granularity of information provided is low, since the event is
-       received by the containing element, and does not reveal the actual text
-       searched.
-     * Find-in-page shortcuts (such as CTRL-F) can already be intercepted by the
-       page, giving it opportunity to intercept user-typed "find-in-page"
-       requests and provide custom behavior.
-     * The position of the searched text can already be deduced by the page
-       based on scroll offsets and intersection observations.
-2. Scroll to text navigation. Depending on the implementation of scroll-to-text,
-   from the page's perspective the behavior is indistinguishable from
-   find-in-page behavior. This means that it reveals where the searched text is
-   located but not what it is. Furthemore, this information is only available to
-   the page using the `beforematch` event, and is not observable by any third
-   parties.
+2. If the page doesn’t reveal hidden-matchable content in response to a
+beforematch event, the beforematch event will not be fired for the remainder of
+the lifetime of the document. This will prevent the page from building out a
+string of what the user is searching for without having to reveal that string
+to the user visually. Although this is already possible as shown in
+[search-incremental.html](/resources/find-in-page/search-incremental.html),
+firing beforematch on hidden content that stays hidden would be harder for the
+user to notice.
 
-Some consideration needs to be given to the `beforematch` event when it comes to
-cross frame interactions. Specifically, if the matched information is found within
-a frame, should the signal propagate to the embedding page?
-
-In general, we believe that the `beforematch` event does not pose a privacy problem.
-However, the privacy aspect of the event should be discussed in more detail via
-formal security reviews.
+As for the ScrollToTextFragment case, the page can already guess with reasonable
+certainty based on the scroll offset which text is already highlighted.
 
 ### Responses to DOM and style changes in the `beforematch` event handler
 
-The scrolling behavior exhibited by find-in-page, and ScrollToTextFragment,
+The scrolling behavior exhibited by find-in-page and ScrollToTextFragment
 after style and DOM changes are made by `beforematch` event
 handlers is not well specified yet and is being discussed here: 
 https://github.com/WICG/display-locking/issues/150
