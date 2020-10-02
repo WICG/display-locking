@@ -56,50 +56,64 @@ currently possible.
 
 ### Primary Use Case: collapsed searchable sections
 ```html
+<!DOCTYPE html>
+<meta charset="utf-8">
+
 <style>
-.collapsed {
+.title {
+  cursor: pointer;
+}
+.title::before {
+  content: '⬇️ ';
+}
+.collapsed > .title::before {
+  content: '➡️ ';
+}
+
+.details {
+  margin-left: 20px;
+}
+.collapsed > .details {
   content-visibility: hidden-matchable;
-}
-.title-collapsed::before {
-  content: '➡';
-}
-.title-open::before
-  content: '⬇';
 }
 </style>
 
 Please explore the following sections:
-<div class=section>
-  <h1 class="title-collapsed">Introduction</h1>
-  <div class=collapsed>lorem ipsum ...</div>
+<div class="section collapsed">
+  <h2 class=title>Introduction</h1>
+  <div class=details>lorem ipsum ...</div>
 </div>
 
-<div class=section>
-  <h1 class="title-collapsed">Thesis</h1>
-  <div class=collapsed>dolor sit amet ...<div>
+<div class="section collapsed">
+  <h2 class=title>Thesis</h1>
+  <div class=details>dolor sit amet ...</div>
 </div>
 
-<div class=section>
-  <h1 class="title-collapsed">Conclusion</h1>
-  <div class=collapsed>consectetur adipiscing ...</div>
+<div class="section collapsed">
+  <h2 class=title>Conclusion</h1>
+  <div class=details>consectetur adipiscing ...</div>
 </div>
 
 <script>
 document.querySelectorAll('.section').forEach(section => {
-  const title = section.querySelector('.title-collapsed');
-  const hiddenContent = section.querySelector('.collapsed');
-  section.addEventListener('beforematch', () => {
-    hiddenContent.classList.remove('collapsed');
-    title.classList.remove('title-collapsed');
-    title.classList.add('title-open');
-  });
+  section.onbeforematch = () => {
+    section.classList.remove('collapsed');
+  };
+  section.querySelector('.title').onclick = () => {
+    section.classList.toggle('collapsed');
+  };
 });
 </script>
 ```
 
-![example1 1](images/example1-1.png)
-![example1 2](images/example1-2.png)
-![example1 3](images/example1-3.png)
+![beforematch](images/beforematch.gif)
+
+As you can see in the above gif, the flow of the use case is as follows:
+1. The page loads and all subsections are hidden with only the headings visible,
+similar to a `<details>` element.
+2. User searches for hidden text, such as "lorem ipsum".
+3. The beforematch event is fired on the element containing "lorem ipsum."
+4. User may click on the section to collapse it again.
 
 In this example, most of the content of the page is hidden in collapsed sections.
 It uses the `content-visibility: hidden-matchable` CSS property to hide the
