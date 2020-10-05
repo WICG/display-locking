@@ -16,7 +16,7 @@ This is an explainer for two closely related features:
     content to the user in response to searches which scroll the page to some
     target text. The event is fired at render timing on the nearest ancestor
     block-level element for these cases:
-    * There is a new find-in-page (ctrl+f)
+    * There is a new find-in-page
       [active match](https://html.spec.whatwg.org/multipage/interaction.html#fip-matches)
       which is located inside an element with `content-visibility:
       hidden-matchable` style.
