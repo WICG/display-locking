@@ -4,38 +4,52 @@ _These changes will likely go into the
 [find-in-page](https://html.spec.whatwg.org/multipage/interaction.html#find-in-page)
 section of the HTML spec_
 
-When a new active match is set, either by advancing through the match list or
+When a new _active match_ is set, either by advancing through the match list or
 due to a new find-in-page request, a `beforematch` event is fired on a node
-identified by the active match [range
+identified by the _active match_'s [range
 start](https://dom.spec.whatwg.org/#concept-range-start). This process follows
 the following algorithm:
 
-1. Identify the candidate match _M_ which will become the new active match. _M_'s DOM
-range must not be [collapsed](https://dom.spec.whatwg.org/#range-collapsed).
+1. Identify the candidate match which will become the new _active match_. The
+   _active match_'s DOM range must not be
+   [collapsed](https://dom.spec.whatwg.org/#range-collapsed). 
 
-2. At the next rendering opportunity, specifically step 12 of [Update the
-rendering](https://html.spec.whatwg.org/#rendering-opportunity) step:
+2. At the next rendering opportunity, specifically step 12 "run the animation
+   frame callbacks" of
+   [update-the-rendering](https://html.spec.whatwg.org/multipage/webappapis.html#update-the-rendering):
 
-      2.1. If the range that constitutes match _M_ is
-        [collapsed](https://dom.spec.whatwg.org/#range-collapsed), restart the
-        algorithm at Step 1 with the match following _M_ as the new candidate
-        match.
+      2.1. If the DOM range representing the _active match_ has been collapsed,
+        start the search over again starting at this collapsed range.
 
-      2.2. Fire a `beforematch` event on an element identified by _M_'s range start node.
+      2.2. Let "_matchable ancestor_" be the nearest flat-tree ancestor element of
+        the beginning of the DOM range representing the _active match_ which has
+        the content-visibility: hidden-matchable property.
 
-3. At the next rendering opportunity (the _next_ Step 12 of [Update the
-rendering](https://html.spec.whatwg.org/#rendering-opportunity)):
+      2.3. If the beforematch event has been disabled or there is no _matchable
+        ancestor_, call
+        [`scrollIntoView()`](https://drafts.csswg.org/cssom-view/#dom-element-scrollintoview)
+        on the _active match_ and end the algorithm.
 
-      3.1 If the range which constitutes match _M_ is
-      [collapsed](https://dom.spec.whatwg.org/#range-collapsed), or the range
-      start node is not shown to the user (e.g. it is inside a
-      `content-visibility: hidden-matchable` subtree), restart the algorithm at
-      Step 1 with with match following _M_ as the new candidate match.
+      2.4. Fire the beforematch event on the _matchable ancestor_.
 
-      3.2 Scroll the range start node of match _M_ into view, following the same
-      algorithm as if
-      [`scrollIntoView()`](https://drafts.csswg.org/cssom-view/#dom-element-scrollintoview)
-      was invoked on that node.
+      2.5. Signal a need for another run of update-the-rendering.
+
+3. At the next rendering opportunity (the _next_ Step 12 of
+   [update-the-rendering](https://html.spec.whatwg.org/#update-the-rendering)):
+
+      3.1. Disable the beforematch event for the remaining lifetime of the
+        document and start the search over again starting at the end of the
+        _active match_'s DOM range if any of the following conditions are true:
+        - The DOM range representing the _active match_ has been collapsed.
+        - The _active match_ has the `content-visibility: hidden-matchable` or
+          `content-visibility: hidden` in any ancestors.
+        - The _active match_ has the `display: none` property in any ancestors.
+        - The _active match_'s `visibility` property is not `visible` in any
+          ancestors.
+
+      3.2. Call
+        [`scrollIntoView()`](https://drafts.csswg.org/cssom-view/#dom-element-scrollintoview)
+        on the _active match_.
 
 # content-visibility: hidden-matchable
 
