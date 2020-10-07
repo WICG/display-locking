@@ -14,8 +14,8 @@ This is an explainer for two closely related features:
 
 2. The `beforematch` event allows developers to display `hidden-matchable`
     content to the user in response to searches which scroll the page to some
-    target text. The event is fired at render timing on the nearest ancestor
-    block-level element for these cases:
+    target text. The event is fired on the nearest `content-visibility:
+    hidden-matchable` ancestor at render timing for these cases:
     * There is a new find-in-page
       [active match](https://html.spec.whatwg.org/multipage/interaction.html#fip-matches)
       which is located inside an element with `content-visibility:
@@ -24,9 +24,10 @@ This is an explainer for two closely related features:
       navigation (`example.com/#:~:text=foo`), where the target text is located
       inside a `content-visibility: hidden-matchable` element.
 
-If the matching text spans multiple block-level elements, then the first
-block-level element is used. Since the flat tree is used to determine the
-element to fire the event on, shadow boundaries have no impact.
+If the matching text spans multiple `content-visibility: hidden-matchable`
+ancestors, the beforematch event will be fired on the first one. Since the flat
+tree is used to determine the element to fire the event on, shadow boundaries
+have no impact.
 
 Note that the proposal for beforematch is still in review and is subject to
 change.
