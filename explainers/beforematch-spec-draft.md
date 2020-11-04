@@ -26,8 +26,8 @@ the following algorithm:
         the content-visibility: hidden-matchable property.
 
       2.3. If the beforematch event has been disabled or there is no _matchable
-        ancestor_, call
-        [`scrollIntoView()`](https://drafts.csswg.org/cssom-view/#dom-element-scrollintoview)
+        ancestor_, run
+        [scroll into view](https://drafts.csswg.org/cssom-view/#scroll-an-element-into-view)
         on the _active match_ and end the algorithm.
 
       2.4. Fire the beforematch event on the _matchable ancestor_.
@@ -47,8 +47,8 @@ the following algorithm:
         - The _active match_'s `visibility` property is not `visible` in any
           ancestors.
 
-      3.2. Call
-        [`scrollIntoView()`](https://drafts.csswg.org/cssom-view/#dom-element-scrollintoview)
+      3.2. Run
+        [scroll into view](https://drafts.csswg.org/cssom-view/#scroll-an-element-into-view)
         on the _active match_.
 
 # content-visibility: hidden-matchable
