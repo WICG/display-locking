@@ -265,33 +265,39 @@ when it is searched for, there are a number of alternatives we have considered.
 `content-visibility: hidden-matchable` text would automatically become visible
 when searched for by adding an internal flag to the `hidden-matchable` element
 saying that it has been revealed.
-This used to be implemented as a prior iteration of this feature.
+This used to be implemented in chrome as a prior iteration of this feature.
 ##### Pros
-* Provides the desired behavior without the need for the web developer to do
-  anything besides use the `hidden-matchable` value.
+* The browser reveals the content and scrolls to it without the need for any
+  script.
 * Since there is no event causing script to run, the interaction and scrolling
   occurs entirely within the browser, which guarantees that we can scroll to
   the element without complications.
+* Less privacy concerns since the browser doesn't explicitly signal new
+  information to the page when a match is found or revealed.
 ##### Cons
-* Doesn't allow the developer to change other properties in conjunction with
-  displaying hidden content. For example, in "Example 1: Expanding
-  `hidden-matchable`," automatic revealing wouldn't be able to change the
-  style of the `<h1>` title elements.
-* Doesn't allow script to make the `hidden-matchable` content hidden again once
-  it has been revealed since the flag saying that is has been revealed is
-  internal to the browser. This doesn't allow for use cases where the
-  `hidden-matchable` content looks similar to a details element with a button
-  that runs script to reveal and collapse the content.
+* Doesn't allow the page to change other state in conjunction with displaying
+  hidden content. For example, the html example earlier in this explainer uses
+  the beforematch event to change the arrow in the clickable title section which
+  expand and collapses the section to show whether or not the section is
+  expanded or collapsed. This is a very common pattern, and without the page
+  being notified about the reveal, it isn't possible.
+* Doesn't make it feasible for script to toggle the expanded/collapsed state
+  since script can't see the internal flag representing the expanded/collapsed
+  state.
 * Automatic revealing and adding internal hidden state to track revealed
   `hidden-matchable` sections gets complicated and confusing in the browser
   implementation.
 
-#### Automatic Revealing without internal state
+#### Automatic Revealing with `element.style`
 `content-visibility: hidden-matchable` text would automatically be changed
 to `content-visibility: visible` by modifying `element.style` when text inside
 it has been searched for.
 ##### Pros
-* Same pros as "Automatic Revealing."
+* The browser reveals the content and scrolls to it without the need for any
+  script.
+* Since there is no event causing script to run, the interaction and scrolling
+  occurs entirely within the browser, which guarantees that we can scroll to
+  the element without complications.
 * Don't need to maintain internal state in the browser.
 * If a developer knows how it works, they can change the style back to
   `content-visibility: hidden-matchable`.
@@ -300,24 +306,27 @@ it has been searched for.
 * If script later modifies `element.style`, then the matching text would become
   invisible again. In general, having the browser change DOM or style like this
   isn't a good idea because it would be likely to clash with how the page is
-  maintaining the same state.
+  maintaining the same state and isn't very intuitive to the developer.
+* Doesn't make it easy for the page to change other state in conjunction with
+  the reveal.
+* Requires privacy mitigations since the reveal/match is observable by the page.
 
 #### Automatic Revealing with activation event
 This is like "Automatic Revealing," but with an added "activation" event emitted
-when content is displayed to allow developers to change other state and styles
-if needed.
+when content is revealed to allow the page to change other state and styles if
+needed.
 ##### Pros
-* Same pros as "Automatic Revealing."
-* Allows other script state and styles to be changed when content is displayed.
+* The browser reveals the content and scrolls to it without the need for any
+  script.
+* Allows script to modify state and style when content is revealed.
 ##### Cons
-* Doesn't allow script to make the `hidden-matchable` content hidden again once
-  it has been revealed since the flag saying that is has been revealed is
-  internal to the browser. This doesn't allow for use cases where the
-  `hidden-matchable` content looks similar to a details element with a button
-  that runs script to reveal and collapse the content.
+* Doesn't make it feasible for script to toggle the expanded/collapsed state
+  since script can't see the internal flag representing the expanded/collapsed
+  state.
 * Automatic revealing and adding internal hidden state to track revealed
   `hidden-matchable` sections gets complicated and confusing in the browser
   implementation.
+* Requires privacy mitigations since the reveal/match is observable by the page.
 
 #### CSS Pseudo Selector
 A pseudo selector, such as `:target`, would be applied to the element
@@ -340,6 +349,13 @@ could be applied to the entire ancestor chain.
   pseudo selector to the entire ancestor chain, it can be complicated or
   impossible to provide the right selector which can modify a style on an
   unrelated element.
+* Requires privacy mitigations since the reveal/match is observable by the page.
+* Harder to add privacy mitigations. Making the presence of the persistent
+  pseudo selector based on the presence of `content-visibility:
+  hidden-matchable` in the ancestor chain is more complicated than simply not
+  firing the beforematch event in some situations.
+* Not elegant or not even possible for script to listen for the reveal and
+  change other state in the page.
 
 #### `<details>`/`<summary>` auto-expanding
 Instead of having a generic hidden-matchable property or a specialized
@@ -349,7 +365,7 @@ for the beforematch event, and the details element already has a toggle event
 which would act like the beforematch event. This could be implemented either by
 adding an attribute to the details element saying that the collapsed content
 should be searchable, or just by making it searchable as-is because find-in-page
-is not specced.
+is not specced rigitly enough to forbid this.
 ```html
 <details searchable id=mydetails>
   <summary>Persistent summary content</summary>
@@ -361,30 +377,28 @@ is not specced.
   });
 </script>
 ```
+We may still add this feature to the details element separately from the
+beforematch event.
 ##### Pros
-* Requires less work and less stuff added to the web platform.
+* Requires less to be added to the web platform.
 * Exposes less information about find-in-page to the page, which improves
   privacy.
-* Lets the browser handle updating style and scrolling, so there would be no
-  need to implement async scrolling to work around use cases with scrolling
-  to expanded content.
+* No script needed to get the basic revealing behavior.
 ##### Cons
 * Doesn't handle every use case. Not every collapsed section of content has an
   associated persistent summary view, such as hidden parts of virtual scrollers.
 * Rather than making a powerful primitive for the web platform like beforematch,
   this would provide a narrowly scoped complete feature to the web.
+* May require some small privacy mitigations.
 
-#### Only fire beforematch on a hidden-matchable element attribute
+#### Make hidden-matchable an element attribute instead of a CSS property
 Instead of having `content-visibility: hidden-matchable` and a separate
 `beforematch` event that fires whenever text is searched for, we could have
 a `hidden-matchable` element attribute which would function like the
 `content-visibility: hidden-matchable` css property. By having an element
 attribute instead of a css property, we could have the browser reveal the
-content and scroll on its own by removing the `hidden-matchable` attribute
-instead of needing to have script to do so. We would also only fire
-`beforematch` on the element with the `hidden-matchable` property as soon as it
-is revealed, rather than firing the event on the nearest block-level element
-every time any text is searched for.
+content by removing the script observable attribute as well as fire the
+beforematch event.
 ```html
 <div hidden-matchable id=mydiv>
   hidden searchable content
@@ -397,19 +411,11 @@ every time any text is searched for.
 ```
 ##### Pros
 * Simple use cases won't require any script to reveal content.
-* Exposes less information about find-in-page to the page, which improves
-  privacy.
 * Lets the browser handle updating style and scrolling, so there would be no
   need to implement async scrolling to work around use cases with scrolling
   to expanded content.
 ##### Cons
-* Couples the `beforematch` event with `hidden-matchable`. Both of them would
-  need to be shipped together, since `beforematch` would only fire on
-  `hidden-matchable` elements.
-* Doesn't allow for `beforematch` to be used for use cases outside of hidden
-  content, but if it is determined that `beforematch` reveals too much
-  information to the page then this would be necessary.
-  Alternatively, we could still fire `beforematch` on everything we scroll to
-  during find-in-page/ScrollToTextFragment and keep the `hidden-matchable` as
-  an attribute idea which would still keep the Pros of not needing script for
-  a big use case and letting the browser revealing and scrolling.
+* It makes more sense for visibility to be controlled by CSS than an element
+  attribute given that the `display`, `visibility`, and `content-visibility`
+  CSS properties all control visibility.
+* Requires privacy mitigations since the reveal/match is observable by the page.
