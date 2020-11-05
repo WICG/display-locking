@@ -167,11 +167,17 @@ the page, we have added two constraints to beforematch:
    events and guessing which element was scrolled to, the beforematch event
    without this restriction is a stronger and more accurate signal.
 
-2. If the page doesn't reveal the text in response to the beforematch event, the
-   beforematch event will not be fired for the remainder of the lifetime of the
-   document. By "reveal," I mean that the `content-visibility: hidden-matchable`
-   property is removed and there are no other properties applied which would
-   prevent find-in-page from finding the text normally, such as `display: none`.
+2. If the page fails to reveal the active match when the browser tries to scroll
+   to the active match after firing the beforematch event, the beforematch event
+   will be disabled for the remaining lifetime of the document. By "reveal," I
+   mean that the active match fulfills all of these requirements:
+   - The DOM range of the target match is not
+     [collapsed](https://dom.spec.whatwg.org/#range-collapsed) (meaning that the
+     target match was not removed from the DOM.
+   - The `content-visibility` CSS property is not `hidden` or
+     `hidden-matchable`.
+   - The `display` CSS property is not `display: none`.
+   - The `visibility` CSS property is `visibility: visible`.
    This mitigation will prevent the page from building out a string of what the
    user is searching for without having to reveal that string to the user
    visually. Although this is already possible as shown in 
@@ -187,75 +193,12 @@ term since there will only be one possible beforematch event.
 
 ### Responses to DOM and style changes in the `beforematch` event handler
 
-The scrolling behavior exhibited by find-in-page and ScrollToTextFragment
-after style and DOM changes are made by `beforematch` event
-handlers is not well specified yet and is being discussed here: 
-https://github.com/WICG/display-locking/issues/150
-
-Here is a list of `beforematch` handler use cases that could affect scrolling:
-1. **Removed from DOM**: The `beforematch` event handler removes the
-target element from the DOM.
-2. **Reparented in DOM**: The `beforematch` event handler removes the target
-element from the DOM, and re-adds it further down the tree such that the
-location to scroll to is different.
-3. **display: none**: The `beforematch` event handler adds the style
-`display: none` to the target element.
-4. **visibility: hidden**: The `beforematch` event handler adds the style
-`visibility: hidden` to the target element.
-5. **content-visibility: hidden-matchable -> visible**: The target element has
-the style `content-visibility: hidden-matchable` before the `beforematch` event
-is fired on the target element, and the `beforematch` event handler changes the
-style value from `hidden-matchable` to `visible`.
-
-
-Here is the current scrolling behavior in Chromium for each of those cases in
-ScrollToTextFragment, and ElementFragment, and find-in-page. As mentioned
-before, this is still being discussed
-[here](https://github.com/WICG/display-locking/issues/150) and is subject to
-change.
-
-#### ScrollToTextFragment
-1. **Removed from DOM**: ScrollToTextFragment will not scroll to the removed
-element. If there is a second match which is still in the DOM after
-beforematch, it will be scrolled to but a second beforematch event will not be
-fired.
-2. **Reparented in DOM**: ScrollToTextFragment will scroll to the new
-location of the target. If there is a second match which was not reparented,
-ScrollToTextFragment will scroll to whichever comes first from the top of the
-page after the beforematch event is fired.
-3. **display: none**: ScrollToTextFragment will not scroll to the target
-element. If there is a second match which was not modified, ScrollToTextFragment
-will scroll to it.
-4. **visibility: hidden**: ScrollToTextFragment will not scroll to the target
-element. If there is a second match which was not modified, ScrollToTextFragment
-will scroll to it.
-5. **content-visibility: hidden-matchable -> visible**: ScrollToTextFragment
-will scroll to the revealed text.
-
-#### find-in-page
-The find-in-page behavior has some issues in these cases. These will likely
-be fixed after adding an async step to pick up layout changes made by the
-beforematch event listener. Here is a bug to track this work:
-https://bugs.chromium.org/p/chromium/issues/detail?id=1074121
-1. **Removed from DOM**: find-in-page does not scroll to the target element. If
-there is a second match in the DOM, find-in-page will find it and scroll to it
-without needing additional user input.
-2. **Reparented in DOM**: If the only match in the document is reparented to the
-end of the document, find-in-page becomes stuck at "0/x" matches and can't
-scroll to the new location, even if you keep typing more of the match out or
-close and reopen find-in-page. This behavior is obviously not good, and
-hopefully will be fixed by adding an async step to get updated layout
-information. If there is a second match in the DOM which is not reparented,
-the page will scroll but find-in-page will still get stuck.
-3. **display: none**: find-in-page will scroll to the spot the element used to
-take up. This should probably not scroll at all instead, and will hopefully
-happen after adding an async step to get updated layout information. If there
-is a second match, the page will scroll to the second match.
-4. **visibility: hidden**: find-in-page will scroll to the spot the element used
-to take up. This should probably not scroll at all instead, and hopefully won't
-scroll after adding an async step.
-5. **content-visibility: hidden-matchable -> visible**: find-in-page scrolls to
-to the revealed text.
+The beforematch event handler, as well as any other script that runs during the
+async steps before we actually scroll to the target match, affects the outcome
+of the scroll. As mentioned in the privacy section, if the DOM range
+representing the active match is collapsed or it has a style which makes it
+invisible, the scroll will be canceled. Otherwise, the target match will be
+scrolled into view.
 
 ### Alternatives Considered
 Given the purpose of displaying `content-visibility: hidden-matchable` text
