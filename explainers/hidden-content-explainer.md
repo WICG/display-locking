@@ -172,11 +172,11 @@ the page, we have added two constraints to beforematch:
    will be disabled for the remaining lifetime of the document. By "reveal," I
    mean that the active match fulfills all of these requirements:
    - The DOM range of the target match is not
-     [collapsed](https://dom.spec.whatwg.org/#range-collapsed) (meaning that the
+     [collapsed](https://dom.spec.whatwg.org/#range-collapsed), meaning that the
      target match was not removed from the DOM.
-   - The `content-visibility` CSS property is not `hidden` or
-     `hidden-matchable`.
-   - The `display` CSS property is not `display: none`.
+   - Neither the match nor any of its ancestors have `content-visibility:
+     hidden` or `content-visibility: hidden-matchable`.
+   - Neither the match nor the any of its ancestors have `display: none`.
    - The `visibility` CSS property is `visibility: visible`.
    This mitigation will prevent the page from building out a string of what the
    user is searching for without having to reveal that string to the user
