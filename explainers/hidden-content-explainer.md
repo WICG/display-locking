@@ -265,7 +265,7 @@ when it is searched for, there are a number of alternatives we have considered.
 `content-visibility: hidden-matchable` text would automatically become visible
 when searched for by adding an internal flag to the `hidden-matchable` element
 saying that it has been revealed.
-This used to be implemented in chrome as a prior iteration of this feature.
+This used to be implemented in Blink as a prior iteration of this feature.
 ##### Pros
 * The browser reveals the content and scrolls to it without the need for any
   script.
@@ -364,8 +364,8 @@ collapsed content searchable. This addresses most of the use cases we have seen
 for the beforematch event, and the details element already has a toggle event
 which would act like the beforematch event. This could be implemented either by
 adding an attribute to the details element saying that the collapsed content
-should be searchable, or just by making it searchable as-is because find-in-page
-is not specced rigitly enough to forbid this.
+should be searchable, or just by making it searchable as-is because the
+find-in-page spec does not specify this behavior.
 ```html
 <details searchable id=mydetails>
   <summary>Persistent summary content</summary>
@@ -419,3 +419,5 @@ beforematch event.
   attribute given that the `display`, `visibility`, and `content-visibility`
   CSS properties all control visibility.
 * Requires privacy mitigations since the reveal/match is observable by the page.
+* It's harder to apply an attribute to a lot of content at once than it is to
+  apply a CSS property to a lot of content at once.
