@@ -68,7 +68,7 @@ This is currently implemented in Chromium M85 behind the
 
 #### Summary
 
-`containt-intrinsic-size` is a CSS property that allows the developer to specify
+`contain-intrinsic-size` is a CSS property that allows the developer to specify
 an intrinsic size to use when size-containment is specified. This enables the
 developers to specify “placeholder size” on content which is meant to be sized
 by intrinsic sizing, but has size containment applied to it.
