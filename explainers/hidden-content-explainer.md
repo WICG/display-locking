@@ -364,3 +364,7 @@ beforematch event.
 * Requires privacy mitigations since the reveal/match is observable by the page.
 * It's harder to apply an attribute to a lot of content at once than it is to
   apply a CSS property to a lot of content at once.
+* If you have a custom element which wants to apply hidden-matchable to its
+  light DOM children, you can easily do so with a CSS selector which doesn't
+  actually modify the state of the light DOM children. With this attribute, you
+  would have to modify the light DOM children.
