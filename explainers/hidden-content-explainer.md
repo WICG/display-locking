@@ -22,6 +22,10 @@ This is an explainer for two coupled features:
       inside a `content-visibility: hidden-matchable` element.
     * There is an element fragment navigation or change (`example.com/#foo`),
       where the target is the element whose id matches the id in the fragment.
+    * [`window.find`](https://developer.mozilla.org/en-US/docs/Web/API/Window/find)
+      found a text match located inside a `content-visibility: hidden-matchable`
+      element. We aren't certain if `window.find` will be supported for sure
+      yet, see the detailed section about it below.
 
 If the matching text spans multiple `content-visibility: hidden-matchable`
 ancestors, the beforematch event will be fired on the first one. Since the flat
@@ -208,9 +212,8 @@ scrolled into view.
 ## Accessibility
 
 `content-visibility: hidden-matchable` subtrees will not be included in the
-accessibility tree because they are not visible on the screen. This is the same
-as `content-visibility: hidden` and offscreen/unrendered `content-visibility:
-auto` subtrees.
+accessibility tree because they are not visible on the screen, just like
+`content-visibility: hidden`.
 
 The content inside `content-visibility: hidden-matchable` subtrees will still
 remain accessible to assisstive technology users because there should always be
@@ -224,9 +227,10 @@ asynchronous flow for firing the beforematch event and scrolling when the match
 is in a `content-visibility: hidden-matchable` subtree:
 1. A match within a `content-visibility: hidden-matchable` subtree has been
    found
-2. Wait for the next requestAnimationFrame
-3. Fire the beforematch event on the `hidden-matchable` ancestor
-4. Wait for the next requestAnimationFrame
+2. Schedule an animation frame and wait until it happens
+3. Fire the beforematch event on the `hidden-matchable` ancestor before other
+   animation frame callbacks from script
+4. Schedule an animation frame and wait until it happens
 5. Scroll to the target match
 
 This behavior was implemented in response to early feedback about pages where
@@ -247,23 +251,20 @@ window.location.hash = '#foo';
 window.scrollY; // returns 100
 </script>
 ```
-Since changes to the element fragment trigger synchronous scrolling, which we
-can't change without a breaking the current behavior, we will have to fire the
-beforematch event and then scroll synchronously, instead of the
-rAF->beforematch->rAF->scroll behavior we have for ScrollToTextFragment and
-find-in-page. This means that pages which need a full rAF in between the
-beforematch event and the scroll in order to reveal the content to scroll to may
-not be able to reveal the target content in time for the scroll.
-
-A possible mitigation for this would be to check to see if the target element is
-still within a content-visibility:hidden-matchable subtree during the first
-attempt to scroll, and if it is, wait for one rAF and try to scroll to it again.
+Since changes to the element fragment trigger synchronous scrolling which we
+can't change without breaking the current behavior, the beforematch event must
+be fired either synchronously before the scroll or via a posted task on the
+event loop instead of the rAF->beforematch->rAF->scroll behavior we have for
+ScrollToTextFragment and find-in-page.
+This means that pages which need a full rAF in between the beforematch event and
+the scroll in order to reveal the content to scroll to may not be able to reveal
+the target content in time for the scroll.
 
 ## Supporting `window.find()`
 
 Another potential user-agent algorithm we could add beforematch to is
 `window.find`. `window.find` works very similarly to find-in-page and exists in
-firefox, safari, and chrome, but is not specified and has rather low usage. The
+Firefox, Safari, and Chrome, but is not specified and has rather low usage. The
 only benefit I see to adding support to `window.find` would be to make it easier
 to add WPT tests for beforematch, since we cant have WPTs for find-in-page.
 However, that would also require speccing `window.find`.
