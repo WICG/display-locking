@@ -1,18 +1,15 @@
-# Finding information in hidden sections.
+# `content-visibility: hidden-matchable` and the `beforematch` event
 
-## content-visibility: hidden-matchable and the `beforematch` event.
+## Summary (TL;DR)
 
-### Summary (TL;DR)
+This is an explainer for two coupled features:
 
-This is an explainer for two closely related features:
+1. `content-visibility: hidden-matchable` is a new value for the CSS property
+   `content-visibility`. It makes the content hidden from the user, similar to
+   `content-visibility: hidden`, but the content remains searchable via
+   user-agent algorithms such as find-in-page.
 
-1. Content visibility hidden matchable is an extension to the `content-visibility`
-    feature. It adds a new value to the possible set of properties:
-    * `content-visibility: hidden-matchable`: in this configuration, the content is
-        hidden from the user (similar to `content-visibility: hidden`), but the
-        content remains searchable via user-agent find-in-page algorithms.
-
-2. The `beforematch` event allows developers to display `hidden-matchable`
+2. The `beforematch` event allows developers to reveal `hidden-matchable`
     content to the user in response to searches which scroll the page to some
     target text. The event is fired on the nearest `content-visibility:
     hidden-matchable` ancestor at render timing for these cases:
@@ -23,6 +20,12 @@ This is an explainer for two closely related features:
     * There is a [scroll-to-text](https://github.com/WICG/ScrollToTextFragment)
       navigation (`example.com/#:~:text=foo`), where the target text is located
       inside a `content-visibility: hidden-matchable` element.
+    * There is an element fragment navigation or change (`example.com/#foo`),
+      where the target is the element whose id matches the id in the fragment.
+    * [`window.find`](https://developer.mozilla.org/en-US/docs/Web/API/Window/find)
+      found a text match located inside a `content-visibility: hidden-matchable`
+      element. We aren't certain if `window.find` will be supported for sure
+      yet, see the detailed section about it below.
 
 If the matching text spans multiple `content-visibility: hidden-matchable`
 ancestors, the beforematch event will be fired on the first one. Since the flat
@@ -32,7 +35,7 @@ have no impact.
 Note that the proposal for beforematch is still in review and is subject to
 change.
 
-### Motivation
+## Motivation
 
 With the evolution of the web, there are always new and interesting ways that
 developers choose to organize the information on their pages. Some of these
@@ -44,7 +47,7 @@ However, other approaches like collapsed sections of text do not work well with
 user-agent features since the page does not get any indication that the user
 initiated a find-in-page request, or scroll-to-text navigation.
 
-The content-visibility: hidden-matchable in concert with the `beforematch` event
+`content-visibility: hidden-matchable` in concert with the `beforematch` event
 is a step in the direction that allows developers to leverage information that
 the user-agent already has to make these search and navigation experiences
 great. Specifically, it makes it possible to process text for find-in-page match
@@ -54,7 +57,7 @@ section. The net effect is that the user is able to use find-in-page or link
 navigation to find content in collapsed sections -- something that is not
 currently possible.
 
-### Primary Use Case: collapsed searchable sections
+## Primary use case: collapsed searchable sections
 ```html
 <!DOCTYPE html>
 <meta charset="utf-8">
@@ -136,12 +139,18 @@ wikipedia pages. find-in-page and scroll-to-text currently can't find text insid
 of the collapsed sections, but with beforematch and content-visibility they
 could be searchable and automatically expanded.
 
-Also note that developer adoption of the `beforematch` event in these use-cases should be
-straight-forward, since the typical page that provides content in collapsed
-sections already has an event handler to expand and show the section. With the
-`beforematch` event, we can reuse the same handler to expand the section.
+Also note that developer adoption of the `beforematch` event in these use
+cases should be straightforward, since the typical page that provides content in
+collapsed sections already has an event handler to expand and show the section.
+With the `beforematch` event, we can reuse the same handler to expand the
+section.
 
-### Privacy Concerns
+Using this feature is a good optimization for low power mobile devices that
+don't want to render all of the content in the page but still making it
+accessible to features such as find-in-page. Making long articles with collapsed
+sections accessible to find-in-page will improve the user experience.
+
+## Privacy concerns
 
 The beforematch event could expose more information to the page than is
 currently exposed because it is fired on an element that contains the text the
@@ -191,7 +200,7 @@ addition, ScrollToTextFragment can only occur once at the beginning of a
 document's load, so we don't have to worry about the page building out a search
 term since there will only be one possible beforematch event.
 
-### Responses to DOM and style changes in the `beforematch` event handler
+## Responses to DOM and style changes in the `beforematch` event handler
 
 The beforematch event handler, as well as any other script that runs during the
 async steps before we actually scroll to the target match, affects the outcome
@@ -200,16 +209,76 @@ representing the active match is collapsed or it has a style which makes it
 invisible, the scroll will be canceled. Otherwise, the target match will be
 scrolled into view.
 
-### Alternatives Considered
+## Accessibility
+
+`content-visibility: hidden-matchable` subtrees will not be included in the
+accessibility tree because they are not visible on the screen, just like
+`content-visibility: hidden`.
+
+The content inside `content-visibility: hidden-matchable` subtrees will still
+remain accessible to assisstive technology users because there should always be
+a way to reveal the content besides using find-in-page, such as a button to
+expand the content like a `<details>` element.
+
+## Scroll timing and element fragment issue
+
+With this feature, find-in-page and ScrollToTextFragment will have an
+asynchronous flow for firing the beforematch event and scrolling when the match
+is in a `content-visibility: hidden-matchable` subtree:
+1. A match within a `content-visibility: hidden-matchable` subtree has been
+   found
+2. Schedule an animation frame and wait until it happens
+3. Fire the beforematch event on the `hidden-matchable` ancestor before other
+   animation frame callbacks from script
+4. Schedule an animation frame and wait until it happens
+5. Scroll to the target match
+
+This behavior was implemented in response to early feedback about pages where
+the beforematch event handler queued an asynchronous task to remove the
+`hidden-matchable` property, in which case the requestAnimationFrame gap between
+firing the beforematch event and scrolling was needed in order to correctly
+scroll to the revealed content.
+
+Supporting beforematch for element fragments is problematic because scrolling
+for element fragments is always done synchronously. To be more specific,
+consider the following code:
+```html
+<div style="height:100px"></div>
+<div id=foo></div>
+<script>
+window.scrollY; // returns 0
+window.location.hash = '#foo';
+window.scrollY; // returns 100
+</script>
+```
+Since changes to the element fragment trigger synchronous scrolling which we
+can't change without breaking the current behavior, the beforematch event must
+be fired either synchronously before the scroll or via a posted task on the
+event loop instead of the rAF->beforematch->rAF->scroll behavior we have for
+ScrollToTextFragment and find-in-page.
+This means that pages which need a full rAF in between the beforematch event and
+the scroll in order to reveal the content to scroll to may not be able to reveal
+the target content in time for the scroll.
+
+## Supporting `window.find()`
+
+Another potential user-agent algorithm we could add beforematch to is
+`window.find`. `window.find` works very similarly to find-in-page and exists in
+Firefox, Safari, and Chrome, but is not specified and has rather low usage. The
+only benefit I see to adding support to `window.find` would be to make it easier
+to add WPT tests for beforematch, since we cant have WPTs for find-in-page.
+However, that would also require speccing `window.find`.
+
+## Alternatives considered
 Given the purpose of displaying `content-visibility: hidden-matchable` text
 when it is searched for, there are a number of alternatives we have considered.
 
-#### Automatic Revealing
+### Automatic revealing
 `content-visibility: hidden-matchable` text would automatically become visible
 when searched for by adding an internal flag to the `hidden-matchable` element
 saying that it has been revealed.
 This used to be implemented in Blink as a prior iteration of this feature.
-##### Pros
+#### Pros
 * The browser reveals the content and scrolls to it without the need for any
   script.
 * Since there is no event causing script to run, the interaction and scrolling
@@ -217,7 +286,7 @@ This used to be implemented in Blink as a prior iteration of this feature.
   the element without complications.
 * Less privacy concerns since the browser doesn't explicitly signal new
   information to the page when a match is found or revealed.
-##### Cons
+#### Cons
 * Doesn't allow the page to change other state in conjunction with displaying
   hidden content. For example, the html example earlier in this explainer uses
   the beforematch event to change the arrow in the clickable title section which
@@ -231,11 +300,11 @@ This used to be implemented in Blink as a prior iteration of this feature.
   `hidden-matchable` sections gets complicated and confusing in the browser
   implementation.
 
-#### Automatic Revealing with `element.style`
+### Automatic revealing with `element.style`
 `content-visibility: hidden-matchable` text would automatically be changed
 to `content-visibility: visible` by modifying `element.style` when text inside
 it has been searched for.
-##### Pros
+#### Pros
 * The browser reveals the content and scrolls to it without the need for any
   script.
 * Since there is no event causing script to run, the interaction and scrolling
@@ -244,7 +313,7 @@ it has been searched for.
 * Don't need to maintain internal state in the browser.
 * If a developer knows how it works, they can change the style back to
   `content-visibility: hidden-matchable`.
-##### Cons
+#### Cons
 * May require modifying `element.style` of multiple elements.
 * If script later modifies `element.style`, then the matching text would become
   invisible again. In general, having the browser change DOM or style like this
@@ -254,15 +323,15 @@ it has been searched for.
   the reveal.
 * Requires privacy mitigations since the reveal/match is observable by the page.
 
-#### Automatic Revealing with activation event
+### Automatic revealing with activation event
 This is like "Automatic Revealing," but with an added "activation" event emitted
 when content is revealed to allow the page to change other state and styles if
 needed.
-##### Pros
+#### Pros
 * The browser reveals the content and scrolls to it without the need for any
   script.
 * Allows script to modify state and style when content is revealed.
-##### Cons
+#### Cons
 * Doesn't make it feasible for script to toggle the expanded/collapsed state
   since script can't see the internal flag representing the expanded/collapsed
   state.
@@ -271,14 +340,14 @@ needed.
   implementation.
 * Requires privacy mitigations since the reveal/match is observable by the page.
 
-#### CSS Pseudo Selector
+### CSS pseudo selector
 A pseudo selector, such as `:target`, would be applied to the element
 containing the matching text when it is searched for. This pseudo selector
 could be applied to the entire ancestor chain.
-##### Pros
+#### Pros
 * Allows content to become visible when searched for with only CSS.
 * Allows other styles to be changed when the content is displayed.
-##### Cons
+#### Cons
 * If CSS with a pseudo selector is used to make text visible, then when
   find-in-page is closed or the search text changes, the pseudo selector would
   be removed and then any selector which is displaying the text based on that
@@ -300,7 +369,7 @@ could be applied to the entire ancestor chain.
 * Not elegant or not even possible for script to listen for the reveal and
   change other state in the page.
 
-#### `<details>`/`<summary>` auto-expanding
+### `<details>`/`<summary>` auto-expanding
 Instead of having a generic hidden-matchable property or a specialized
 beforematch event, we could just slightly tweak the `<details>` element to make
 collapsed content searchable. This addresses most of the use cases we have seen
@@ -322,19 +391,19 @@ find-in-page spec does not specify this behavior.
 ```
 We may still add this feature to the details element separately from the
 beforematch event.
-##### Pros
+#### Pros
 * Requires less to be added to the web platform.
 * Exposes less information about find-in-page to the page, which improves
   privacy.
 * No script needed to get the basic revealing behavior.
-##### Cons
+#### Cons
 * Doesn't handle every use case. Not every collapsed section of content has an
   associated persistent summary view, such as hidden parts of virtual scrollers.
 * Rather than making a powerful primitive for the web platform like beforematch,
   this would provide a narrowly scoped complete feature to the web.
 * May require some small privacy mitigations.
 
-#### Make hidden-matchable an element attribute instead of a CSS property
+### Make hidden-matchable an HTML attribute instead of a CSS property
 Instead of having `content-visibility: hidden-matchable` and a separate
 `beforematch` event that fires whenever text is searched for, we could have
 a `hidden-matchable` element attribute which would function like the
@@ -352,18 +421,26 @@ beforematch event.
   });
 </script>
 ```
-##### Pros
+#### Pros
 * Simple use cases won't require any script to reveal content.
 * Lets the browser handle updating style and scrolling, so there would be no
   need to implement async scrolling to work around use cases with scrolling
-  to expanded content.
-##### Cons
+  to expanded content, and there would be less of a chance of running into
+  limitations from the privacy mitigations.
+#### Cons
 * It makes more sense for visibility to be controlled by CSS than an element
   attribute given that the `display`, `visibility`, and `content-visibility`
   CSS properties all control visibility.
 * Requires privacy mitigations since the reveal/match is observable by the page.
 * It's harder to apply an attribute to a lot of content at once than it is to
-  apply a CSS property to a lot of content at once.
+  apply a CSS property to a lot of content at once. CSS is more ergonomic.
+* Having an HTML attribute concerned with the visibility of the content separate
+  from the multiple CSS properties which actually control the visibility leaves
+  open questions about the interactions between the HTML attribute and the
+  different visibility CSS properties: `visibility:hidden`, `display:none`,
+  `content-visibility:hidden`, etc. The possibility of having these interactions
+  could increase the complexity in the browser and the cognitive load on
+  developers.
 * If you have a custom element which wants to apply hidden-matchable to its
   light DOM children, you can easily do so with a CSS selector which doesn't
   actually modify the state of the light DOM children. With this attribute, you
