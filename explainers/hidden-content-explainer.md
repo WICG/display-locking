@@ -1,3 +1,5 @@
+## Warning: This is likely going to be an HTML attribute instead of a CSS property. [See discussion here](https://github.com/whatwg/html/issues/6040#issuecomment-785991421).
+
 # `content-visibility: hidden-matchable` and the `beforematch` event
 
 ## Summary (TL;DR)
