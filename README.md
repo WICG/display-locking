@@ -27,42 +27,37 @@ happens.
 
 #### Status
 
-The spec draft for the feature is in a mature state.
+The feature has been accepted by CSS Working Group, and is a part of the
+[css-contain-2]() module.
 
-The feature is currently implemented in Chromium M85 behind the
-`--enable-blink-features=CSSContentVisibility` flag.
+The feature is implemented in Chromium M85.
 
 #### Additional information
 
-* [spec draft](https://drafts.csswg.org/css-contain-2/#content-visibility)
+* [spec](https://www.w3.org/TR/css-contain-2/#content-visibility)
 * [explainer](https://github.com/WICG/display-locking/blob/master/explainers/content-visibility.md)
 * [TAG review](https://github.com/w3ctag/design-reviews/issues/306)
+* [article](web.dev/content-visibility)
 
-### `content-visibility: hidden-matchable`
+### `hidden=until-found` and searchable `details` element.
 
 #### Summary
 
-`content-visibility: hidden-matchable` is an additional value for the
-`content-visibility` property that allows user-agents to search for find-in-page
-matches inside an otherwise hidden element. This feature is meant to be combined
-with the `beforematch` event to allow searchability into collapsed sections
-which expand if there is a match found.
+Leveraging content-visibility, we can also support searchable hidden content.
+We are applying this automatically to the details elements, to make the contents
+of the details element available to find-in-page.
+
+We are also adding a new attribute `hidden=until-found` to allow developers to create
+hidden, but searchable, content.
 
 #### Status
 
-This feature depends on both the successful adoption of `content-visibility`
-feature as well as the `beforematch` event. The explainer outlines the target
-use-cases, but neither the spec draft nor the TAG review are available at this
-time.
+Searchable `details` element is available in Chromium behind the
+`--enable-blink-features=AutoExpandDetailsElement` flag.
 
-This is currently implemented in Chromium M85 behind the
-`--enable-blink-features=CSSContentVisibilityHiddenMatchable` flag.
+* [spec PR](https://github.com/whatwg/html/pull/6466)
 
-#### Additional information
-
-* spec draft — not yet available.
-* [explainer](https://github.com/WICG/display-locking/blob/master/explainers/content-visibility-hidden-matchable.md)
-* TAG review — not yet available.
+`hidden=until-found` is currently being implemented.
 
 ### `contain-intrinsic-size`
 
@@ -75,47 +70,30 @@ by intrinsic sizing, but has size containment applied to it.
 
 #### Status
 
-The spec draft for the feature is in a mature state.
-
 The feature is currently implemented and shipped in Chromium M83.
 
 #### Additional information
 
-* [spec draft](https://drafts.csswg.org/css-sizing-4/#intrinsic-size-override)
+* [spec](https://www.w3.org/TR/css-sizing-4/#intrinsic-size-override)
 * [explainer](https://github.com/WICG/display-locking/blob/master/explainers/contain-intrinsic-size.md)
 * [TAG review](https://github.com/w3ctag/design-reviews/issues/437)
 * [privacy assessment](https://github.com/WICG/display-locking/blob/master/privacy-assessments/contain-intrinsic-size.md)
 
-### `beforematch`
+
+### `updateRendering()`
 
 #### Summary
 
-`beforematch` is an event which is fired under one of the following conditions:
-
-* There has been a find-in-page request with the matching text found inside the
-    target element.
-* There has been a scroll-to-text navigation with the text being found inside
-    target element.
-* There has been a fragment link navigation and the target element was the
-    fragment target.
-
-This allows pages to react to users searching for content on their sites. This
-is particularly useful in combination with `content-visibility: hidden-matchable`
-as it allows searchability inside otherwise hidden content.
+`updateRendering` is a JavaScript API that allows asynchronous rendering updates
+within a DOM subtree. It also has a attribute implementation which lets the
+user-agent make the decision of when to asynchronously update the annotated
+element subtrees.
 
 #### Status
 
-The exact requirements and the design of this feature is still being discussed.
+This feature is in active development.
 
-The feature is under development in Chromium M85 and is available behind the
-`--enable-blink-features=BeforeMatchEvent` flag.
-
-#### Additional information
-
-* spec draft — not yet available
-* [explainer](https://github.com/WICG/display-locking/blob/master/explainers/beforematch.md)
-* [TAG review](https://github.com/w3ctag/design-reviews/issues/511)
-* [privacy assessment](https://github.com/WICG/display-locking/blob/master/privacy-assessments/beforematch.md)
+[discussion & open questions](https://github.com/WICG/display-locking/blob/master/explainers/update-rendering.md)
 
 ## Disclaimer
 
