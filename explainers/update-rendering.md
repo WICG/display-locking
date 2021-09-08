@@ -22,11 +22,20 @@ that the element’s contents should be updated in preparation for display:
 
 Signature: `Promise Element.updateRendering(Priority?)`
 
-The function takes a Priority as an argument, with the following proposed values
+The function takes a Priority as an argument, with the following proposed values,
+following [the postTask API](https://wicg.github.io/scheduling-apis/#sec-task-priorities)
+example.
 
-* High - indicates a high priority that should be done by the end of the next frame
-* Normal (default) - indicates a normal priority which guarantees forward progress but may be split among several frames
-* Idle - indicates idle priority which prioritizes not blocking other work and only proceeds if the user-agent determines that this work will not block other work required for this frame
+* `user-blocking` is the highest priority, and is meant to be used for updates
+  that are blocking the user’s ability to interact with the page, such as
+  rendering the core experience or responding to user input.
+
+* `user-visible` is the second highest priority, and is meant to be used for
+  updates that visible to the user but not necessarily blocking user actions,
+  such as rendering secondary parts of the page. This is the default priority.
+
+* `background` is the lowest priority, and is meant to be used for updates that
+  are not time-critical, such as background updates for speculative layout.
 
 The function returns a promise which resolves when the contents of the element
 are ready to be displayed to screen.  Note that repeated calls to
