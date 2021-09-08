@@ -45,7 +45,7 @@ The feature is implemented in Chromium M85.
 
 Leveraging `content-visibility`, we can also support searchable hidden content.
 We are applying this automatically to details elements, to make the contents
-of the details element available to find-in-page.
+of a details element available to find-in-page.
 
 We are also adding a new attribute `hidden=until-found` to allow developers to create
 hidden, but searchable, content.
