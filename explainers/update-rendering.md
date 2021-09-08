@@ -30,7 +30,7 @@ The function takes a Priority as an argument, with the following proposed values
 
 The function returns a promise which resolves when the contents of the element
 are ready to be displayed to screen.  Note that repeated calls to
-updateRendering() return new promises, with the ultimate priority of the
+updateRendering() returns new promises, with the ultimate priority of the
 request being the highest requested priority.
 
 ### Notes
