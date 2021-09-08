@@ -39,7 +39,7 @@ The feature is implemented in Chromium M85.
 * [TAG review](https://github.com/w3ctag/design-reviews/issues/306)
 * [article](web.dev/content-visibility)
 
-### `hidden=until-found` and searchable `details` element.
+### `hidden=until-found` and searchable `details` elements.
 
 #### Summary
 
