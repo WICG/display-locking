@@ -38,7 +38,7 @@ If the User Agent does not optimize rendering of elements, then the
 function can return a resolved promise for every call Note that a successful
 resolution of the promise does not provide strong guarantees of performance:
 bringing the element on screen may partially or fully invalidate the work that
-has been prepared.  The user-agent should prepare the element and its contents
+has been prepared.  The User Agent should prepare the element and its contents
 as much as it deems is necessary for presentation
 
 
