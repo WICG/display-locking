@@ -27,7 +27,7 @@ happens.
 
 #### Status
 
-The feature has been accepted by CSS Working Group, and is a part of the
+The feature has been accepted by the CSS Working Group, and is a part of the
 [css-contain-2]() module.
 
 The feature is implemented in Chromium M85.
