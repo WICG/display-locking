@@ -52,7 +52,7 @@ hidden, but searchable, content.
 
 #### Status
 
-Searchable `details` element is available in Chromium behind the
+The searchable `details` element feature is available in Chromium behind the
 `--enable-blink-features=AutoExpandDetailsElement` flag.
 
 * [spec PR](https://github.com/whatwg/html/pull/6466)
