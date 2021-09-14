@@ -5,7 +5,7 @@ _Note that issues referenced in this document can refer to either the
 discussed apply to both._
 
 ### TL;DR
-The `renderPriority` attribute is an HTML attribute that which informs the User
+The `renderPriority` attribute is an HTML attribute that informs the User
 Agent to keep the element's rendering state updated with a specified priority.
 
 (Note that the `renderPriority` name is a
