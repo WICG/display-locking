@@ -10,6 +10,9 @@ discussed apply to both._
 The `renderPriority` attribute is an HTML attribute that which informs the User
 Agent to keep the element's rendering state updated with a specified priority.
 
+(Note that the `renderPriority` name is a
+[placeholder name](https://github.com/WICG/display-locking/issues/200))
+
 ### Motivation
 The web includes a number of features and heuristics (such as
 content-visibility, containment and others) that allow the User Agent to skip
