@@ -4,8 +4,6 @@ _Note that issues referenced in this document can refer to either the
 `renderPriority` attribute or `updateRendering()` JavaScript API. The issues
 discussed apply to both._
 
-%TOC%
-
 ### TL;DR
 The `renderPriority` attribute is an HTML attribute that which informs the User
 Agent to keep the element's rendering state updated with a specified priority.
