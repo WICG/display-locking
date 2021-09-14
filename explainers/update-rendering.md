@@ -76,7 +76,7 @@ rendering with a given priority.
 
 * Setting the attribute on an element that contains descendants with
   `content-visibility: hidden`, `display: none`, or similar styles would not
-  cause such descendants to be updated. This is a consequence of the fact that
+  cause the contents of such elements to be updated. This is a consequence of the fact that
   a fully updated parent element has all its rendering work completed without
   updating such descendants. ([more
   details](https://github.com/WICG/display-locking/issues/196))
