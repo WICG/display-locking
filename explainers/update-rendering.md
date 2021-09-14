@@ -79,5 +79,5 @@ rendering with a given priority.
   cause the contents of such elements to be updated. This is a consequence of the fact that
   a fully updated parent element has all its rendering work completed without
   updating such descendants. ([more
-  details](https://github.com/WICG/display-locking/issues/196))
+  details](https://github.com/WICG/display-locking/issues/196)). If such an update is desired, a `renderPriority` attribute should be set on such elements.
 
