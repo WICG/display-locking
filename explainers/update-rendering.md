@@ -40,8 +40,8 @@ The values that the attribute takes inform the User Agent of developer intent:
 * `background` is the lowest priority, and is meant to be used for updates that
   are not time-critical, such as background updates for speculative layout.
 
-* `auto` is the default priority, which should be equivalent to `userBlocking`
-  for the purposes of User Agent prioritization.
+* `auto` is the default priority, which allows the User Agent select an
+  approriate priotization for rendering work.
 
 Note that the attribute values follow [the postTask API](https://wicg.github.io/scheduling-apis/#sec-task-priorities)
 example.
