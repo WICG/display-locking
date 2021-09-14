@@ -80,20 +80,22 @@ The feature is currently implemented and shipped in Chromium M83.
 * [privacy assessment](https://github.com/WICG/display-locking/blob/master/privacy-assessments/contain-intrinsic-size.md)
 
 
-### `updateRendering()`
+### `renderPriority` attribute
 
 #### Summary
 
-`updateRendering` is a JavaScript API that allows asynchronous rendering updates
-within a DOM subtree. It also has a attribute implementation which lets the
-user-agent make the decision of when to asynchronously update the annotated
-element subtrees.
+`renderPriority` ([placeholder name](https://github.com/WICG/display-locking/issues/200))
+is an HTML attribute that indicates a request from the developer to keep the element
+and its subtree updated with a certain priority. The User Agent is then responsible for
+scheduling the updates using the specified priority as a strong hint for prioritizing
+the work.
 
 #### Status
 
 This feature is in active development.
 
-[discussion & open questions](https://github.com/WICG/display-locking/blob/master/explainers/update-rendering.md)
+* [discussion & open questions](https://github.com/WICG/display-locking/blob/master/explainers/update-rendering.md)
+* [issues](https://github.com/WICG/display-locking/labels/updateRendering)
 
 ## Disclaimer
 
