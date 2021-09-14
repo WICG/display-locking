@@ -37,8 +37,13 @@ The values that the attribute takes inform the User Agent of developer intent:
   updates that visible to the user but not necessarily blocking user actions,
   such as rendering secondary parts of the page. This is the default priority.
 
-* `background` is the lowest priority, and is meant to be used for updates that
-  are not time-critical, such as background updates for speculative layout.
+* `background` is the lowest priority which permits updates, and is meant to be
+  used for updates that are not time-critical, such as background updates for
+  speculative layout.
+
+* `never` is the value that skips rendering updates. Note that this value only
+  has an effect if the rendering of the page would already have been skipped --
+  See Notes and Clarification below.
 
 * `auto` is the default priority, which allows the User Agent select an
   approriate priotization for rendering work.
