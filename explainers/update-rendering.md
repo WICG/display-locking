@@ -49,7 +49,7 @@ updateRendering() returns new promises, with the ultimate priority of the
 request being the highest requested priority.
 
 ### Proposal: `keepUpdated` element attribute
-The declarative version `updateRendering()` is an attribute called `keepUpdated`.
+The declarative version of `updateRendering()` is an attribute called `keepUpdated`.
 
 When present, this attribute informs the User Agent that it should keep the
 element and its subtree updated whenever possible. The timing and frequency of
