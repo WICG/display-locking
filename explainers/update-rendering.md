@@ -24,9 +24,9 @@ presented.
 
 ### Proposal: `renderPriority` element attribute
 When present, this attribute informs the User Agent that it should keep the
-element and its subtree updated according to the specified priority. The timing and frequency of
-updates are kept in the User Agent's control to allow flexibility in
-prioritizing this work.
+element and its subtree updated according to the specified priority. The timing
+and frequency of updates are kept in the User Agent's control to allow
+flexibility in prioritizing this work.
 
 The values that the attribute takes inform the User Agent of developer intent:
 * `userBlocking` is the highest priority, and is meant to be used for updates
@@ -81,8 +81,9 @@ rendering with a given priority.
 
 * Setting the attribute on an element that contains descendants with
   `content-visibility: hidden`, `display: none`, or similar styles would not
-  cause the contents of such elements to be updated. This is a consequence of the fact that
-  a fully updated parent element has all its rendering work completed without
-  updating such descendants. ([more
-  details](https://github.com/WICG/display-locking/issues/196)). If such an update is desired, a `renderPriority` attribute should be set on such elements.
-
+  cause the contents of such elements to be updated. This is a consequence of
+  the fact that a fully updated parent element has all its rendering work
+  completed without updating such descendants. ([more details](https://github.com/WICG/display-locking/issues/196)).
+  If such an update is desired, a `renderPriority` attribute should be set on
+  such elements. Note that recursive `renderPriority` settings may be considered
+  in the future.
