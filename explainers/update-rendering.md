@@ -24,7 +24,7 @@ presented.
 
 ### Proposal: `renderPriority` element attribute
 When present, this attribute informs the User Agent that it should keep the
-element and its subtree updated whenever possible. The timing and frequency of
+element and its subtree updated according to the specified priority. The timing and frequency of
 updates are kept in the User Agent's control to allow flexibility in
 prioritizing this work.
 
