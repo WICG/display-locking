@@ -57,6 +57,9 @@ Since the User Agent typically keeps rendering state of subtrees up-to-date,
 this feature would be a no-op in a majority of cases. For instance, having
 `renderPriority` on a visible, on screen, element would not have to do any
 work since the rendering state of such an element is already kept up to date.
+(Note that it is an [open question](https://github.com/WICG/display-locking/issues/202)
+whether the behavior of visible elements with `renderPriority` should cause
+asynchronous updates)
 
 We're proposing this feature as an enhancement for the `content-visibility` CSS
 property. For example, when `content-visibity: hidden` property is applied to
