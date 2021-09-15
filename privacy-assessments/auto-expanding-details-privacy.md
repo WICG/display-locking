@@ -34,7 +34,7 @@ No.
 
 ### 2.8. What data does this specification expose to an origin? Please also document what data is identical to data exposed by other features, in the same or different contexts.
 
-This feature does not expose any information about an origin's state and does not enable sending or receving of any data to or from a network connection.
+This feature does not expose any information about an origin's state and does not enable sending or receiving of any data to or from a network connection.
 
 ### 2.9. Does this specification enable new script execution/loading mechanisms?
 
