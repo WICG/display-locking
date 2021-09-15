@@ -12,7 +12,7 @@ Yes.
 
 ### 2.3. How does this specification deal with personal information or personally-identifiable information or information derived thereof?
 
-If you consider find-in-page queries or ScrollToTextFragment queries persinal information or PII, it is dealt with the same way "sensitive information" is in the next section.
+If you consider find-in-page queries or ScrollToTextFragment queries personal information or PII, it is dealt with the same way "sensitive information" is in the next section.
 
 No new information stored on the device is exposed by this feature.
 
