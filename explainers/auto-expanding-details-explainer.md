@@ -6,7 +6,7 @@ Today, users can’t search for content inside `<details>` elements when they ar
 
 # The solution
 
-The solution is to make the hidden contents of closed details elements searchable by find-in-page and have the browser  automatically them when trying to scroll to their hidden contents.
+The solution is to make the hidden contents of closed details elements searchable by find-in-page and have the browser automatically open them when trying to scroll to their hidden contents.
 
 In addition to find-in-page, this feature should also work for Element fragments (navigating to a hash with an element id) and [ScrollToTextFragment](https://github.com/WICG/scroll-to-text-fragment/issues/173) in order to make content hidden inside `<details>` elements more findable and shareable.
 
