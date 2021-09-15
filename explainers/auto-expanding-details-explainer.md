@@ -14,4 +14,4 @@ This feature has already been [added to the HTML spec](https://github.com/whatwg
 
 # Privacy concerns
 
-A security and privacy self review can be found [here](/privacy-assessments/auto-expanding-details-privacy.md). TL;DR this feature does not reveal any new sensitive information to the page due to the existing `scroll` events and `:target` psuedo selector.
+A security and privacy self review can be found [here](/privacy-assessments/auto-expanding-details-privacy.md). TL;DR this feature does not reveal any new sensitive information to the page due to the existing `scroll` events and `:target` pseudo selector.
