@@ -62,15 +62,11 @@ This feature will work the same regardless of incognito mode being enabled or di
 
 ### 2.15. Does this specification have a "Security Considerations" and "Privacy Considerations" section?
 
-I included a Privacy Considerations section further down this document. I did not include a Security Considerations section because I do not believe this feature exposes any security vulnerabilities.
+A Privacy Considerations section can be found further down in this document. There is no Security Considerations section because this feature does not expose any security vulnerabilities.
 
 ### 2.16. Does this specification allow downgrading default security characteristics?
 
 No.
-
-### 2.17. What should this questionnaire have asked?
-
-I have no suggestions to improve this questionnaire.
 
 ## Privacy Considerations
 
@@ -92,4 +88,4 @@ No privacy mitigations have been implemented.
 
 ### 4. What privacy mitigations have considered and not implemented (and why)?
 
-Adding a delay to find-in-page's scrolling would help mitigate the possibility of this feature being used to snoop on find-in-page. Due to the existing `scroll` events, this feature does not make the situation any worse and therefore should not be blocked on adding a delay to find-in-page. However, I do plan on adding the find-in-page delay to chromium.
+Adding a delay to find-in-page's scrolling would help mitigate the possibility of this feature being used to snoop on find-in-page. Due to the existing `scroll` events, this feature does not make the situation any worse and therefore should not be blocked on adding a delay to find-in-page. However, the find-in-page delay is planned to be implemented in chromium.
