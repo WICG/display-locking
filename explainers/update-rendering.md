@@ -76,6 +76,7 @@ Consider the following example.
 <div id=container style="content-visibility: hidden">
   <!-- some complicated subtree here -->
   ...
+</div>
 ```
 
 Here the contents of the `#container` are not visible, and its rendering state
@@ -94,6 +95,7 @@ The solution is to add the `renderPriority` attribute:
 <div id=container renderPriority=background style="content-visibility: hidden">
   <!-- some complicated subtree here -->
   ...
+</div>
 ```
 
 Here, the developer has added renderPriority=background, which means that they
