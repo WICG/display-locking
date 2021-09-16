@@ -54,7 +54,9 @@ None.
 
 ### 2.13. How does this specification distinguish between behavior in first-party and third-party contexts?
 
-If a match is found in a cross-origin iframe and a details element exists in a parent frame, this feature will not be used and the details element will not be automatically expanded.
+ScrollToTextFragment doesn't work on cross-origin iframes, so that isn't a concern for this feature.
+
+Find-in-page does work on cross origin iframes, but every time find-in-page scrolls to a match in an iframe it will continue to emit `scroll` events which are already revealing more information than this feature would.
 
 ### 2.14. How does this specification work in the context of a user agent's Private Browsing or "incognito" mode?
 
