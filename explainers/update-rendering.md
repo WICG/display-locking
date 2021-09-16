@@ -104,7 +104,7 @@ to be kept up to date with a low priority.
 
 Assuming that the User Agent completes this work (i.e. it is not otherwise busy
 doing more important rendering work), then when the developer removes
-`content-visibility` style, the contents are displayed without delay or jank.
+the `content-visibility` style, the contents are displayed without delay or jank.
 This is a consequence of the fact that the rendering state should already be
 up-to-date, completed cooperatively with the rest of the required work.
 
