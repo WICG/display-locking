@@ -90,4 +90,4 @@ No privacy mitigations have been implemented.
 
 ### 4. What privacy mitigations have considered and not implemented (and why)?
 
-Adding a delay to find-in-page's scrolling would help mitigate the possibility of this feature being used to snoop on find-in-page. Due to the existing `scroll` events, this feature does not make the situation any worse and therefore should not be blocked on adding a delay to find-in-page. However, the find-in-page delay is planned to be implemented in chromium.
+Adding a delay to the frequency find-in-page queries are sent to the page would help mitigate the possibility of this feature being used to snoop on find-in-page. Due to the existing `scroll` events, this feature does not make the situation any worse and therefore should not be blocked on adding a delay to find-in-page. However, the find-in-page delay is planned to be implemented in chromium.
