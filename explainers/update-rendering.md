@@ -98,7 +98,7 @@ The solution is to add the `renderPriority` attribute:
 </div>
 ```
 
-Here, the developer has added renderPriority=background, which means that they
+Here, the developer has added `renderPriority=background`, which means that they
 would like the User Agent to keep the rendering state of `#container`'s content
 to be kept up to date with a low priority.
 
