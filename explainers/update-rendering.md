@@ -87,7 +87,9 @@ This is typically done to avoid rendering work in this subtree. However, when
 the developer decides that the contents should now be visible, they remove
 `content-visibility: hidden` style. This causes all of the rendering to be
 updated in the subsequent frame. This work, in turn, can cause undue delay
-(for example, some experimental data from Facebook indicates up to a [250ms](https://web.dev/content-visibility/#hiding-content-with-content-visibility:-hidden) delay due to this work in practice).
+(for example, some experimental data from Facebook indicates up to a
+[250ms](https://web.dev/content-visibility/#hiding-content-with-content-visibility:-hidden)
+delay due to this work in practice).
 
 The solution is to add the `renderPriority` attribute:
 
@@ -103,10 +105,13 @@ would like the User Agent to keep the rendering state of `#container`'s content
 to be kept up to date with a low priority.
 
 Assuming that the User Agent completes this work (i.e. it is not otherwise busy
-doing more important rendering work), then when the developer removes
-the `content-visibility` style, the contents are displayed without delay or jank.
+doing more important rendering work), then when the developer removes the
+`content-visibility` style, the contents are displayed without undue delay.
 This is a consequence of the fact that the rendering state should already be
-up-to-date, completed cooperatively with the rest of the required work.
+up-to-date, completed cooperatively with the rest of the required work. Note
+that there may still be rendering work to be done, since the act of removing
+`content-visibility: hidden` may cause layout changes that need to be updated
+(e.g. containment may be turned off).
 
 
 ### Notes and Clarifications
