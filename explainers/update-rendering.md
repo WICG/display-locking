@@ -87,7 +87,7 @@ This is typically done to avoid rendering work in this subtree. However, when
 the developer decides that the contents should now be visible, they remove
 `content-visibility: hidden` style. This causes all of the rendering to be
 updated in the subsequent frame. This work, in turn, can cause undue delay
-and visible jank on the page.
+(for example, some experimental data from Facebook indicates up to a [250ms](https://web.dev/content-visibility/#hiding-content-with-content-visibility:-hidden) delay due to this work in practice).
 
 The solution is to add the `renderPriority` attribute:
 
