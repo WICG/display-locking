@@ -85,7 +85,7 @@ is not necessarily up-to-date since the contents of the element are
 
 This is typically done to avoid rendering work in this subtree. However, when
 the developer decides that the contents should now be visible, they remove
-`content-visibility: hidden` style. This causes all of the rendering to be
+the `content-visibility: hidden` style. This causes all of the rendering to be
 updated in the subsequent frame. This work, in turn, can cause undue delay
 (for example, some experimental data from Facebook indicates up to a
 [250ms](https://web.dev/content-visibility/#hiding-content-with-content-visibility:-hidden)
