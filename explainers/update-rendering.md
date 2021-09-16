@@ -79,7 +79,7 @@ Consider the following example.
 </div>
 ```
 
-Here the contents of the `#container` are not visible, and its rendering state
+Here the contents of `#container` are not visible, and its rendering state
 is not necessarily up-to-date since the contents of the element are
 [skipped](https://www.w3.org/TR/css-contain-2/#skips-its-contents)
 
