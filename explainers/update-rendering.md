@@ -1,14 +1,14 @@
-## `renderPriority` attribute.
+## `renderpriority` attribute.
 
 _Note that issues referenced in this document can refer to either the
-`renderPriority` attribute or `updateRendering()` JavaScript API. The issues
+`renderpriority` attribute or `updateRendering()` JavaScript API. The issues
 discussed apply to both._
 
 ### TL;DR
-The `renderPriority` attribute is an HTML attribute that informs the User
+The `renderpriority` attribute is an HTML attribute that informs the User
 Agent to keep the element's rendering state updated with a specified priority.
 
-(Note that the `renderPriority` name is a
+(Note that the `renderpriority` name is a
 [placeholder name](https://github.com/WICG/display-locking/issues/200))
 
 ### Motivation
@@ -22,18 +22,18 @@ words, if the website intends to show an element whose contents are currently
 skipped, then skipping work may cause jank when the contents are ultimately
 presented.
 
-### Proposal: `renderPriority` element attribute
+### Proposal: `renderpriority` element attribute
 When present, this attribute informs the User Agent that it should keep the
 element and its subtree updated according to the specified priority. The timing
 and frequency of updates are kept in the User Agent's control to allow
 flexibility in prioritizing this work.
 
 The values that the attribute takes inform the User Agent of developer intent:
-* `userBlocking` is the highest priority, and is meant to be used for updates
+* `user-blocking` is the highest priority, and is meant to be used for updates
   that are blocking the user’s ability to interact with the page, such as
   rendering the core experience or responding to user input.
 
-* `userVisible` is the second highest priority, and is meant to be used for
+* `user-visible` is the second highest priority, and is meant to be used for
   updates that visible to the user but not necessarily blocking user actions,
   such as rendering secondary parts of the page. This is the default priority.
 
@@ -55,16 +55,16 @@ example.
 ### Interaction with `content-visibility`
 Since the User Agent typically keeps rendering state of subtrees up-to-date,
 this feature would be a no-op in a majority of cases. For instance, having
-`renderPriority` on a visible, on screen, element would not have to do any
+`renderpriority` on a visible, on screen, element would not have to do any
 work since the rendering state of such an element is already kept up to date.
 (Note that it is an [open question](https://github.com/WICG/display-locking/issues/202)
-whether the behavior of visible elements with `renderPriority` should cause
+whether the behavior of visible elements with `renderpriority` should cause
 asynchronous updates)
 
 We're proposing this feature as an enhancement for the `content-visibility` CSS
 property. For example, when `content-visibity: hidden` property is applied to
 the element, it ensures that the element's subtree is not visible and that its
-rendering state is not updated to save CPU time. Adding `renderPriority` on
+rendering state is not updated to save CPU time. Adding `renderpriority` on
 such an element, however, would cause the User Agent to continually process its
 rendering with a given priority.
 
@@ -91,16 +91,16 @@ updated in the subsequent frame. This work, in turn, can cause undue delay
 [250ms](https://web.dev/content-visibility/#hiding-content-with-content-visibility:-hidden)
 delay due to this work in practice).
 
-The solution is to add the `renderPriority` attribute:
+The solution is to add the `renderpriority` attribute:
 
 ```html
-<div id=container renderPriority=background style="content-visibility: hidden">
+<div id=container renderpriority=background style="content-visibility: hidden">
   <!-- some complicated subtree here -->
   ...
 </div>
 ```
 
-Here, the developer has added `renderPriority=background`, which means that they
+Here, the developer has added `renderpriority=background`, which means that they
 would like the User Agent to keep the rendering state of `#container`'s content
 to be kept up to date with a low priority.
 
@@ -133,6 +133,6 @@ that there may still be rendering work to be done, since the act of removing
   cause the contents of such elements to be updated. This is a consequence of
   the fact that a fully updated parent element has all its rendering work
   completed without updating such descendants. ([more details](https://github.com/WICG/display-locking/issues/196)).
-  If such an update is desired, a `renderPriority` attribute should be set on
-  such elements. Note that recursive `renderPriority` settings may be considered
+  If such an update is desired, a `renderpriority` attribute should be set on
+  such elements. Note that recursive `renderpriority` settings may be considered
   in the future.

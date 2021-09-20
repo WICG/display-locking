@@ -80,11 +80,11 @@ The feature is currently implemented and shipped in Chromium M83.
 * [privacy assessment](https://github.com/WICG/display-locking/blob/master/privacy-assessments/contain-intrinsic-size.md)
 
 
-### `renderPriority` attribute
+### `renderpriority` attribute
 
 #### Summary
 
-`renderPriority` ([placeholder name](https://github.com/WICG/display-locking/issues/200))
+`renderpriority` ([placeholder name](https://github.com/WICG/display-locking/issues/200))
 is an HTML attribute that indicates a request from the developer to keep the element
 and its subtree updated with a certain priority. The User Agent is then responsible for
 scheduling the updates using the specified priority as a strong hint for prioritizing
