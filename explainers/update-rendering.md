@@ -12,15 +12,16 @@ Agent to keep the element's rendering state updated with a specified priority.
 [placeholder name](https://github.com/WICG/display-locking/issues/200))
 
 ### Motivation
-The web includes a number of features and heuristics (such as
-content-visibility, containment and others) that allow the User Agent to skip
-rendering work for elements and contents of elements. This is done with the
-intent to allow other content, animations and interactions to remain smooth and
-get as much CPU time as possible. However, there are situations where this
-neglects the site intent of showing currently skipped content shortly. In other
-words, if the website intends to show an element whose contents are currently
-skipped, then skipping work may cause jank when the contents are ultimately
-presented.
+The web includes a number of features and heuristics, such as
+content-visibility, containment and others, that allow the User Agent to skip
+rendering work for elements and contents of elements when they are not visible to the
+user. However if that content is subsequently brought on-screen, or its rendering state is
+queried via a DOM API, there may be a significant delay to render the content.
+
+An example use case is optimizing the speed of single-page-application navigations. If
+the application can predict a likely user action, then it can prerender the next
+view offscreen via `content-visibility: hidden` plus `renderpriority`. This will make the
+single-page application navigations faster for the user.
 
 ### Proposal: `renderpriority` element attribute
 When present, this attribute informs the User Agent that it should keep the
