@@ -159,7 +159,7 @@ also hide another corresponding section, perhaps by applying the
 ## Comparison to the `<details>` element
 
 The [auto-expanding `<details>`
-feature](https://github.com/whatwg/html/pull/6466) works very similarly to this
+element](https://github.com/whatwg/html/pull/6466) works very similarly to this
 feature. This feature empowers developers to build their own auto-expandable
 details elements and more by exposing the primitive features used to make the
 auto-expandable `<details>` element.
