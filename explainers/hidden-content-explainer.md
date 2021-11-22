@@ -21,7 +21,7 @@ The browser should fire `beforematch` on the `hidden=until-found` element and
 then remove the `hidden=until-found` attribute at render timing for these cases:
 * There is a new find-in-page
   [active match](https://html.spec.whatwg.org/multipage/interaction.html#fip-matches)
-  which is located inside an element with the `hidden=until-found` attribute.
+  which is located in a subtree of an element with the `hidden=until-found` attribute.
 * There is a [scroll-to-text](https://github.com/WICG/ScrollToTextFragment)
   navigation (`example.com/#:~:text=foo`), where the target text is located
   inside a `hidden=until-found` element.
