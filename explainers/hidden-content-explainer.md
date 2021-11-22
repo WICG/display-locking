@@ -4,7 +4,7 @@
 
 This is an explainer for two coupled features:
 
-1. The `hidden=until-found` HTML attribute. This uses the string `until-found`
+1. The `hidden=until-found` HTML attribute. This adds `until-found`
    as a value for the existing `hidden` HTML boolean attribute. When this
    special string is used as the value for the `hidden` attribute, the browser
    will make that content searchable to user-agent algorithms such as
