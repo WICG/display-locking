@@ -40,9 +40,6 @@ If there are multiple `hidden=until-found` elements in the flat tree ancestor
 chain of the target element to reveal, then all of them will be removed and all
 of them will receive the `beforematch` event.
 
-Note that the proposal for `hidden=until-found` and `beforematch` is still in
-review and is subject to change.
-
 ## Motivation
 
 With the evolution of the web, there are always new and interesting ways that
