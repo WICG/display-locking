@@ -9,7 +9,7 @@ This is an explainer for two coupled features:
    value is used, the browser
    will make the affected content searchable by user-agent algorithms such as
    find-in-page. When the user-agent wants to scroll this hidden content into view,
-   the browser will automatically remove the `hidden` attribute from the element
+   the it will automatically remove the `hidden` attribute from the element
    to reveal it.
 
 2. The `beforematch` event is fired before the browser removes the
