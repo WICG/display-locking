@@ -32,7 +32,7 @@ then remove the `hidden=until-found` attribute at render timing for these cases:
   element. We aren't certain if `window.find` will be supported for sure
   yet, see the detailed section about it below.
 
-If the matching text spans multiple `hidden=until-found` ancestors, only the
+If the matching text spans multiple `hidden=until-found` siblings, only the
 first `hidden=until-found` will be removed and the `beforematch` event will only
 be fired on the first one.
 
