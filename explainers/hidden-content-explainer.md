@@ -218,7 +218,7 @@ tree.
 
 Websites are encouraged to provide a way to reveal `hidden=until-found` content
 without the use of find-in-page, ScrollToTextFragment, or element fragment
-navigation in order to ensure that all users can access the hidden content, like
+navigation in order to ensure that all users can access the hidden content using a method other than find-in-page, such as
 the clickable/activatable label to expand a `<details>` element.
 
 ## Supporting `window.find()`
