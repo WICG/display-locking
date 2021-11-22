@@ -26,7 +26,7 @@ then remove the `hidden=until-found` attribute at render timing for these cases:
   navigation (`example.com/#:~:text=foo`), where the target text is located
   inside a `hidden=until-found` element.
 * There is an element fragment navigation or change (`example.com/#foo`),
-  where the target is the element whose id matches the id in the fragment.
+  where the target is an element in the subtree of a `hidden=until-found` element.
 * [`window.find`](https://developer.mozilla.org/en-US/docs/Web/API/Window/find)
   found a text match located inside a `hidden=until-found`
   element. We aren't certain if `window.find` will be supported for sure
