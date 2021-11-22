@@ -6,7 +6,7 @@ This is an explainer for two coupled features:
 
 1. The `hidden=until-found` HTML attribute. This adds `until-found`
    as a new value for the existing `hidden` HTML boolean attribute. When this
-   special string is used as the value for the `hidden` attribute, the browser
+   value is used, the browser
    will make that content searchable to user-agent algorithms such as
    find-in-page. When the browser wants to scroll this hidden content into view,
    the browser will automatically remove the `hidden` attribute from the element
