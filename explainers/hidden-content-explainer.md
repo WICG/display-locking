@@ -212,7 +212,9 @@ runs can reuse the saved style and layout.
 ## Accessibility
 
 `hidden=until-found` subtrees will not be included in the accessibility tree
-because they internally use `contenet-visibility:hidden`.
+because they are not visible on the screen. This will be implemented in the same
+way that `content-visibility:hidden` content is removed from the accessibility
+tree.
 
 Websites are encouraged to provide a way to reveal `hidden=until-found` content
 without the use of find-in-page, ScrollToTextFragment, or element fragment
