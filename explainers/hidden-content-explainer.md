@@ -8,7 +8,7 @@ This is an explainer for two coupled features:
    as a new value for the existing `hidden` HTML boolean attribute. When this
    value is used, the browser
    will make the affected content searchable by user-agent algorithms such as
-   find-in-page. When the browser wants to scroll this hidden content into view,
+   find-in-page. When the user-agent wants to scroll this hidden content into view,
    the browser will automatically remove the `hidden` attribute from the element
    to reveal it.
 
