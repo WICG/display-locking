@@ -29,8 +29,8 @@ then remove the `hidden=until-found` attribute at render timing for these cases:
   where the target is an element in the subtree of a `hidden=until-found` element.
 * [`window.find`](https://developer.mozilla.org/en-US/docs/Web/API/Window/find)
   found a text match located inside a `hidden=until-found`
-  element. We aren't certain if `window.find` will be supported for sure
-  yet, see the detailed section about it below.
+  element. `window.find` won't be supported until [`window.find` gets
+  specced](https://github.com/whatwg/html/issues/3539).
 
 If the matching text spans multiple `hidden=until-found` siblings, only the
 first `hidden=until-found` will be removed and the `beforematch` event will only
