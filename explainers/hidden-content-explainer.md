@@ -72,39 +72,51 @@ sections -- something that is not currently possible.
 .title::before {
   content: '⬇️ ';
 }
-[hidden=until-found] > .title::before {
+.collapsed > .title::before {
   content: '➡️ ';
 }
 
 .details {
   margin-left: 20px;
 }
+.collapsed > .details {
+  content-visibility: hidden-matchable;
+}
 </style>
 
 Please explore the following sections:
-<div hidden=until-found class=section>
+<div class="section collapsed">
   <h2 class=title>Introduction</h1>
-  <div class=details>lorem ipsum ...</div>
+  <div hidden=until-found class=details>lorem ipsum ...</div>
 </div>
 
-<div hidden=until-found class=section>
+<div class="section collapsed">
   <h2 class=title>Thesis</h1>
-  <div class=details>dolor sit amet ...</div>
+  <div hidden=until-found class=details>dolor sit amet ...</div>
 </div>
 
-<div hidden=until-found class=section>
+<div class="section collapsed">
   <h2 class=title>Conclusion</h1>
-  <div class=details>consectetur adipiscing ...</div>
+  <div hidden=until-found class=details>consectetur adipiscing ...</div>
 </div>
 
 <script>
+function updateHiddenAttribute(section) {
+  const details = section.querySelector('.details');
+  if (section.classList.contains('collapsed')) {
+    details.setAttribute('hidden', 'until-found');
+  } else {
+    details.removeAttribute('hidden');
+  }
+}
 document.querySelectorAll('.section').forEach(section => {
+  section.onbeforematch = () => {
+    section.classList.remove('collapsed');
+    updateHiddenAttribute(section);
+  };
   section.querySelector('.title').onclick = () => {
-    if (section.hasAttribute('hidden') {
-      section.removeAttribute('hidden');
-    } else {
-      section.setAttribute('hidden', 'until-found');
-    }
+    section.classList.toggle('collapsed');
+    updateHiddenAttribute(section);
   };
 });
 </script>
@@ -142,16 +154,6 @@ Using this feature is a good optimization for low power mobile devices that
 don't want to render all of the content in the page but still making it
 accessible to features such as find-in-page. Making long articles with collapsed
 sections accessible to find-in-page will improve the user experience.
-
-## The `beforematch` event and other use cases
-
-The previous example doesn't need to use the proposed `beforematch` event
-because all other visual state in the example is controlled with HTML attribute
-selectors in CSS. However, we should still notify the page that something is
-being revealed via the `beforematch` event. More complex use cases include
-carousels and tabs, where the revealing of one section means that the page must
-also hide another corresponding section, perhaps by applying the
-`hidden=until-found` attribute, in a `beforematch` event handler.
 
 ## Comparison to the `<details>` element
 
