@@ -233,16 +233,29 @@ only benefit I see to adding support to `window.find` would be to make it easier
 to add WPT tests for beforematch, since we cant have WPTs for find-in-page.
 However, that would also require speccing `window.find`.
 
-## Backwards compatability with the `hidden` attribute
+## Backwards compatibility with the `hidden` attribute
 
 If a browser which doesn't implement this feature renders a `hidden=until-found`
 element, it will still apply the `display:none` style from the `hidden`
 attribute, which will still make the element hidden like the
 `content-visiblity:hidden` style that `hidden=until-found` is supposed to apply.
-This means that websites won't need to specially consider support for this
-feature between browsers, it just means that find-in-page and
-ScrollToTextFragment won't work as nicely in the browsers which don't support
-it.
+This means that hopefully websites won't need to specially consider support for
+this feature between browsers.
+
+However, `content-visibility:hidden` will still allow some parts of the
+`hidden=until-found` element to be rendered: the [generated
+box](https://drafts.csswg.org/css2/#visibility) of the element.
+
+As a mitigation for this, the following CSS should be included in the user agent
+stylesheet:
+```css
+[hidden=until-found] {
+  visibility: hidden;
+}
+[hidden=until-found] > * {
+  visibility: visible;
+}
+```
 
 ## Alternatives considered
 Given the purpose of displaying `hidden=until-found` text when it is searched
