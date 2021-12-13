@@ -208,7 +208,7 @@ performance of searching the content inside the `hidden=until-found` subtree
 because searching for text in these areas requires computing style and layout.
 `content-visibility` saves this computed style and layout instead of
 `display:none` which deletes them, which means that once the first run of
-find-in-page or ScrollToTextFragment will compute these values, and subsequent
+find-in-page or ScrollToTextFragment computes these values, the subsequent
 runs can reuse the saved style and layout.
 
 ## Accessibility
