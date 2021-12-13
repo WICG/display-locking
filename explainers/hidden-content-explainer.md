@@ -203,7 +203,7 @@ browser will not scroll to the target text.
 
 `hidden=until-found` will be implemented as a presentational style of
 `content-visibility:hidden` as opposed to the existing `hidden` attribute which
-applies a presentational style of `display:none`. This will improve the
+applies a presentational style of `display:none`. This improves the
 performance of searching the content inside the `hidden=until-found` subtree
 because searching for text in these areas requires computing style and layout.
 `content-visibility` saves this computed style and layout instead of
