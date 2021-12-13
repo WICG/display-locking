@@ -205,9 +205,9 @@ browser will not scroll to the target text.
 `content-visibility:hidden` as opposed to the existing `hidden` attribute which
 applies a presentational style of `display:none`. This improves the
 performance of searching the content inside the `hidden=until-found` subtree
-because searching for text in these areas requires computing style and layout.
-`content-visibility` saves this computed style and layout instead of
-`display:none` which deletes them, which means that once the first run of
+because `content-visibility: hidden`, unlike `display: none`, allows the rendering state
+needed to perform a text search to be cached.
+This means that once the first run of
 find-in-page or ScrollToTextFragment computes these values, the subsequent
 runs can reuse the saved style and layout.
 
