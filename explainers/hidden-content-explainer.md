@@ -209,7 +209,7 @@ because `content-visibility: hidden`, unlike `display: none`, allows the renderi
 needed to perform a text search to be cached.
 This means that once the first run of
 find-in-page or ScrollToTextFragment computes these values, the subsequent
-runs can reuse the saved style and layout.
+runs can reuse the cached rendering state.
 
 ## Accessibility
 
