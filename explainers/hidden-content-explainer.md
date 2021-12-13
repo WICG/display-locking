@@ -237,8 +237,7 @@ However, that would also require speccing `window.find`.
 
 If a browser which doesn't implement this feature processes a `hidden=until-found`
 attribute, it will still apply the `display:none` style from the `hidden`
-attribute, which will still make the element hidden like the
-`content-visiblity:hidden` style that `hidden=until-found` is supposed to apply.
+attribute, which will still make the element hidden.
 This means that hopefully websites won't need to specially consider support for
 this feature between browsers.
 
