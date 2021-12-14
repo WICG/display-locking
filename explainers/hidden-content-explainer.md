@@ -235,14 +235,12 @@ However, that would also require speccing `window.find`.
 
 ## Backwards compatibility with the `hidden` attribute
 
-If a browser which doesn't implement this feature processes a `hidden=until-found`
-attribute, it will still apply the `display:none` style from the `hidden`
-attribute, which will still make the element hidden.
-This provides desired behavior on browsers that do not support `hidden=until-found`.
-
-However, `content-visibility:hidden` will still allow some parts of the
-`hidden=until-found` element to be rendered: the [generated
-box](https://drafts.csswg.org/css2/#visibility) of the element.
+If a browser which doesn't implement this feature processes a
+`hidden=until-found` attribute, it will apply `display:none` instead of
+`content-visibility:hidden`. This should make it visually appear the same on all
+browsers, but `content-visibility:hidden` still allows some parts of the element
+to be rendered: the [generated box](https://drafts.csswg.org/css2/#visibility)
+of the element.
 
 As a mitigation for this, the following CSS should be included in the user agent
 stylesheet:
