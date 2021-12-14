@@ -242,8 +242,8 @@ browsers, but `content-visibility:hidden` still allows some parts of the element
 to be rendered: the [generated box](https://drafts.csswg.org/css2/#visibility)
 of the element.
 
-As a mitigation for this, the following CSS should be included in the user agent
-stylesheet:
+To allow compatibility with hidden attribute, and to make adoption straight
+forward, the user-agent stylesheet must also include the following:
 ```css
 [hidden=until-found] {
   visibility: hidden;
