@@ -116,8 +116,28 @@ that there may still be rendering work to be done, since the act of removing
 
 
 ### Notes and Clarifications
-* If the User Agent does not optimize rendering of elements, by skipping work,
-  then the attribute has no effect.
+* If the User Agent does not optimize the rendering of an element, by skipping
+  work, then the attribute has no effect on such an element. Note, however, that
+  the value can still affect subtree elements that _are_ optimized.
+  Specifically, the value dictates the maximum priority that would be used on
+  the subtree element. In the example below, `.is_optimized` will be processed
+  with a `background` priority, since that is the maximum priority established
+  by its parent, regardless of whether the parent is itself optimized.
+
+```html
+<div class=not_optimized renderpriority="background">
+  <div class=is_optimized renderpriority="user-visible"></div>
+</div>
+```
+
+* Note that the UA must be careful about selecting the `auto` priority that is
+  lower than `user-blocking`, since the priority cannot be overriden to be
+  higher -- it can only be lowered. This means that if the overall default
+  `auto` value is equivalent to `user-visible`, for example, then setting a
+  value of `user-blocking` on any element would have no effect. For this reason,
+  we recommend that the default behavior of `auto` is equivalent to
+  `user-blocking` unless the user agent has a good reason to enforce a lower
+  priority.
 
 * Setting the attribute on an element whose rendering state is not updated due
   to `display: none`, ancestor style that prevents update (e.g. ancestor
