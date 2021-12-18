@@ -114,10 +114,79 @@ that there may still be rendering work to be done, since the act of removing
 `content-visibility: hidden` may cause layout changes that need to be updated
 (e.g. containment may be turned off).
 
+### Performance Potential
+
+One of the benefits of this feature comes from the fact that the work can be
+delayed until later. This is, of course, already possible via properties such as
+`display: none` and `content-visibility: hidden`. This means, on its own, this
+benefit is not sufficient to justify adding a new attribute. 
+
+However, consider how a page with `display: none` would typically work: 
+1. The user navigates to the page, which loads, parses, and renders all of the
+   DOM. 
+2. DOM that is styled with `display: none` does not generate layout boxes, which
+   means that rendering work like layout and painting is skipped.
+3. Sometime later, a user action, for example, causes the page to remove the
+   `display: none` style from some large subtree.
+4. At this point, the user agent renders the full subtree synchronously.
+
+This process is similar for `content-visibility: hidden` subtrees.
+
+The synchronous rendering could cause jank, since the amount of work is
+dependent on the DOM and that work must be done synchronously. The key
+observation here is that some time may pass between initial load and when the
+page would like to display hidden content. This naturally leads to a proposal:
+let's use that time to render the hidden content incrementally without causing
+jank. That way, when the page ultimately displays the content, the rendering
+cost is small.
+
+We need to be careful not to render all of `content-visibility: hidden` content
+though, since we don't know whether the page intends to show it to the user at
+all. It is also unclear whether some content is more important, meaning we
+should do more rendering work in such subtrees even if we risk a small amount of
+jank.
+
+This leads us to the `renderpriority` attribute. It allows for the two behaviors
+we want: take the opportunity to use idle time for incremental rendering, and
+to let the page dictate the importance of each hidden content piece. The only
+heuristic here is how much work the User Agent will do, which should be left up
+to the implementation.
+
+Note that one can draw an equivalence to adding `content-visibility: auto` to
+items in a large list. The initial visible content is rendered, but the content
+off-screen remains unrendered. As the user continuously scrolls, more and more
+content enters the viewport and renders. This accomplishes two things: the
+initial load is significantly faster, since we only render on-screen items, and
+the progressive rendering of new content does not jank -- since it is rendered
+one item at a time. We have observed [substatial savings in
+performance](web.dev/content-visibility) in using this approach. The
+renderpriority attribute should allow similar performance gains for general
+content, the availability of which is not tied to the viewport intersection as
+is the case with `content-visibility: auto`.
 
 ### Notes and Clarifications
-* If the User Agent does not optimize rendering of elements, by skipping work,
-  then the attribute has no effect.
+* If the User Agent does not optimize the rendering of an element, by skipping
+  work, then the attribute has no effect on such an element. Note, however, that
+  the value can still affect subtree elements that _are_ optimized.
+  Specifically, the value dictates the maximum priority that would be used on
+  the subtree element. In the example below, `.is_optimized` will be processed
+  with a `background` priority, since that is the maximum priority established
+  by its parent that is no higher than `user-visible`, regardless of whether the parent is itself optimized.
+
+```html
+<div class=not_optimized renderpriority="background">
+  <div class=is_optimized renderpriority="user-visible"></div>
+</div>
+```
+
+* Note that the UA must be careful about selecting the `auto` priority that is
+  lower than `user-blocking`, since the priority cannot be overriden to be
+  higher -- it can only be lowered. This means that if the overall default
+  `auto` value is equivalent to `user-visible`, for example, then setting a
+  value of `user-blocking` on any element would have no effect. For this reason,
+  we recommend that the default behavior of `auto` is equivalent to
+  `user-blocking` unless the user agent has a good reason to enforce a lower
+  priority.
 
 * Setting the attribute on an element whose rendering state is not updated due
   to `display: none`, ancestor style that prevents update (e.g. ancestor
