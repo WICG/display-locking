@@ -141,7 +141,7 @@ jank. That way, when the page ultimately displays the content, the rendering
 cost is small.
 
 We need to be careful not to render all of `content-visibility: hidden` content
-though since we don't know whether the page intends to show it to the user at
+though, since we don't know whether the page intends to show it to the user at
 all. It is also unclear whether some content is more important, meaning we
 should do more rendering work in such subtrees even if we risk a small amount of
 jank.
