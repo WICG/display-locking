@@ -171,7 +171,7 @@ is the case with `content-visibility: auto`.
   Specifically, the value dictates the maximum priority that would be used on
   the subtree element. In the example below, `.is_optimized` will be processed
   with a `background` priority, since that is the maximum priority established
-  by its parent, regardless of whether the parent is itself optimized.
+  by its parent that is no higher than `user-visible`, regardless of whether the parent is itself optimized.
 
 ```html
 <div class=not_optimized renderpriority="background">
