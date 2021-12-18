@@ -126,7 +126,7 @@ However, consider how a page with `display: none` would typically work:
    DOM. 
 2. DOM that is styled with `display: none` does not generate layout boxes, which
    means that rendering work like layout and painting is skipped.
-3. Sometime later, a user action, for example, causes the page to remove
+3. Sometime later, a user action, for example, causes the page to remove the
    `display: none` style from some large subtree.
 4. At this point, the user agent renders the full subtree synchronously.
 
