@@ -284,6 +284,7 @@ Mitigation 2: Change selectors
 }
 <div hidden class=mydiv></div>
 </style>
+```
 
 ## Alternatives considered
 Given the purpose of displaying `hidden=until-found` text when it is searched
