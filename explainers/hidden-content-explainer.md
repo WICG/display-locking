@@ -242,16 +242,48 @@ browsers, but `content-visibility:hidden` still allows some parts of the element
 to be rendered: the [generated box](https://drafts.csswg.org/css2/#visibility)
 of the element.
 
-To allow compatibility with hidden attribute, and to make adoption straight
-forward, the user-agent stylesheet must also include the following:
-```css
-[hidden=until-found] {
-  visibility: hidden;
+If the `hidden=until-found` element still shows a generated box, then it is best
+to avoid letting the styles causing the generated box to apply to the
+`hidden=until-found` element. Here are some examples:
+
+Before usage of `hidden=until-found`:
+```html
+<style>
+.mydiv {
+  /* explicit height and border can both cause a generated box */
+  height: 10px;
+  border: 1px solid blue;
 }
-[hidden=until-found] > * {
-  visibility: visible;
-}
+</style>
+
+<div hidden class=mydiv></div>
 ```
+
+Mitigation 1: Add an extra div
+```html
+<style>
+.mydiv {
+  /* explicit height and border can both cause a generated box */
+  height: 10px;
+  border: 1px solid blue;
+}
+</style>
+
+<div hidden=until-found>
+  <div class=mydiv></div>
+</div>
+```
+
+Mitigation 2: Change selectors
+```html
+<style>
+.mydiv:not([hidden=until-found]) {
+  /* explicit height and border can both cause a generated box */
+  height: 10px;
+  border: 1px solid blue;
+}
+<div hidden class=mydiv></div>
+</style>
 
 ## Alternatives considered
 Given the purpose of displaying `hidden=until-found` text when it is searched
