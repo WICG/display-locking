@@ -2,10 +2,15 @@
 
 * What information might this feature expose to Web sites or other parties, and for what purposes is that exposure necessary?
 
-This function exposes information that is already available to the page, and is
-retrievable by other means. It is being exposed, because it is difficult to
-efficiently and correctly compute this value. The function ss provided as a
-useful convenience. 
+For the most part, this function exposes information that is already available
+to the page, and is retrievable by other means. The exception to this case is
+getting the value from a closed shadow tree. Specifically, if a light DOM
+element is not visible because of the structure of a closed shadow tree, this
+function would be able to return the correct result, but this result is not
+easily retrieved by other means.
+
+It is being exposed, because it is difficult to efficiently and correctly
+compute this value. The function ss provided as a useful convenience. 
 
 * Do features in your specification expose the minimum amount of information necessary to enable their intended uses?
 
@@ -54,7 +59,7 @@ None.
 * How does this specification distinguish between behavior in first-party and third-party contexts?
 
 This feature does not make a distinction between contexts, it acts on DOM state
-already available to the page.
+already available to the page, including closed shadow trees.
 
 * How do the features in this specification work in the context of a browser’s Private Browsing or Incognito mode?
 
@@ -63,8 +68,7 @@ contexts.
 
 * Does this specification have both "Security Considerations" and "Privacy Considerations" sections?
 
-No. I don't believe this is necessary, since this is function that determines
-its result by functionality already available in other APIs
+No.
 
 * Do features in your specification enable origins to downgrade default security protections?
 
