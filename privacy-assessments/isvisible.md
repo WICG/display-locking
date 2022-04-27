@@ -10,7 +10,7 @@ function would be able to return the correct result, but this result is not
 easily retrieved by other means.
 
 It is being exposed, because it is difficult to efficiently and correctly
-compute this value. The function ss provided as a useful convenience. 
+compute this value. The function is provided as a useful and efficient convenience. 
 
 * Do features in your specification expose the minimum amount of information necessary to enable their intended uses?
 
