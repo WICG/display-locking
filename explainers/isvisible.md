@@ -13,7 +13,7 @@ have distinct characteristics and are used for different purposes:
   rendering state and makes the DOM subtree not take up any time while
   processing rendering.
 * `content-visibility: hidden`: this hides the subtree of an element, without
-  destroying the rendering state. It also makes the DOM subtree not take up any
+  destroying the rendering state (i.e. its layout box is preserved). It also makes the DOM subtree not take up any
   time while processing rendering, but allows for the possibility for such
   rendering state to be forced (e.g. via calls to getBoundingClientRect). It
   also allows the element's subtree to be shown again quicker than `display:
