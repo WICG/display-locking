@@ -10,7 +10,7 @@ have distinct characteristics and are used for different purposes:
 * `opacity: 0`: this hides the element and its subtree visually but keeps its layout box and allows for animations
   that fade content in or out.
 * `display: none`: this hides the element and its subtree, it also destroys
-  rendering state and makes the DOM subtree not take up any time while
+  rendering state (removes its layout box) and makes the DOM subtree not take up any time while
   processing rendering.
 * `content-visibility: hidden`: this hides the subtree of an element, without
   destroying the rendering state (i.e. its layout box is preserved). It also makes the DOM subtree not take up any
