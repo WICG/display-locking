@@ -31,7 +31,7 @@ efficiently, since for example access into the subtree hidden by
 `content-visibility: hidden` may cause rendering work to be updated.
 
 Additionally, checking if an element is hidden by a closed shadow tree, such as
-the case with `&lt;details&gt;` element is difficult, if not impossible
+the case with `<details>` element is difficult, if not impossible
 
 For this reason, we propose to add Element.isVisible function to compute the
 values, so that script authors may use this as a correct and efficient way to
