@@ -7,7 +7,7 @@ have distinct characteristics and are used for different purposes:
   make itself visible. In other words, this property doesn't affect the subtree,
   with the exception of providing the `visibility` value to be inherited by
   descendant styles.
-* `opacity: 0`: this hides the element and its subtree and allows for animations
+* `opacity: 0`: this hides the element and its subtree visually but keeps its layout box and allows for animations
   that fade content in or out.
 * `display: none`: this hides the element and its subtree, it also destroys
   rendering state and makes the DOM subtree not take up any time while
