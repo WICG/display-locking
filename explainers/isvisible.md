@@ -3,7 +3,7 @@
 The web features several ways that content can be hidden. Each of the ways may
 have distinct characteristics and are used for different purposes:
 
-* `visibility: hidden`: this hides the element but allows for the descendant to
+* `visibility: hidden`: this hides the element visually but keeps its layout box and allows for the descendant to
   make itself visible. In other words, this property doesn't affect the subtree,
   with the exception of providing the `visibility` value to be inherited by
   descendant styles.
