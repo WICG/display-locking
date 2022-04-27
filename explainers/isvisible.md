@@ -24,7 +24,7 @@ There are times when script wants to determine whether an element is visible to
 the user, or would be visible if it was in the viewport. This can be used for a
 variety of reasons, such as general state tracking of visibility.
 
-This can be hard to get right, since the script author needs to remember to
+This can be hard to compute correctly, since the script author needs to remember to
 check all the necessary methods by which content can be hidden (including
 accounting for the fact that new methods could be added). It also is hard to do
 efficiently, since for example access into the subtree hidden by
