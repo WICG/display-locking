@@ -75,13 +75,6 @@ sections -- something that is not currently possible.
 .collapsed > .title::before {
   content: '➡️ ';
 }
-
-.details {
-  margin-left: 20px;
-}
-.collapsed > .details {
-  content-visibility: hidden-matchable;
-}
 </style>
 
 Please explore the following sections:
@@ -101,22 +94,19 @@ Please explore the following sections:
 </div>
 
 <script>
-function updateHiddenAttribute(section) {
-  const details = section.querySelector('.details');
-  if (section.classList.contains('collapsed')) {
-    details.setAttribute('hidden', 'until-found');
-  } else {
-    details.removeAttribute('hidden');
-  }
-}
 document.querySelectorAll('.section').forEach(section => {
   section.onbeforematch = () => {
     section.classList.remove('collapsed');
-    updateHiddenAttribute(section);
   };
   section.querySelector('.title').onclick = () => {
     section.classList.toggle('collapsed');
-    updateHiddenAttribute(section);
+
+    const details = section.querySelector('.details');
+    if (section.classList.contains('collapsed')) {
+      details.hidden = 'until-found';
+    } else {
+      details.removeAttribute('hidden');
+    }
   };
 });
 </script>
