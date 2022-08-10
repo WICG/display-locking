@@ -1,4 +1,9 @@
-# Display locking
+# Important Note
+
+The work here has all been adopted in CSSWG or WHATWG as needed.  This repo is
+archived for the historical record.
+
+## Display locking
 
 <div style="background: #ffffcc; border: 1px solid #ccc; padding: 20px;">
 Note that this feature should not be confused with the
